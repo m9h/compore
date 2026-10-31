@@ -35,6 +35,7 @@ tutorials/uncertainty_quantification
 :caption: Validation results and decisions
 
 decisions/README
+decisions/012-retrospective-and-landscape-2026-10
 decisions/008-positioning-vs-force-prism-sbi
 decisions/009-graves-orbit-resolve-design
 decisions/010-package-review-and-cleanup-plan

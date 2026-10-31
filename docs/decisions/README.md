@@ -5,7 +5,7 @@ research logs that read like lab notebooks. The table says which is which and
 what state each is in. Numbers are stable: other docs, commit messages and the
 memory of previous sessions cite them as "doc 008 §13".
 
-| doc | type | status (2026-10-09) | one line |
+| doc | type | status (2026-10-31) | one line |
 |---|---|---|---|
 | [001](001-optimistix-over-optax.md) | ADR | accepted | Optimistix for deterministic voxel fitting, Optax for stochastic training |
 | [002](002-adoption-of-kidger-stack.md) | ADR | accepted | Equinox / Diffrax / Lineax / Optimistix as the numerical stack |
@@ -20,6 +20,7 @@ memory of previous sessions cite them as "doc 008 §13".
 | [009](009-graves-orbit-resolve-design.md) | design calc | done, no data yet | Fisher design of an orbital RESOLVE block for Graves orbitopathy |
 | [010](010-package-review-and-cleanup-plan.md) | review + plan | P0–P2 executed; deferred items in §9 | port fidelity, structure, documentation audit and the clean-up log (§7–§9) |
 | [011](011-dmipy-v2-dmrai-lab-comparison.md) | comparison | done | SBI4DWI vs the revived dmipy 2.x stack (dmrai-lab): overlap only at the compartment layer; uncertainty/SBI/PRISM/validation are ours, substrates/relaxation/sequences are theirs; AGPL |
+| [012](012-retrospective-and-landscape-2026-10.md) | review + survey | live | origins as a dmipy fork, Kidger-stack audit, the tour of techniques, and the October 2026 landscape by group; supersedes doc 004 as the landscape entry point |
 
 Conventions: one file per topic; append dated sections rather than rewriting
 history; numbers in the tables are copied from the JSON the scripts in

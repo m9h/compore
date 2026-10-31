@@ -9,6 +9,9 @@ Research survey — informing dmipy-JAX roadmap.
 (`dipy.reconst.force.FORCEModel`); see [Section 9](#9-empirical-replication-2026-05-07)
 for end-to-end comparison results.
 
+
+**Landscape update (2026-10-31):** this survey is historical. The current group-by-group landscape, with citations in `docs/references.bib`, is [doc 012 §4](012-retrospective-and-landscape-2026-10.md).
+
 ## Summary
 
 This document surveys three recent bodies of work that converge on the same core idea:

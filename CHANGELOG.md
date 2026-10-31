@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased (2026-10-31) — retrospective and bibliography
+
+### Added
+- doc 012: project retrospective (dmipy fork origins, Kidger-stack audit, technique tour)
+  and the October 2026 landscape by group; doc 004 now points to it.
+- `docs/references.bib`: 6 → 51 entries (Crossref/arXiv records for every group, method and
+  JAX package the decisions cite); the Sphinx bibliography lists all entries.
+- `signal_models/matrix_formalism.py`: exact finite-pulse ring / disk / sphere kernels
+  (Canales-Rodríguez et al. 2026), doc 011 §6.
+
 ## Unreleased (2026-10-09) — package review follow-up (doc 010)
 
 ### Fixed
