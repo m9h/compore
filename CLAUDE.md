@@ -84,7 +84,9 @@ dmipy_jax/                   # the installable package (wheel = this directory o
 ├── acquisition.py           # JaxAcquisition (b-values SI, gradient dirs, delta/Delta)
 ├── constants.py             # SPHERE_ROOTS (100-root dmipy table), Bessel-root finders, gamma
 ├── signal_models/           # Analytical forward models (Ball, Stick, Zeppelin, cylinders,
-│                            #   spheres incl. Callaghan, NODDI, SANDI); closed-form tested
+│                            #   spheres incl. Callaghan, NODDI, SANDI); closed-form tested;
+│                            #   matrix_formalism.py = exact finite-pulse ring (myelin water,
+│                            #   Canales-Rodríguez 2026) / disk / sphere spectral kernels
 ├── prism/                   # PRISM-JAX: multi-fixel refine (prism_jax), Laplace fixel
 │   │                        #   posterior (prism_uncertainty), DIPY plug-in (dipy_refine,
 │   │                        #   default_config / fi_config), tracking helpers

@@ -121,3 +121,45 @@ already plugs in as a `PeaksAndMetrics` refinement stage; see
 `docs/outreach/force-dipy-notes.md`.
 
 Contact for the record: Rutger Fick, fick.rutger@gmail.com (GitHub profile).
+
+## 6. Addendum 2026-10-30: matrix-method pores are no longer a gap
+
+§2.1 listed "matrix-method pores C5/S5/P5" as inventory dmipy-sim has and we
+lacked. `dmipy_jax/signal_models/matrix_formalism.py` now provides the
+spectral (Laplacian) matrix formalism for finite rectangular PGSE in three
+axially symmetric pores, prompted by Canales-Rodríguez, Tax, Górriz, Jones,
+Thiran, Rafael-Patiño, *Phys. Med. Biol.* 2026 (arXiv:2603.23421, CC-BY),
+whose cylindrical-surface model is the myelin-water compartment:
+
+| kernel | geometry | eigenbasis | reference it is tested against |
+|---|---|---|---|
+| `cylinder_surface_pgse` / `ring_perpendicular_attenuation` | cylindrical surface (myelin water) | cos nθ, λ = n²/r², K̃ tridiagonal with √2 (paper Eqs. 29–34) | Jacobi–Anger narrow-pulse series (3e-6), J₀² diffraction limit, tangential free limit, paper Table II convergence (M = 3: 2e-3 %, M = 5 < 1e-5 %, M = 10 < 1e-8 %) |
+| `cylinder_mf_pgse` / `disk_perpendicular_attenuation` | cylinder interior | J_n(α_nk ρ) cos nθ, J_n'(α) = 0 | `callaghan_perpendicular_attenuation` at δ → 0 (2e-5), Söderman at Δ → ∞ (1e-5), Mitra short-time slope |
+| `sphere_mf_pgse` / `sphere_attenuation` | sphere interior | j_n(α_nk ρ) P_n(μ), j_n'(α) = 0 | `g3_sphere_callaghan` at δ → 0 (1e-5), Stejskal–Tanner at Δ → ∞, `g3_sphere` GPD at low b (3e-4 at b = 1 ms/µm², the GPD's own error) |
+
+Implementation notes. The pore is scaled to unit radius so Λ̂ and B̂ are
+host-side constants (cached per truncation); radius, D, δ, Δ enter only as
+a = Dδ/R², g = D(Δ−δ)/R², c = qR, which keeps every kernel differentiable in
+all four (used by the acquisition-design layer). The signal is
+Σ_j conj(U₀ⱼ) e^{−gλⱼ} Uⱼ₀ with U = expm(−aΛ̂ + icB̂), the second lobe being
+the conjugate of the first (paper §3.4). Disk and sphere coupling matrices
+are built by Gauss–Legendre quadrature of the eigenfunctions rather than
+the closed forms, which is exact to 1e-12 for these smooth integrands and
+avoids transcribing Grebenkov's coefficient tables. One numerical trap: for
+a·λ ≳ 1e6 (0.1 µm ring, 50 modes) JAX's expm returns NaN; the diagonal decay
+is capped at 2000, which is exactly zero in float64 anyway.
+
+What this enables, in order: (i) a myelin-water compartment with its own
+short T2 for the multi-TE item in §3 (point 3) and for the Cima.X
+short-TE protocol question, where that pool first becomes visible;
+(ii) an exact finite-pulse reference for the GPD sphere PRISM uses as the
+glial pool (doc 008 §14.3). Measured at the CHUV protocol (δ 16.5 / Δ 55.5 ms,
+b 0.5–5 ms/µm², D 2.5): max |GPD − exact| is 0.0000 at r 2.7 and 3.0 µm,
+0.0014 at r 5.7 µm (the MC-glia-equivalent sphere, at b = 5, GPD 0.8256 vs
+exact 0.8242) and 0.0001 at r 3 µm with D 0.8 — all far below the SNR-50
+noise sd of 0.02, so the GPD glial pool stands;
+(iii) a cheap independent check of our Monte Carlo walker on disks and
+spheres at finite δ, which the Callaghan kernels (narrow pulse) could not
+give. The paper's Monte Carlo engine is
+github.com/jonhrafe/Robust-Monte-Carlo-Simulations (EPFL); their code link
+for this paper was not resolvable from the LinkedIn post.
