@@ -301,6 +301,22 @@ of doc 008 §11.2. Moving the three runners behind the ABC with the emulator
 as the adapter turns scripts into the platform's defining feature: three
 Monte Carlo engines behind one differentiable interface.
 
+**Done 2026-11-04.** `dmipy_jax/simulation/oracle.py`: `PGSEScheme`,
+`OracleResult`, `SubstrateOracle` (ABC with `simulate`, `generate_library`
+→ `SimulationLibrary` HDF5 with measured descriptors and per-compartment
+signals), `JaxWalkerOracle`, `MCMROracle` (stages the CSV/JSON interface of
+`substrate_pgse.jl` under a workdir), `MCDSOracle` (geometry with periodic
+images, scheme and config writers from `run_mcds_parity.py`), registry.
+`dmipy_jax/simulation/emulator.py`: `LibraryEmulator` (ensemble MLP from
+`emulator_inversion.py`) with `as_model_simulator` for `train_sbi`, `invert`,
+`save/load`. The substrate geometry and walker moved into the wheel as
+`simulation/substrates/spheres.py`; `validation/lib/substrate_benchmark.py`
+re-exports it so the ladder, permeability and library scripts are unchanged.
+Tests: `dmipy_jax/tests/test_oracle.py` (registry, physics sanity of the JAX
+oracle on a grid of straight axons, library round-trip, emulator fit +
+`ModelSimulator` adapter + persistence) and the existing substrate suites,
+20 passed. Engine smoke run on the same tiny substrate recorded in §7.6.
+
 ### 7.4 Step 4: one result where amortisation wins, or the SBI label goes
 
 Per-voxel MAP + Laplace beat the flow on every orientation task (doc 008
@@ -345,3 +361,23 @@ none of diffrax, scico, flowjax, blackjax, sympy, pandas, matplotlib, jaxopt,
 healpy or numpyro (h5py arrives through dipy). `tests/validation/test_prism_*`
 pass in that environment except the MSMT-CSD oracle test, which needs cvxpy
 and now skips without it.
+
+Oracle engines end to end (2026-11-04, `oracle_smoke.py` in the session
+scratchpad; four straight sphere-chain axons r = 0.8 µm in a 6 µm box, 13
+measurements b 0/1000/2500, δ 6 / Δ 12 ms, D 2 µm²/ms, 2000 walkers per
+compartment; values copied from `oracle_smoke.json`). This is a wiring check,
+not a parity study: the parity numbers on CATERPillar substrates are doc 008
+§11.1.
+
+| engine | wall time | S_intra, b 2500, ⊥ (|g_z| < 0.3) | S_extra, b 2500 | RMS vs JAX (intra / extra) |
+|---|---|---|---|---|
+| jax (CPU, dt 10 µs) | 9.8 s | 0.881 | 0.036 | — |
+| mcds (8 threads, 5000 steps) | 0.9 s | 0.895 | 0.031 | 0.038 / 0.033 |
+| mcmr (Julia 1.13, 8 threads, incl. compile) | 82 s | 0.994 | 0.023 | 0.396 / 0.020 |
+
+MCMR's intra signal is the known over-restriction of overlapping-sphere
+chains (doc 007 §8.6: the chain is treated as separate spheres, so axial
+diffusion is blocked and the perpendicular signal is nearly 1); the
+extra-cellular agreement to 0.02 is the same as on the real substrates. The
+MCDS wrapper initially failed because MCDS selects its geometry parser by
+file extension (`.swc`); fixed in the oracle.

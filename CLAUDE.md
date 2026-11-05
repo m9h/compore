@@ -93,7 +93,10 @@ dmipy_jax/                   # the installable package (wheel = this directory o
 ├── workflows/refine_peaks_flow.py   # `dipy_refine_peaks` CLI
 ├── core/                    # modeling_framework (compose), solvers, surrogate
 ├── simulation/              # mesh_sim (FEM), monte_carlo, differentiable_walker, simulator,
-│   └── substrates/          #   caterpillar.py (CATERPillarOracle, oracle boundary)
+│   │                        #   oracle.py (SubstrateOracle ABC, jax/mcmr/mcds engines, registry,
+│   │                        #   library generation), emulator.py (LibraryEmulator → ModelSimulator)
+│   └── substrates/          #   spheres.py (Substrate, SDFs, PGSE walker; was validation/lib/
+│                            #   substrate_benchmark.py), caterpillar.py (CATERPillar generators)
 ├── pipeline/                # ModelSimulator → train_sbi → checkpoint → deploy; UQ (sbc, ppc,
 │                            #   conformal, ood, ensemble), comparison runner, metrics
 ├── library/                 # SimulationLibrary (HDF5), generator, matcher
@@ -191,28 +194,29 @@ Key features:
 
 ## Oracle system
 
-> **Status (2026-09-08):** the oracle protocol below is the *intended*
-> design. None of `simulation/oracle.py`, `simulation/oracles/`,
-> `pipeline/oracle_adapter.py`, `pipeline/multi_fidelity.py` exist yet.
-> The only substrate-oracle code in the tree is
-> `dmipy_jax/simulation/substrates/caterpillar.py` (`CATERPillarOracle`) and, since
-> 2026-09-14, a Julia 1.13 environment `julia/mcmr/` running MCMRSimulator.jl
-> v1.1.0 (`julia +1.13 -t 16 --project=julia/mcmr julia/mcmr/substrate_pgse.jl <tag>`;
-> doc 007 §8.5–8.6: extra-cellular parity with our walker, sphere-chain
-> axons over-restricted upstream). See
-> `docs/decisions/006-octopus-differentiable-substrate-landscape.md` §7.
+Status (2026-11-04, doc 012 §7.3): the protocol exists in
+`dmipy_jax/simulation/oracle.py` and wraps three Monte Carlo engines behind one
+interface; the sphere-substrate geometry, SDFs and PGSE walker moved from
+`validation/lib/substrate_benchmark.py` into
+`dmipy_jax/simulation/substrates/spheres.py` (the old path is a re-export shim).
 
-The oracle protocol separates **simulation fidelity** from **JAX requirements**:
-
-- `OracleSimulator` (ABC): `check_available()`, `generate_batch(params, acq)`, `generate_library(n, ...)`
-- Implementations: `DIPYMultiTensorOracle`, `ReMiDiOracle`, `MCMROracle`
-- Registry: `get_oracle("dipy")` lazy-imports the right class
-- Adapter: `OracleModelSimulator` wraps any `SimulationLibrary` into the `ModelSimulator` interface
-
-The `OracleModelSimulator.simulate()` method uses k-NN inverse-distance
-interpolation (not single nearest-neighbour) and supports:
-- Out-of-support detection (warns when queries are far from library coverage)
-- Optional neural emulator (`fit_emulator()` trains a small MLP for smooth interpolation)
+- `PGSEScheme(bvals_si, bvecs, delta, Delta)` — SI; rejects s/mm².
+- `SubstrateOracle` (ABC): `check_available()`, `simulate(substrate, scheme, D_intra=, D_extra=, n_particles=, seed=) -> OracleResult(S, S_intra, S_extra, S_glia, engine, seconds, meta)`,
+  `generate_library(sampler, n, scheme, parameter_names=, descriptor_fn=, out_path=) -> SimulationLibrary`
+  (HDF5; metadata carries scheme, engine, measured descriptors, per-compartment signals, skip count).
+- Engines: `JaxWalkerOracle` ("jax", always available, differentiable walker, glia supported),
+  `MCMROracle` ("mcmr", MCMRSimulator.jl v1.1.0 via `julia +1.13 --project=julia/mcmr julia/mcmr/substrate_pgse.jl`, staged under a workdir),
+  `MCDSOracle` ("mcds", Permeable_MCDS CLI, `MCDS_BIN` env or the `_external` build; periodic images of boundary spheres).
+  None is a Python dependency; unavailable engines raise on use.
+- Registry: `get_oracle("jax" | "mcmr" | "mcds", **kw)`, `available_oracles()`, `register_oracle(name, cls)`.
+- Adapter: `dmipy_jax/simulation/emulator.py::LibraryEmulator.fit(library)` trains an Equinox MLP
+  ensemble f(θ, b, ĝ) → log S; `.as_model_simulator(acq)` gives a `ModelSimulator` for `train_sbi`;
+  `.invert(y, bvals, bvecs)` is the emulator-in-the-loop LM inversion of doc 008 §11.2;
+  `.save/.load` (JSON header + Equinox leaves).
+- Parity of the three engines: doc 008 §11.1 (extra-cellular RMS 0.01–0.015 JAX↔MCMR; MCDS freer;
+  intra MCDS < JAX < MCMR). Tests: `dmipy_jax/tests/test_oracle.py`.
+- Not built: the k-NN `OracleModelSimulator` and `DIPYMultiTensorOracle` / `ReMiDiOracle` named in
+  earlier versions of this file (ReMiDi has no public code; DIPY multi-tensor is a closed form, not an oracle).
 
 ## Comparison framework
 

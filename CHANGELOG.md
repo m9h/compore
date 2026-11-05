@@ -22,6 +22,11 @@
   (`validation/runtime_hardi_cpu.json`; GPU 31 s / 23 s).
 - doc 012 §7: the program to completion (two distributions, upstream, oracle protocol,
   the SBI model-selection experiment, January debts).
+- Oracle protocol (step 3): `simulation/oracle.py` with `SubstrateOracle`, `PGSEScheme`,
+  `JaxWalkerOracle` / `MCMROracle` / `MCDSOracle`, `get_oracle`, `generate_library` → HDF5
+  `SimulationLibrary`; `simulation/emulator.py::LibraryEmulator` (ensemble MLP, `as_model_simulator`,
+  `invert`, `save/load`). `validation/lib/substrate_benchmark.py` moved into the wheel as
+  `simulation/substrates/spheres.py` (shim kept). Tests in `dmipy_jax/tests/test_oracle.py`.
 
 ## Unreleased (2026-10-31) — retrospective and bibliography
 
