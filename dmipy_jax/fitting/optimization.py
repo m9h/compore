@@ -1,8 +1,19 @@
 import jax
 import jax.numpy as jnp
-import jaxopt
 import optimistix as optx
 from functools import partial
+
+
+def _jaxopt():
+    """jaxopt is optional (not a dependency since 2026-11-04, doc 012 §7): the
+    bounded L-BFGS paths below need it; everything else in this module uses
+    Optimistix."""
+    try:
+        import jaxopt
+    except ImportError as e:  # pragma: no cover
+        raise ImportError("This fitter uses jaxopt.LBFGSB; install it with "
+                          "`uv add jaxopt` or use OptimistixFitter / CustomLMFitter.") from e
+    return jaxopt
 
 __all__ = ['VoxelFitter', 'OptimistixFitter', 'CustomLMFitter', 'mse_loss']
 
@@ -71,7 +82,7 @@ class VoxelFitter:
             return jnp.mean((data - prediction) ** 2)
 
         # Instantiate Pure JAX Solver (L-BFGS-B)
-        solver = jaxopt.LBFGSB(
+        solver = _jaxopt().LBFGSB(
             fun=objective,
             **self.solver_settings
         )
@@ -280,7 +291,7 @@ class ConstrainedOptimizer:
 
         # Solver
         # bounds must be tuple of arrays? jaxopt supports (lower, upper).
-        solver = jaxopt.LBFGSB(
+        solver = _jaxopt().LBFGSB(
             fun=objective,
             **self.solver_settings
         )

@@ -1,5 +1,28 @@
 # Changelog
 
+## Unreleased (2026-11-04) — product/platform split, step 1–2 (doc 012 §7)
+
+### Changed
+- Core dependencies 29 → 11 (jax, jaxlib, numpy, scipy, equinox, jaxtyping, optimistix,
+  lineax, optax, nibabel, dipy). New extras: `cuda` (jax[cuda13]), `sbi`, `sim`, `algebra`,
+  `inverse`, `nn`, `viz`, `all`. CPU users install no GPU wheels.
+- `dmipy_jax/__init__.py` imports submodules lazily; `import dmipy_jax.prism` no longer
+  loads diffrax / scico / flowjax.
+- `jaxopt` is optional: `VoxelFitter` (bounded L-BFGS), `ConstrainedOptimizer` and
+  `models/fw_dti` import it on use. `annotated-types` removed (no importer).
+
+### Added
+- Shipped σ calibration: `prism_uncertainty.SIGMA_INFLATION_HCP_YA = 1.81` (± 0.15,
+  44-subject HCP-YA scan–rescan, doc 008 §10.6). `FixelPosterior.sigma_inflation`,
+  `.sigma_deg_calibrated`, `.fintra_sd_calibrated`, `sample_dirs(calibrated=True)`;
+  `refine_peaks(sigma_inflation=…)` (default: the HCP-YA constant); `dipy_refine_peaks`
+  writes `*_sigmatheta_calibrated.nii.gz`, the fixel directory gains
+  `sigma_theta_deg_calibrated`, `*_model.json` records the factor. Raw σ unchanged.
+- CPU whole-brain runtime (Stanford HARDI, 154,625 voxels): refine 88 s, Laplace 31 s
+  (`validation/runtime_hardi_cpu.json`; GPU 31 s / 23 s).
+- doc 012 §7: the program to completion (two distributions, upstream, oracle protocol,
+  the SBI model-selection experiment, January debts).
+
 ## Unreleased (2026-10-31) — retrospective and bibliography
 
 ### Added

@@ -281,6 +281,7 @@ class TestSyntheticBenchmark:
     def test_msmt_oracle_response_mask_is_used(self):
         """Synthetic MSMT must build its WM response from the GT single-fibre
         voxels, not an FA percentile (which selects crossing voxels here)."""
+        pytest.importorskip("cvxpy")  # dipy MSMT-CSD needs it (extra `inverse`)
         from validation.lib import prism_synthetic as ps
         from validation.lib import msmt_baseline as mb
         b = ps.make_benchmark(snr=None)

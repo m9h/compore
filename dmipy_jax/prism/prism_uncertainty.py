@@ -30,6 +30,17 @@ import jax
 import jax.numpy as jnp
 
 from dmipy_jax.prism import prism_jax as pj
+
+# In-vivo calibration of the Laplace σ_θ. On the 44-subject HCP-YA scan–rescan
+# cohort the Laplace σ ranks the observed test–retest angular error (ρ = 0.457
+# ± 0.023) but under-predicts it by 1.81 ± 0.15 (range 1.70–2.3, largest on
+# the low-SNR subjects); doc 008 §10.6. The factor absorbs what the block-
+# diagonal, fixed-global Laplace step leaves out (spatial-prior coupling,
+# global-parameter uncertainty, physiological and motion variance between
+# sessions). It was measured on HCP-YA (3 T Prisma, 1.25 mm, b 1000/2000/3000)
+# and should be re-estimated per scanner/protocol from a retest pair.
+SIGMA_INFLATION_HCP_YA = 1.81
+SIGMA_INFLATION_HCP_YA_SD = 0.15
 def _tangent_basis(n):
     """Two unit vectors orthogonal to n (n: (...,3))."""
     a = jnp.where(jnp.abs(n[..., 0:1]) < 0.9,
@@ -63,11 +74,28 @@ class FixelPosterior:
     wm_fracs: np.ndarray      # (N,K)
     mask: np.ndarray
     fintra_sd: np.ndarray = None   # (N,) Laplace sd of f_i (f units, via the logit's sd × f(1−f))
+    # multiplicative in-vivo calibration of σ (see SIGMA_INFLATION_HCP_YA); 1.0 = raw Laplace
+    sigma_inflation: float = 1.0
 
-    def sample_dirs(self, key, n_samples: int) -> np.ndarray:
-        """(S,N,K,3) unit-vector samples from the tangent Gaussians."""
+    @property
+    def sigma_deg_calibrated(self) -> np.ndarray:
+        """(N,K) σ_θ × sigma_inflation: the scan–rescan-calibrated angular sd."""
+        return self.sigma_deg * self.sigma_inflation
+
+    @property
+    def fintra_sd_calibrated(self):
+        return None if self.fintra_sd is None else self.fintra_sd * self.sigma_inflation
+
+    def sample_dirs(self, key, n_samples: int, calibrated: bool = False) -> np.ndarray:
+        """(S,N,K,3) unit-vector samples from the tangent Gaussians.
+        ``calibrated=True`` scales the covariance by sigma_inflation² so the
+        samples have the in-vivo-calibrated spread (doc 008 §13.2 found the
+        posterior-mean connectome gain insensitive to the width, so the raw
+        posterior remains the default)."""
         # symmetric sqrt via eigh (cholesky fails on near-singular float32 blocks)
         w, V = np.linalg.eigh(0.5 * (self.cov + np.swapaxes(self.cov, -1, -2)))
+        if calibrated:
+            w = w * self.sigma_inflation ** 2
         L = V * np.sqrt(np.maximum(w, 0.0))[..., None, :]           # (N,K,2,2)
         z = np.asarray(jax.random.normal(key, (n_samples,) + self.cov.shape[:2] + (2,)))
         t = np.einsum("nkij,snkj->snki", L, z)                     # (S,N,K,2)
@@ -76,7 +104,8 @@ class FixelPosterior:
 
 
 def laplace_fixel_posterior(fit: pj.PrismFit, data: np.ndarray, bvals_si, bvecs,
-                            jitter: float = 1e-6, dir_prior_sd_rad: float = 1.0) -> FixelPosterior:
+                            jitter: float = 1e-6, dir_prior_sd_rad: float = 1.0,
+                            sigma_inflation: float = 1.0) -> FixelPosterior:
     """Laplace approximation around the MAP, per voxel, over
     [tangent coords (K×2), f_i logit, fraction logits (K+3)]. Only the
     direction block is returned as a covariance; the rest is marginalised
@@ -88,7 +117,11 @@ def laplace_fixel_posterior(fit: pj.PrismFit, data: np.ndarray, bvals_si, bvecs,
     leaks through the (small) cross-fibre coupling into the *main*
     fibre's covariance. The prior bounds any fixel's σ_θ at ~57° and
     leaves well-determined fixels untouched (their precision is 10³–10⁵×
-    larger)."""
+    larger).
+
+    ``sigma_inflation``: stored on the result (``FixelPosterior.sigma_inflation``);
+    ``sigma_deg`` stays the raw Laplace value, ``sigma_deg_calibrated`` applies
+    the factor. Pass ``SIGMA_INFLATION_HCP_YA`` for 3 T HCP-like protocols."""
     cfg = fit.cfg
     K = cfg.n_fibres
     mask = fit.mask
@@ -163,7 +196,8 @@ def laplace_fixel_posterior(fit: pj.PrismFit, data: np.ndarray, bvals_si, bvecs,
     fi_sd = np.sqrt(np.maximum(np.asarray(var_fi_logit), 0.0)) * fic * (1 - fic)
     return FixelPosterior(dirs=np.asarray(fit.dirs), cov=cov_kk, e1=np.asarray(e1),
                           e2=np.asarray(e2), sigma_deg=sigma_deg,
-                          wm_fracs=np.asarray(fit.wm_fracs), mask=mask, fintra_sd=fi_sd)
+                          wm_fracs=np.asarray(fit.wm_fracs), mask=mask, fintra_sd=fi_sd,
+                          sigma_inflation=float(sigma_inflation))
 
 
 def cone_coverage(post: FixelPosterior, gt_dirs: np.ndarray, level: float = 0.9,

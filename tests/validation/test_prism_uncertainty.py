@@ -100,3 +100,24 @@ def test_evidence_prefers_true_model_class():
             assert frac_disp > 0.7, frac_disp
         else:
             assert frac_disp < 0.5, frac_disp
+
+
+def test_sigma_inflation_is_stored_and_applied(fitted):
+    """The in-vivo calibration factor (doc 008 §10.6) is carried on the
+    posterior; sigma_deg stays raw, sigma_deg_calibrated scales it, and
+    calibrated samples widen by the same factor."""
+    b, m, gt, ang, fit, post = fitted
+    assert post.sigma_inflation == 1.0
+    np.testing.assert_array_equal(post.sigma_deg_calibrated, post.sigma_deg)
+    assert pu.SIGMA_INFLATION_HCP_YA == 1.81
+    post_c = pu.laplace_fixel_posterior(fit, b["data"], b["bvals"], b["bvecs"],
+                                        sigma_inflation=pu.SIGMA_INFLATION_HCP_YA)
+    np.testing.assert_allclose(post_c.sigma_deg, post.sigma_deg, rtol=1e-6)
+    np.testing.assert_allclose(post_c.sigma_deg_calibrated, 1.81 * post.sigma_deg, rtol=1e-6)
+    np.testing.assert_allclose(post_c.fintra_sd_calibrated, 1.81 * post.fintra_sd, rtol=1e-6)
+    key = jax.random.PRNGKey(1)
+    raw = post_c.sample_dirs(key, 400); cal = post_c.sample_dirs(key, 400, calibrated=True)
+    dev = lambda S: np.degrees(np.arccos(np.clip(np.abs(np.einsum("snkj,nkj->snk", S, post.dirs)), 0, 1)))
+    well = ang > 0
+    ratio = np.median(dev(cal).std(0)[well, 0] / dev(raw).std(0)[well, 0])
+    assert 1.5 < ratio < 2.1, ratio

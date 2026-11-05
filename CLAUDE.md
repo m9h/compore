@@ -115,8 +115,14 @@ docs/decisions/              # ADRs and result logs (008 = PRISM/HCP results, 00
 docs/artifacts.md            # where the untracked checkpoints/binaries live
 ```
 
-Optional dependency extras: `data` (boto3, datalad for HCP/OpenNeuro loaders),
-`baselines` (dmri-amico, torch for validation scripts), `test`, `doc`.
+Dependencies (doc 012 §7, 2026-11-04): the core list is only what
+`dmipy_jax.signal_models` / `fitting` / `prism` and `dipy_refine_peaks` need on
+CPU. Extras: `cuda` (jax[cuda13]), `sbi` (flowjax, blackjax, numpyro, h5py),
+`sim` (diffrax, jax-md, pandas), `algebra` (sympy), `inverse` (scico, cvxpy),
+`nn` (e3nn, healpy, ttax), `viz` (matplotlib, tqdm), `data`, `baselines`,
+`test`, `doc`, `all`. The dev environment is `uv sync --all-extras`. Keep the
+core import path free of extras: `import dmipy_jax.prism` must not pull in
+diffrax/scico/flowjax (the package `__init__` is lazy for this reason).
 
 ## Key data flow
 

@@ -1,0 +1,12 @@
+{
+ "n_voxels": 154625,
+ "n_meas": 160,
+ "platform": "cpu",
+ "device": "cpu:0",
+ "t_csd": 6.615805149078369,
+ "t_refine": 87.75175476074219,
+ "t_laplace": 31.22402024269104,
+ "main_peak_agreement_deg_median": 6.185521194212441,
+ "dpar": 1.3233718565430763,
+ "fintra_mean": 0.42015472054481506
+}

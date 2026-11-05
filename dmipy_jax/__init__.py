@@ -16,22 +16,19 @@ Submodules
 - `inference.mcmc`: Bayesian inference using Blackjax (NUTS).
 """
 
-from dmipy_jax import acquisition
-from dmipy_jax import cylinder
-from dmipy_jax import gaussian
-from dmipy_jax import sphere
-from dmipy_jax import fitting
-from dmipy_jax import inverse
-from dmipy_jax import composer
-from dmipy_jax import simulation
+import importlib
 
-__all__ = [
-    'acquisition',
-    'cylinder',
-    'gaussian',
-    'sphere',
-    'fitting',
-    'inverse',
-    'composer',
-    'simulation',
-]
+__all__ = ['acquisition', 'cylinder', 'gaussian', 'sphere', 'fitting', 'inverse',
+           'composer', 'simulation', 'signal_models', 'prism']
+
+# Submodules load on first attribute access, so `import dmipy_jax.prism` pulls in
+# jax, optax, dipy and the compartment kernels but not diffrax / scico / flowjax
+# (doc 012 §7: the product must import with the core dependencies only).
+def __getattr__(name):
+    if name in __all__:
+        return importlib.import_module(f"dmipy_jax.{name}")
+    raise AttributeError(f"module 'dmipy_jax' has no attribute {name!r}")
+
+
+def __dir__():
+    return sorted(set(globals()) | set(__all__))

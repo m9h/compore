@@ -21,7 +21,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--n-iter", type=int, default=300); ap.add_argument("--force-sims", type=int, default=500_000)
     ap.add_argument("--num-cpus", type=int, default=6); ap.add_argument("--slices", type=int, default=0, help="0 = whole brain; else central N axial slices")
-    ap.add_argument("--out", default="validation/runtime_hardi.json")
+    ap.add_argument("--out", default="validation/runtime_hardi.json"); ap.add_argument("--skip-force", action="store_true")
     a = ap.parse_args()
     fdwi, fbval, fbvec = get_fnames(name="stanford_hardi")
     data, affine = load_nifti(fdwi); bvals, bvecs = read_bvals_bvecs(fbval, fbvec); gtab = gradient_table(bvals, bvecs=bvecs)
@@ -29,7 +29,7 @@ def main():
     if a.slices:
         z0 = data.shape[2] // 2; keep = np.zeros_like(mask); keep[:, :, z0 - a.slices // 2:z0 + (a.slices + 1) // 2] = True; mask &= keep
     N = int(mask.sum()); print(f"Stanford HARDI {data.shape}, {N:,} mask voxels, {len(bvals)} measurements", flush=True)
-    res = {"n_voxels": N, "n_meas": int(len(bvals))}
+    res = {"n_voxels": N, "n_meas": int(len(bvals)), "platform": jax.devices()[0].platform, "device": str(jax.devices()[0])}
     t0 = time.time()
     response, _ = auto_response_ssst(gtab, data, roi_radii=10, fa_thr=0.7)
     csd = ConstrainedSphericalDeconvModel(gtab, response, sh_order_max=8)
@@ -49,6 +49,7 @@ def main():
     res["main_peak_agreement_deg_median"] = float(np.median(ang)); print(f"main-peak agreement CSD vs refined: median {np.median(ang):.1f}°, 90th pct {np.percentile(ang, 90):.1f}°", flush=True)
     res["dpar"] = float(fit.d_par * 1e9); res["fintra_mean"] = float(fit.fintra.mean())
     try:
+        if a.skip_force: raise RuntimeError("--skip-force")
         from dipy.reconst.force import FORCEModel, force_peaks
         t0 = time.time(); model = FORCEModel(gtab, compute_odf=False); model.generate(num_simulations=a.force_sims, num_cpus=a.num_cpus, use_cache=True); res["t_force_lib"] = time.time() - t0
         t0 = time.time(); ffit = model.fit(data, mask=mask); _ = force_peaks(ffit, mask=mask); res["t_force_fit"] = time.time() - t0

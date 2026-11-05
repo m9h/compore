@@ -71,15 +71,6 @@ wheels = [
 ]
 
 [[package]]
-name = "annotated-types"
-version = "0.7.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/ee/67/531ea369ba64dcff5ec9c3402f9f51bf748cec26dde048a2f973a4eea7f5/annotated_types-0.7.0.tar.gz", hash = "sha256:aff07c09a53a08bc8cfccb9c85b05f1aa9a2a6f23728d790723543408344ce89", size = 16081, upload-time = "2024-05-20T21:33:25.928Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/78/b6/6307fbef88d9b5ee7421e68d78a9f162e0da4900bc5f5793f6d3d0e34fb8/annotated_types-0.7.0-py3-none-any.whl", hash = "sha256:1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53", size = 13643, upload-time = "2024-05-20T21:33:24.1Z" },
-]
-
-[[package]]
 name = "argcomplete"
 version = "3.6.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1485,21 +1476,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/8f/17/bbc0a38d2d560c92e1dd123d293ec2f78e24a843baa13238fd361e7ab370/jaxlib-0.11.1-cp315-cp315t-macosx_11_0_arm64.whl", hash = "sha256:d3945259807c26d231a2b61a63f4b6f1058f6519803b9bcc55ea2f1ae6a13108", size = 63263361, upload-time = "2026-08-17T20:31:20.369Z" },
     { url = "https://files.pythonhosted.org/packages/97/5b/819e20e911ba4eae21f96ec808a97605383d519d605276914a2b0fb8ef2a/jaxlib-0.11.1-cp315-cp315t-manylinux_2_27_aarch64.whl", hash = "sha256:3bce7f70714ed7e1967b9725e67c0aa3e111ca7e0dc7434c5d7d1e2047a8de26", size = 82868605, upload-time = "2026-08-17T20:31:23.805Z" },
     { url = "https://files.pythonhosted.org/packages/8c/e7/9593d22d398b66dae5fab17f961ed16ce7acfe11425276a6d2a0200d97ff/jaxlib-0.11.1-cp315-cp315t-manylinux_2_27_x86_64.whl", hash = "sha256:a3064a14d47f03b777454667bc8bf0a7c2d506714fe108adacf734f63cd7a5ae", size = 87998599, upload-time = "2026-08-17T20:31:27.376Z" },
-]
-
-[[package]]
-name = "jaxopt"
-version = "0.8.3"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "jax" },
-    { name = "jaxlib" },
-    { name = "numpy" },
-    { name = "scipy" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/f9/af/73f7514ea14d6aba0a851e03afbdd532a7af896577c708c6ce405917ce80/jaxopt-0.8.3.tar.gz", hash = "sha256:4b06dfa6f915a4f3291699606245af6069371a48dc5c92d4c507840d62990646", size = 121236, upload-time = "2024-01-10T12:04:13.487Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/64/a4/fc292a90a9c51d1b633cdffe2df30c702e1e0b3e0b568c7b81004cac0a06/jaxopt-0.8.3-py3-none-any.whl", hash = "sha256:4be2f82798393682529c9ca5046e5397ac6c8657b8acb6bf275e773b28df15b6", size = 172264, upload-time = "2024-01-10T12:04:11.354Z" },
 ]
 
 [[package]]
@@ -3385,42 +3361,52 @@ name = "sbi4dwi"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "annotated-types" },
-    { name = "blackjax" },
-    { name = "chex" },
-    { name = "cvxpy" },
-    { name = "diffrax" },
     { name = "dipy" },
-    { name = "e3nn-jax" },
     { name = "equinox" },
-    { name = "flowjax" },
-    { name = "h5py" },
-    { name = "healpy" },
-    { name = "jax", extra = ["cuda13"] },
-    { name = "jax-md" },
+    { name = "jax" },
     { name = "jaxlib" },
-    { name = "jaxopt" },
     { name = "jaxtyping" },
     { name = "lineax" },
-    { name = "matplotlib" },
     { name = "nibabel" },
     { name = "numpy" },
-    { name = "numpyro" },
     { name = "optax" },
     { name = "optimistix" },
-    { name = "pandas" },
-    { name = "scico" },
     { name = "scipy" },
-    { name = "simpleitk" },
-    { name = "sympy" },
-    { name = "tqdm" },
-    { name = "ttax" },
 ]
 
 [package.optional-dependencies]
+algebra = [
+    { name = "sympy" },
+]
+all = [
+    { name = "blackjax" },
+    { name = "boto3" },
+    { name = "chex" },
+    { name = "cvxpy" },
+    { name = "datalad" },
+    { name = "diffrax" },
+    { name = "dmri-amico" },
+    { name = "e3nn-jax" },
+    { name = "flowjax" },
+    { name = "h5py" },
+    { name = "healpy" },
+    { name = "jax-md" },
+    { name = "matplotlib" },
+    { name = "numpyro" },
+    { name = "pandas" },
+    { name = "scico" },
+    { name = "simpleitk" },
+    { name = "sympy" },
+    { name = "torch" },
+    { name = "tqdm" },
+    { name = "ttax" },
+]
 baselines = [
     { name = "dmri-amico" },
     { name = "torch" },
+]
+cuda = [
+    { name = "jax", extra = ["cuda13"] },
 ]
 data = [
     { name = "boto3" },
@@ -3434,10 +3420,36 @@ doc = [
     { name = "sphinx-copybutton" },
     { name = "sphinxcontrib-bibtex" },
 ]
+inverse = [
+    { name = "cvxpy" },
+    { name = "scico" },
+]
+nn = [
+    { name = "e3nn-jax" },
+    { name = "healpy" },
+    { name = "ttax" },
+]
+sbi = [
+    { name = "blackjax" },
+    { name = "chex" },
+    { name = "flowjax" },
+    { name = "h5py" },
+    { name = "numpyro" },
+]
+sim = [
+    { name = "diffrax" },
+    { name = "h5py" },
+    { name = "jax-md" },
+    { name = "pandas" },
+]
 test = [
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "sybil" },
+]
+viz = [
+    { name = "matplotlib" },
+    { name = "tqdm" },
 ]
 
 [package.dev-dependencies]
@@ -3450,51 +3462,52 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "annotated-types", specifier = ">=0.7.0" },
-    { name = "blackjax" },
+    { name = "blackjax", marker = "extra == 'sbi'" },
     { name = "boto3", marker = "extra == 'data'", specifier = ">=1.42.30" },
-    { name = "chex", specifier = ">=0.1.92" },
-    { name = "cvxpy", specifier = ">=1.7.5" },
+    { name = "chex", marker = "extra == 'sbi'", specifier = ">=0.1.92" },
+    { name = "cvxpy", marker = "extra == 'inverse'", specifier = ">=1.7.5" },
     { name = "datalad", marker = "extra == 'data'" },
-    { name = "diffrax" },
+    { name = "diffrax", marker = "extra == 'sim'" },
     { name = "dipy", specifier = ">=1.12.1" },
     { name = "dmri-amico", marker = "extra == 'baselines'", specifier = ">=2.1.1" },
-    { name = "e3nn-jax", specifier = ">=0.20.8" },
+    { name = "e3nn-jax", marker = "extra == 'nn'", specifier = ">=0.20.8" },
     { name = "equinox" },
-    { name = "flowjax", specifier = ">=17.2.1" },
+    { name = "flowjax", marker = "extra == 'sbi'", specifier = ">=17.2.1" },
     { name = "furo", marker = "extra == 'doc'" },
-    { name = "h5py" },
-    { name = "healpy", specifier = ">=1.19.0" },
-    { name = "jax", extras = ["cuda13"] },
-    { name = "jax-md" },
+    { name = "h5py", marker = "extra == 'sbi'" },
+    { name = "h5py", marker = "extra == 'sim'" },
+    { name = "healpy", marker = "extra == 'nn'", specifier = ">=1.19.0" },
+    { name = "jax" },
+    { name = "jax", extras = ["cuda13"], marker = "extra == 'cuda'" },
+    { name = "jax-md", marker = "extra == 'sim'" },
     { name = "jaxlib" },
-    { name = "jaxopt" },
     { name = "jaxtyping" },
     { name = "lineax" },
-    { name = "matplotlib", specifier = ">=3.10.8" },
+    { name = "matplotlib", marker = "extra == 'viz'", specifier = ">=3.10.8" },
     { name = "myst-parser", marker = "extra == 'doc'" },
     { name = "nibabel" },
     { name = "numpy" },
-    { name = "numpyro", specifier = ">=0.19.0" },
+    { name = "numpyro", marker = "extra == 'sbi'", specifier = ">=0.19.0" },
     { name = "optax", specifier = ">=0.2.6" },
     { name = "optimistix" },
-    { name = "pandas", specifier = ">=3.0.0" },
+    { name = "pandas", marker = "extra == 'sim'", specifier = ">=3.0.0" },
     { name = "pytest", marker = "extra == 'test'" },
     { name = "pytest-cov", marker = "extra == 'test'" },
-    { name = "scico", git = "https://github.com/lanl/scico?rev=b5ddfb34e9774344ece5a76bf1b11574d5d69593" },
+    { name = "sbi4dwi", extras = ["sbi", "sim", "algebra", "inverse", "nn", "viz", "data", "baselines"], marker = "extra == 'all'" },
+    { name = "scico", marker = "extra == 'inverse'", git = "https://github.com/lanl/scico?rev=b5ddfb34e9774344ece5a76bf1b11574d5d69593" },
     { name = "scipy" },
-    { name = "simpleitk", specifier = ">=2.5.3" },
+    { name = "simpleitk", marker = "extra == 'all'", specifier = ">=2.5.3" },
     { name = "sphinx", marker = "extra == 'doc'" },
     { name = "sphinx-autodoc-typehints", marker = "extra == 'doc'" },
     { name = "sphinx-copybutton", marker = "extra == 'doc'" },
     { name = "sphinxcontrib-bibtex", marker = "extra == 'doc'" },
     { name = "sybil", marker = "extra == 'test'" },
-    { name = "sympy", specifier = ">=1.14.0" },
+    { name = "sympy", marker = "extra == 'algebra'", specifier = ">=1.14.0" },
     { name = "torch", marker = "extra == 'baselines'", specifier = ">=2.1.0" },
-    { name = "tqdm", specifier = ">=4.67.1" },
-    { name = "ttax" },
+    { name = "tqdm", marker = "extra == 'viz'", specifier = ">=4.67.1" },
+    { name = "ttax", marker = "extra == 'nn'" },
 ]
-provides-extras = ["data", "baselines", "test", "doc"]
+provides-extras = ["cuda", "sbi", "sim", "algebra", "inverse", "nn", "viz", "all", "data", "baselines", "test", "doc"]
 
 [package.metadata.requires-dev]
 dev = [

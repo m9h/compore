@@ -48,8 +48,13 @@ def init_from_pam(pam, mask: np.ndarray, n_fibres: int, frac_min: float = 0.05) 
 
 
 def refine_peaks(data: np.ndarray, gtab, mask: np.ndarray, pam, n_fibres: int = 3, cfg: Optional[pj.PrismConfig] = None,
-                 sphere=None, peak_frac_min: float = 0.10, affine=None, laplace: bool = True):
-    """Refine DIPY peaks with the PRISM-JAX MAP; return (PeaksAndMetrics, FixelPosterior | None, PrismFit)."""
+                 sphere=None, peak_frac_min: float = 0.10, affine=None, laplace: bool = True,
+                 sigma_inflation: float = pu.SIGMA_INFLATION_HCP_YA):
+    """Refine DIPY peaks with the PRISM-JAX MAP; return (PeaksAndMetrics, FixelPosterior | None, PrismFit).
+
+    ``sigma_inflation`` is stored on the posterior and applied by
+    ``FixelPosterior.sigma_deg_calibrated``; the default is the HCP-YA
+    scan–rescan constant (doc 008 §10.6). Pass 1.0 for the raw Laplace σ."""
     from dipy.data import default_sphere
     sphere = sphere or default_sphere
     bvals_si = np.asarray(gtab.bvals, float) * 1e6; bvecs = np.asarray(gtab.bvecs, float)
@@ -57,7 +62,7 @@ def refine_peaks(data: np.ndarray, gtab, mask: np.ndarray, pam, n_fibres: int = 
     init_dirs, init_fracs = init_from_pam(pam, mask, n_fibres)
     fit = pj.fit_prism(data, mask, bvals_si, bvecs, cfg, init_dirs, init_fracs)
     pam_ref = pj.prism_fit_to_pam(fit, sphere, peak_frac_min=peak_frac_min, affine=affine if affine is not None else getattr(pam, "affine", np.eye(4)))
-    post = pu.laplace_fixel_posterior(fit, data, bvals_si, bvecs) if laplace else None
+    post = pu.laplace_fixel_posterior(fit, data, bvals_si, bvecs, sigma_inflation=sigma_inflation) if laplace else None
     return pam_ref, post, fit
 
 

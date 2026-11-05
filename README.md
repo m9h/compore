@@ -58,14 +58,18 @@ tractography 0.64 vs MSMT-CSD 0.47; the fixel σ ranks edge reliability
 
 ## Install
 
-Python 3.12+, [uv](https://docs.astral.sh/uv/). The default install pulls
-CUDA-13 JAX; CPU works too (`JAX_PLATFORMS=cpu`).
+Python 3.12+, [uv](https://docs.astral.sh/uv/). The core install is CPU-only
+and is all that compartment models, fitting and `dipy_refine_peaks` need
+(whole-brain refine + posterior in about two minutes on 20 cores).
 
 ```bash
 git clone https://github.com/m9h/sbi4dwi.git && cd sbi4dwi
-uv sync                       # core
+uv sync                       # core: jax, equinox, optimistix, optax, dipy, nibabel
+uv sync --extra cuda          # + CUDA-13 JAX wheels
+uv sync --extra sbi           # + flowjax, blackjax, numpyro, h5py (SBI pipeline, UQ)
+uv sync --extra sim           # + diffrax, jax-md, pandas (walkers, FEM, substrates)
 uv sync --extra data          # + HCP/OpenNeuro loaders (boto3, datalad)
-uv sync --extra baselines     # + dmri-amico, torch for the validation scripts
+uv sync --all-extras          # everything, incl. baselines (dmri-amico, torch)
 ```
 
 ## Quickstart

@@ -7,7 +7,6 @@ spatial regularization on the free water fraction map.
 
 import jax
 import jax.numpy as jnp
-import jaxopt
 from functools import partial
 
 def _cholesky_to_tensor(c_params):
@@ -216,6 +215,7 @@ class SpatiallyRegularizedFWDTI:
             x0 = param_grid_init.ravel()
         
         # Setup Optimizer
+        import jaxopt  # optional dependency
         optimizer = jaxopt.ScipyMinimize(
             fun=loss_function,
             method='L-BFGS-B'

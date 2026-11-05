@@ -8,8 +8,9 @@ Outputs (BIDS-derivative style, `<prefix>` = `--prefix`, default the DWI stem):
   <prefix>_desc-refined_peaks.pam5           refined PeaksAndMetrics (DIPY tracking)
   <prefix>_desc-refined_fintra.nii.gz        intra-axonal fraction (WM-internal, f_i)
   <prefix>_desc-refined_fwm.nii.gz           WM fraction Σ f_wm (so f_i·f_wm is the voxel intra fraction)
-  <prefix>_desc-refined_sigmatheta.nii.gz    Laplace σ_θ of the main fixel (deg)
-  <prefix>_desc-refined_fixels/              MRtrix fixel directory: index, directions, fraction, sigma_theta_deg, f_intra
+  <prefix>_desc-refined_sigmatheta.nii.gz    Laplace σ_θ of the main fixel (deg, raw)
+  <prefix>_desc-refined_sigmatheta_calibrated.nii.gz  σ_θ × sigma_inflation (HCP-YA retest constant 1.81)
+  <prefix>_desc-refined_fixels/              MRtrix fixel directory: index, directions, fraction, sigma_theta_deg, sigma_theta_deg_calibrated, f_intra
   <prefix>_desc-refined_model.json           configuration + learned global diffusivities
 """
 from __future__ import annotations
@@ -25,7 +26,7 @@ class RefinePeaksFlow(Workflow):
         return "refine_peaks"
 
     def run(self, input_files, bvalues_files, bvectors_files, mask_files, pam_files, n_fibres=3, n_iter=300,
-            d_par_init=1.7, wm_only=False, peak_frac_min=0.1, no_laplace=False, prefix="", out_dir=""):
+            d_par_init=1.7, wm_only=False, peak_frac_min=0.1, no_laplace=False, sigma_inflation=1.81, prefix="", out_dir=""):
         """Refine DIPY peaks with the PRISM-JAX plus-x fit and Laplace posterior.
 
         Parameters
@@ -46,6 +47,11 @@ class RefinePeaksFlow(Workflow):
         peak_frac_min : float, optional
         no_laplace : bool, optional
             Skip the Laplace posterior (and the fixel directory / σ_θ map).
+        sigma_inflation : float, optional
+            In-vivo calibration factor applied to the Laplace σ_θ in the
+            ``*_sigmatheta_calibrated`` map and fixel file. Default 1.81 is the
+            HCP-YA 44-subject scan–rescan constant (doc 008 §10.6); use 1.0 for
+            the raw Laplace value, or re-estimate on a retest pair of your scanner.
         prefix : string, optional
         out_dir : string, optional
         """
@@ -62,7 +68,8 @@ class RefinePeaksFlow(Workflow):
             mask = load_nifti(mask_f)[0].astype(bool); pam = load_pam(pam_f)
             cfg = dr.default_config(n_fibres, n_iter=n_iter, d_par_init=d_par_init * 1e-9, wm_only=wm_only)
             pam_ref, post, fit = dr.refine_peaks(data.astype(np.float32), gtab, mask, pam, n_fibres=n_fibres, cfg=cfg,
-                                                 peak_frac_min=peak_frac_min, affine=affine, laplace=not no_laplace)
+                                                 peak_frac_min=peak_frac_min, affine=affine, laplace=not no_laplace,
+                                                 sigma_inflation=sigma_inflation)
             pre = prefix or Path(dwi_f).name.split(".")[0]
             out = Path(out_dir or "."); out.mkdir(parents=True, exist_ok=True); base = out / f"{pre}_desc-refined"
             save_pam(f"{base}_peaks.pam5", pam_ref)
@@ -70,11 +77,12 @@ class RefinePeaksFlow(Workflow):
             vol = np.zeros(mask.shape, np.float32); vol[mask] = fit.wm_fracs.sum(1); save_nifti(f"{base}_fwm.nii.gz", vol, affine)
             if post is not None:
                 vol = np.zeros(mask.shape, np.float32); vol[mask] = post.sigma_deg[:, 0]; save_nifti(f"{base}_sigmatheta.nii.gz", vol, affine)
+                vol[mask] = post.sigma_deg_calibrated[:, 0]; save_nifti(f"{base}_sigmatheta_calibrated.nii.gz", vol, affine)
                 dirs, vals = fixels_from_posterior(post, fit)
                 vox = tuple(float(v) for v in img.header.get_zooms()[:3])
                 write_fixel_directory(f"{base}_fixels", mask, dirs, vals, vox=vox, transform=affine, frac_min=peak_frac_min)
             json.dump({"n_fibres": n_fibres, "n_iter": n_iter, "wm_only": wm_only, "d_par_um2_ms": float(fit.d_par * 1e9),
-                       "d_par_extra_um2_ms": float((fit.d_par_extra or fit.d_par) * 1e9), "sigma": None if fit.sigma is None else float(fit.sigma),
+                       "d_par_extra_um2_ms": float((fit.d_par_extra or fit.d_par) * 1e9), "sigma": None if fit.sigma is None else float(fit.sigma), "sigma_inflation": float(sigma_inflation),
                        "source_pam": str(pam_f)}, open(f"{base}_model.json", "w"), indent=1)
             print(f"wrote {base}_* (D∥ = {fit.d_par*1e9:.2f} µm²/ms, {int(mask.sum()):,} voxels)")
 

@@ -1,5 +1,7 @@
 
-import jax
+import pytest
+jax = pytest.importorskip("jax")
+pytest.importorskip("jaxopt")  # ConstrainedOptimizer uses jaxopt.LBFGSB (optional since 2026-11-04)
 import jax.numpy as jnp
 from jax.scipy.stats import beta
 import numpy as np

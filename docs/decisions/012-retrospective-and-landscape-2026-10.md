@@ -234,3 +234,114 @@ Option 3 falls out of maintaining this document.
 - `docs/decisions/README.md` gained the 012 row; doc 004 points here.
 - `jaxopt` is flagged above as a dependency with no importer; removal is left
   for the next clean-up pass rather than done in a docs commit.
+
+## 7. The program to completion (2026-11-04)
+
+Accepted on 2026-11-04: the repository is a product and a platform, and
+"complete the program" means finishing both as separately installable things
+and settling the SBI question with one decisive experiment. Steps 1 and 2 are
+engineering with no research risk; step 3 is refactoring of code that runs;
+step 4 is the one open research question and the one that decides the name.
+
+### 7.1 Step 1: cut the wheel in two (begun 2026-11-04)
+
+One repository, two distributions. A slim core that imports with jax,
+equinox, optimistix, lineax, optax, numpy, scipy, nibabel and dipy, holding
+the kernels, acquisition, fitting, the Laplace machinery and PRISM refine.
+Everything else behind extras, later a second distribution.
+
+Done today, name-independent:
+
+- `pyproject.toml`: core dependency list 29 → 11; extras `cuda`, `sbi`,
+  `sim`, `algebra`, `inverse`, `nn`, `viz`, `all` (plus the existing `data`,
+  `baselines`, `test`, `doc`). `jax[cuda13]` moved to the `cuda` extra so CPU
+  users install nothing GPU-specific. `jaxopt` and `annotated-types` removed
+  (no importer for the latter; the former is now optional, imported lazily by
+  the two bounded L-BFGS fitters and `models/fw_dti`).
+- `dmipy_jax/__init__.py` loads submodules lazily, so `import dmipy_jax.prism`
+  no longer imports diffrax, scico or flowjax.
+- Verified in a fresh venv with the core dependencies only: see §7.5.
+
+File-level map of what the second distribution will contain when the split
+is made physical (not done; needs the name):
+
+| stays in the core | moves to the platform distribution |
+|---|---|
+| `acquisition`, `constants`, `signal_models/`, `composer`, `cylinder`, `gaussian`, `sphere` | `simulation/` (walkers, FEM, substrates, scanner), `library/`, `biophysics/` |
+| `fitting/` (VoxelFitter, Optimistix, brute init), `core/modeling_framework` | `pipeline/` (SBI train/deploy, SBC, PPC, conformal, OOD, ensembles), `inference/` |
+| `prism/`, `workflows/refine_peaks_flow`, `io/fixel`, `io/bids` | `inverse/`, `algebra/`, `nn/`, `pinns/`, `reconstruction/`, `tractography/`, `bayesian/` |
+| `tests/validation/test_prism_*` | `validation/` (paper scripts) and the oracle protocol of §7.3 |
+
+Candidate names, for the user to decide; none contain "SBI", "dmipy" or "JAX":
+
+- for the product: a word that says fixel + posterior (the refine stage is
+  the only tool in §4 that reports a per-fixel σ);
+- for the platform: a word that says compartments and pores, or analysis by
+  synthesis;
+- the import name `dmipy_jax` changes with the platform name, in the same
+  commit as `scratchpad/rename_to_sbi4dwi.sh` is retired.
+
+### 7.2 Step 2: finish the product and send it upstream
+
+| item | state 2026-11-04 |
+|---|---|
+| ship the σ calibration | **done**: `prism_uncertainty.SIGMA_INFLATION_HCP_YA = 1.81` (± 0.15, 44 subjects, doc 008 §10.6) with provenance; `FixelPosterior.sigma_inflation`, `.sigma_deg_calibrated`, `.fintra_sd_calibrated`, `sample_dirs(calibrated=True)`; `refine_peaks(sigma_inflation=…)` defaults to the HCP-YA constant; the CLI writes `*_sigmatheta_calibrated.nii.gz`, the fixel directory gains `sigma_theta_deg_calibrated`, `*_model.json` records the factor. Raw σ is unchanged everywhere. Test added. |
+| CPU path and runtime | `validation/benchmark_runtime_hardi.py --skip-force` on CPU, whole Stanford HARDI; result in §7.5 |
+| API freeze | `refine_peaks`, `default_config`, `fi_config`, `FixelPosterior`, `write_fixel_directory`, `dipy_refine_peaks` are the public surface; no further signature changes without a CHANGELOG entry |
+| DIPY contribution | open an issue on DIPY with the doc 008 §6.4 and §10.6 tables, then the PR; raw material in `docs/outreach/force-dipy-notes.md` |
+| paper | doc 008 is the draft's results section |
+
+### 7.3 Step 3: build the platform's missing skeleton
+
+The oracle protocol in CLAUDE.md (`OracleSimulator`, registry,
+`OracleModelSimulator`) does not exist. What exists: `SimulationLibrary`
+(HDF5), `CATERPillarOracle`, and three working runners for CATERPillar, MCMRSimulator.jl
+and Permeable_MCDS as scripts in `validation/`, plus the MC-library emulator
+of doc 008 §11.2. Moving the three runners behind the ABC with the emulator
+as the adapter turns scripts into the platform's defining feature: three
+Monte Carlo engines behind one differentiable interface.
+
+### 7.4 Step 4: one result where amortisation wins, or the SBI label goes
+
+Per-voxel MAP + Laplace beat the flow on every orientation task (doc 008
+§6.3, §7.1, §9.2). The place the flow should win is model selection, where
+Laplace evidence failed (§6.19): a joint posterior over model structure and
+parameters across the realism-ladder compartments (stick, zeppelin, glial
+sphere, exchange, myelin ring), benchmarked against
+{cite}`gloeckler2026sbiprism`, on ds008771 scan–rescan and WAND. Needs the
+WAND loader to read `t_bdel` and a multi-TE forward model with the ring
+kernel. If the flow loses there too, the SBI tooling becomes a validation
+utility and the name goes.
+
+### 7.5 Step 5: close the January debts
+
+Remove `scico` (done as an extra; the modules remain), decide ADR 002c
+(close it: SI everywhere works), runtime-check the jaxtyping annotations,
+retire or archive the dormant qMRI and score-posterior modules.
+
+### 7.6 Numbers from the step-1/2 runs (2026-11-04)
+
+Whole-brain Stanford HARDI runtime (`validation/benchmark_runtime_hardi.py`,
+K = 3, 300 iterations, 154,625 mask voxels, 160 measurements; values copied
+from `validation/runtime_hardi.json` (GB10, Slurm 1782) and
+`validation/runtime_hardi_cpu.json` (20-core Grace CPU, `--skip-force`)):
+
+| stage | GB10 GPU | CPU (20 cores) |
+|---|---|---|
+| CSD peaks (dipy, 6 processes) | 16.0 s | 6.6 s |
+| PRISM-JAX refine | 30.5 s | 87.8 s (0.57 ms/voxel) |
+| Laplace fixel posterior | 23.2 s | 31.2 s |
+| FORCE library + fit (reference) | 241 + 172 s | not run |
+| median main-peak CSD↔refined agreement | 6.2° | 6.2° |
+| learned D∥ (µm²/ms), mean f_i | 1.33, 0.420 | 1.32, 0.420 |
+
+A whole brain in two minutes on CPU means the product can ship as a plain
+DIPY-compatible package with no GPU requirement; the GPU is a 3× convenience.
+
+Core-only install check (`uv venv` + `uv pip install -e .` with no extras):
+the environment holds 34 distributions; `import dmipy_jax.prism.dipy_refine`,
+`dmipy_jax.workflows.refine_peaks_flow` and `dmipy_jax.signal_models` load
+none of diffrax, scico, flowjax, blackjax, sympy, pandas, matplotlib, jaxopt,
+healpy or numpyro (h5py arrives through dipy). `tests/validation/test_prism_*`
+pass in that environment except the MSMT-CSD oracle test, which needs cvxpy
+and now skips without it.

@@ -21,8 +21,9 @@ classifiers = [
   "Topic :: Scientific/Engineering",
 ]
 dependencies = [
-  # core numerics
-  "jax[cuda13]",
+  # Core: enough to import dmipy_jax.signal_models / fitting / prism and run
+  # `dipy_refine_peaks` on CPU (doc 012 §7, step 1). Everything else is an extra.
+  "jax",
   "jaxlib",
   "numpy",
   "scipy",
@@ -30,32 +31,9 @@ dependencies = [
   "jaxtyping",
   "optimistix",
   "lineax",
-  "diffrax",
   "optax>=0.2.6",
-  "jaxopt",
-  "chex>=0.1.92",
-  # inference
-  "blackjax",
-  "flowjax>=17.2.1",
-  "numpyro>=0.19.0",
-  # models / physics helpers
-  "sympy>=1.14.0",
-  "e3nn-jax>=0.20.8",
-  "healpy>=1.19.0",
-  "jax-md",
-  "ttax",
-  "scico>=0.0.6",
-  "annotated-types>=0.7.0",
-  # IO
   "nibabel",
-  "h5py",
   "dipy>=1.12.1",
-  "cvxpy>=1.7.5",   # dipy MSMT-CSD (the PRISM init path) needs it
-  "simpleitk>=2.5.3",
-  "pandas>=3.0.0",
-  # plotting / UX
-  "matplotlib>=3.10.8",
-  "tqdm>=4.67.1",
 ]
 
 [project.urls]
@@ -70,6 +48,25 @@ dipy_refine_peaks = "dmipy_jax.workflows.refine_peaks_flow:main"
 dmipy-report = "dmipy_jax.cli.bids_report:main"
 
 [project.optional-dependencies]
+# GPU wheels (CUDA 13); CPU users need nothing extra
+cuda = ["jax[cuda13]"]
+# Simulation-based inference and uncertainty: flows, MCMC, HDF5 libraries
+sbi = ["flowjax>=17.2.1", "blackjax", "numpyro>=0.19.0", "h5py", "chex>=0.1.92"]
+# Differentiable simulation: SDE walkers, Bloch, FEM, substrates
+sim = ["diffrax", "jax-md", "h5py", "pandas>=3.0.0"]
+# Symbolic initialisers / identifiability (dmipy_jax.algebra, fitting.algebraic*)
+algebra = ["sympy>=1.14.0"]
+# Linearised inverse problems (dmipy_jax.inverse: scico ADMM / AMICO) and DIPY MSMT-CSD
+inverse = ["scico>=0.0.6", "cvxpy>=1.7.5"]
+# Equivariant / HEALPix networks, tensor trains
+nn = ["e3nn-jax>=0.20.8", "healpy>=1.19.0", "ttax"]
+# Plotting and progress bars used by pipeline.sbc / ppc / comparison and viz
+viz = ["matplotlib>=3.10.8", "tqdm>=4.67.1"]
+# Everything above (the development environment)
+all = [
+  "sbi4dwi[sbi,sim,algebra,inverse,nn,viz,data,baselines]",
+  "simpleitk>=2.5.3",
+]
 # Remote data access (HCP S3, OpenNeuro via datalad): dmipy_jax.io.hcp / lowfield / connectome2, data.openneuro
 data = ["boto3>=1.42.30", "datalad"]
 # Reference implementations used only by validation scripts and benchmarks
