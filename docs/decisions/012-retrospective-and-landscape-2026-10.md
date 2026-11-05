@@ -272,7 +272,14 @@ is made physical (not done; needs the name):
 | `prism/`, `workflows/refine_peaks_flow`, `io/fixel`, `io/bids` | `inverse/`, `algebra/`, `nn/`, `pinns/`, `reconstruction/`, `tractography/`, `bayesian/` |
 | `tests/validation/test_prism_*` | `validation/` (paper scripts) and the oracle protocol of §7.3 |
 
-Candidate names, for the user to decide; none contain "SBI", "dmipy" or "JAX":
+**Decided 2026-11-05: the platform is `compore` (compartments and pores), the
+product is `lafix` (Laplace fixel).** Both were free on PyPI on 2026-11-04.
+`scripts/rename_to_compore_lafix.sh` performs the move: `dmipy_jax` →
+`compore`; `prism/`, `io/fixel.py` and the refine workflow → `packages/lafix/lafix/`
+as a second distribution in a uv workspace, with `dipy_refine_peaks` and
+`lafix` as its entry points. Historical logs (docs 001–012, CHANGELOG) keep
+the old names. The GitHub repository and the working directory are renamed
+by the user. The candidate list that led there:
 
 - for the product: a word that says fixel + posterior (the refine stage is
   the only tool in §4 that reports a per-fixel σ);
