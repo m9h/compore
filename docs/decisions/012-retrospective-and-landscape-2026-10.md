@@ -450,3 +450,145 @@ diffusion is blocked and the perpendicular signal is nearly 1); the
 extra-cellular agreement to 0.02 is the same as on the real substrates. The
 MCDS wrapper initially failed because MCDS selects its geometry parser by
 file extension (`.swc`); fixed in the oracle.
+
+#### 7.4.2 Results (2026-11-06)
+
+Numbers copied from `validation/nexi_c2_model_selection.json` and
+`validation/wand_model_selection.json` (driver
+`validation/nexi_c2_model_selection.py`, batched estimators of doc 013 §6.1;
+whole study 17 min on the GB10: ds008771 9 min, WAND 8 min). Training:
+300 000 joint simulations, classifier 4000 steps, flows 6000 steps, SNR drawn
+from the data's own range (ds008771 9.5–82.5, WAND 15.1–75.6). Test: 400
+simulated voxels, Laplace on the first 120 (0.15 s per voxel batched, was
+3.5 s serial).
+
+**Phase A, simulated truth**
+
+| | ds008771 (15 features, δ 5 ms, Δ 12–45 ms) | WAND (8 features, δ 7 ms, Δ 17.3–55 ms) |
+|---|---|---|
+| amortised 3-way accuracy | 0.780 (0.767 on the Laplace subset) | 0.745 (0.750 on the subset) |
+| Laplace-evidence accuracy (n = 120) | 0.608 | 0.450 |
+| confusion, rows truth NEXI / SANDI / NEXI+soma | 121 2 3 / 1 115 22 / 12 48 76 | 120 0 6 / 1 115 22 / 26 47 63 |
+| reliability, top bin p ≥ 0.87 | acc 0.937 (n 159) | acc 0.910 (n 111) |
+| reliability, bin 0.46–0.60 | acc 0.453 (n 75) | acc 0.551 (n 78) |
+| SBC KS p, 15 parameters | all ≥ 0.10 | all ≥ 0.30 except NEXI t_ex 0.02 |
+
+Parameter recovery (RMSE; 90 % coverage), amortised / Laplace:
+
+| model, param | ds008771 RMSE | ds008771 cov90 | WAND RMSE | WAND cov90 |
+|---|---|---|---|---|
+| NEXI f | 0.061 / 0.062 | 0.754 / 0.917 | 0.072 / 0.086 | 0.810 / 1.000 |
+| NEXI t_ex (ms) | 12.0 / 11.7 | 0.857 / 0.917 | 13.2 / 14.6 | 0.849 / 0.972 |
+| NEXI D_i (µm²/ms) | 0.44 / 0.45 | 0.857 / 0.944 | 0.53 / 0.66 | 0.817 / 1.000 |
+| SANDI f_n | 0.048 / 0.038 | 0.884 / 0.933 | 0.088 / 0.098 | 0.884 / 1.000 |
+| SANDI f_s | 0.022 / 0.018 | 0.870 / 0.978 | 0.061 / 0.074 | 0.862 / 0.933 |
+| SANDI R_s (µm) | 0.91 / 1.12 | 0.906 / 0.911 | 1.29 / 2.51 | 0.913 / 0.956 |
+| NEXI+soma f_n | 0.064 / 0.084 | 0.904 / 0.949 | 0.086 / 0.077 | 0.882 / 0.974 |
+| NEXI+soma f_s | 0.029 / 0.028 | 0.853 / 0.923 | 0.058 / 0.100 | 0.897 / 0.949 |
+| NEXI+soma t_ex (ms) | 17.7 / 22.4 | 0.904 / 0.846 | 18.2 / 22.4 | 0.897 / 0.897 |
+| NEXI+soma R_s (µm) | 1.34 / 1.52 | 0.860 / 0.897 | 1.63 / 2.57 | 0.890 / 0.897 |
+
+Reading: on both schemes the classifier beats the Laplace evidence on model
+identity by 17 and 30 points; its flows recover parameters as well as or
+better than the Laplace fit and are SBC-calibrated (one marginal KS
+rejection in 30 tests). The Laplace intervals are too wide (coverage
+0.92–1.00 at nominal 0.90), the flow's slightly too narrow for NEXI f
+(0.75–0.81). The errors are the physically expected ones: NEXI+soma ↔
+SANDI when t_ex is long, NEXI+soma → NEXI when f_s is small.
+
+**Phase B, data: voxel-wise amortised posterior**
+
+ds008771, 11 sessions (sub-08 ses-01 skipped: reduced protocol only),
+54 866–62 672 cortical voxels each; arg-max share NEXI / SANDI / NEXI+soma
+and mean p:
+
+| session | arg-max share | mean p | session | arg-max share | mean p |
+|---|---|---|---|---|---|
+| sub-02 ses-02 | 0.659 / 0.009 / 0.332 | 0.599 / 0.013 / 0.388 | sub-05 ses-02 | 0.625 / 0.049 / 0.326 | 0.580 / 0.053 / 0.366 |
+| sub-03 ses-01 | 0.675 / 0.038 / 0.287 | 0.621 / 0.041 / 0.338 | sub-06 ses-01 | 0.694 / 0.020 / 0.287 | 0.637 / 0.023 / 0.340 |
+| sub-03 ses-02 | 0.679 / 0.019 / 0.302 | 0.629 / 0.023 / 0.348 | sub-06 ses-02 | 0.695 / 0.019 / 0.287 | 0.632 / 0.023 / 0.344 |
+| sub-04 ses-01 | 0.630 / 0.030 / 0.340 | 0.580 / 0.033 / 0.387 | sub-07 ses-01 | 0.606 / 0.024 / 0.370 | 0.568 / 0.031 / 0.401 |
+| sub-04 ses-02 | 0.706 / 0.028 / 0.266 | 0.643 / 0.030 / 0.326 | sub-07 ses-02 | 0.603 / 0.021 / 0.375 | 0.562 / 0.028 / 0.410 |
+| sub-05 ses-01 | 0.681 / 0.033 / 0.286 | 0.629 / 0.038 / 0.333 | WAND sub-08033 | 0.808 / 0.086 / 0.106 | 0.668 / 0.088 / 0.244 |
+
+**Phase B, data: 62 DKT ROIs per session, both estimators on the ROI median
+signal**
+
+ds008771, ranges over the 11 sessions: ROI-mean p(NEXI / SANDI / NEXI+soma)
+amortised 0.54–0.73 / 0.08–0.23 / 0.15–0.23; Laplace on the full 15
+features 0.00–0.02 / 0.00–0.08 / 0.92–1.00; Laplace on the 8 reduced
+features 0.00–0.03 / 0.00–0.04 / 0.95–1.00. ROIs where the Laplace evidence
+picks NEXI+soma: 57–62 of 62 in every session. Held-out PPC (fit the 8
+reduced features, predict the other 7): median RMSE over ROIs NEXI
+0.0046–0.0060, SANDI 0.0076–0.0096, NEXI+soma 0.0033–0.0045; NEXI+soma is
+the best predictor in 37–57 of 62 ROIs, NEXI in 5–23, SANDI in 0–3. The
+reduced scheme gives the same ROI decision as the full one.
+
+WAND (one session, no held-out split): ROI-mean p amortised
+0.213 / 0.235 / 0.552, Laplace 0.047 / 0.361 / 0.593; ROI arg-max counts
+amortised 13 / 7 / 42, Laplace 2 / 21 / 39. On the second scheme the two
+estimators agree at the ROI level on NEXI+soma.
+
+NEXI parameters at the ROI level (medians over ROIs, Laplace / amortised):
+
+| | ds008771 (range over sessions) | WAND |
+|---|---|---|
+| f | 0.350–0.375 / 0.277–0.305 | 0.320 / 0.317 |
+| t_ex (ms) | 34.2–48.9 / 52.8–67.7 | 70.0 / 68.2 |
+| D_i (µm²/ms) | 3.50 / 3.25–3.34 | 2.80 / 2.86 |
+| D_e (µm²/ms) | 0.85–0.93 / 0.85–0.94 | 0.88 / 0.86 |
+
+Two things in this table are prior-box effects, not biology: the Laplace
+D_i sits at the box top (3.5) in every ds008771 ROI, so its Laplace
+approximation (and evidence) is invalid there, and the WAND t_ex sits at the
+box top (70 ms) for both estimators. The boxes (`gm_powder.PRIOR_BOXES`)
+need widening before any parameter from this run is quoted.
+
+**Scan–rescan, ds008771, 5 subjects × 62 ROIs (n = 310)**
+
+| quantity | mean | bias | LoA (1.96 sd) | ICC |
+|---|---|---|---|---|
+| p(NEXI) amortised | 0.662 | −0.005 | 0.436 | **0.801** |
+| p(NEXI) Laplace | 0.003 | 0.006 | 0.114 | 0.006 (no variance: p ≈ 0 everywhere) |
+| t_ex Laplace (ms) | 40.4 | 2.20 | 16.4 | 0.935 |
+| t_ex amortised (ms) | 52.7 | 1.34 | 11.3 | **0.937** |
+| f Laplace | 0.382 | −0.007 | 0.110 | 0.783 |
+| f amortised | 0.297 | 0.002 | 0.031 | **0.881** |
+| D_i Laplace (µm²/ms) | 3.43 | −0.012 | 0.232 | 0.882 |
+| D_i amortised | 3.22 | −0.027 | 0.158 | **0.927** |
+| D_e Laplace | 0.882 | −0.001 | 0.100 | 0.893 |
+| D_e amortised | 0.865 | 0.003 | 0.049 | **0.940** |
+
+**Against the §7.4.1 criterion and the doc 013 §6.3 decision rule**
+
+- (a) holds on both schemes: classifier accuracy above the Laplace evidence
+  (0.78 vs 0.61; 0.75 vs 0.45), SBC uniform (one p = 0.02 in 30 tests).
+- (b) half holds. The amortised p(NEXI) is far more reproducible than the
+  Laplace p(NEXI) (ICC 0.80 vs 0.01), and every amortised parameter is more
+  reproducible than its Laplace counterpart (ICC +0.00 to +0.10, LoA 1.5–3.5×
+  narrower). But the ICC of p(NEXI) (0.80) is 0.14 below the ICC of t_ex
+  (0.94), outside the pre-registered 0.1 margin, and its LoA of ±0.44 on a
+  0–1 scale is wide.
+- The two estimators disagree on the model at the ROI level on ds008771
+  (amortised NEXI, Laplace and PPC NEXI+soma) and agree on WAND. Part of the
+  ds008771 disagreement is an evaluation artefact: the classifier is given
+  the ROI noise level clipped to the training range (SNR 82.5) while the
+  true ROI-median SNR is in the hundreds, and an ROI median over
+  heterogeneous voxels is not a single-voxel signal. The Laplace side has its
+  own defect (D_i at the bound). Neither estimator's ROI verdict is clean.
+
+What this settles: amortised joint model + parameter inference is the better
+estimator of p(M) and of θ in vivo on this problem, by every measure that
+compares the two estimators on the same data. What it does not settle is
+whether a per-voxel model probability is reproducible enough to report as a
+map; ICC 0.80 is "good" by the usual scale and below the parameters. The
+name decision (doc 013 §4.1 item 4) is Morgan's; the recommendation recorded
+here is to keep `compore.inference.model_selection` as the platform's
+flagship with the model-probability map reported at ROI resolution, and to
+re-run after widening the D_i and t_ex boxes and training the classifier
+over the ROI SNR range.
+
+Artefacts: `validation/{nexi_c2,wand}_model_selection.json`; per-session maps
+(`p_model`, `theta_med`, `label`, `ijk`) in
+`/data/datasets/compore/{ds008771,wand}/model_selection/`; WAND powder data
+and dwi-space DKT labels in `/data/datasets/compore/wand/powder/`.

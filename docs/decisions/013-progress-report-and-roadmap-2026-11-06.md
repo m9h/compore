@@ -288,3 +288,15 @@ tests):
 Order: score posterior and the zero-user subpackages first (pure removal,
 no API change), then scico, then the collapses with shims, then ADR 002c
 and jaxtyping, then the 0.1.0 releases.
+
+## 7. Study complete (2026-11-06, 13:28)
+
+The relaunched study finished both datasets in 17 min. Results and the
+reading against the decision rule of §6.3 are in doc 012 §7.4.2. Short form:
+clause (a) holds on both schemes; clause (b) half holds (amortised p(NEXI)
+ICC 0.80 against Laplace 0.01, but 0.14 below the t_ex ICC of 0.94). All four
+NEXI parameters are more reproducible from the amortised posterior than from
+the Laplace fit. Two prior boxes bind (D_i at 3.5 for Laplace on ds008771,
+t_ex at 70 ms on WAND) and the ROI-level classifier runs outside its SNR
+training range; both are fixable in a re-run. Roadmap item 4 (the label) is
+now Morgan's decision with the recommendation in doc 012 §7.4.2.
