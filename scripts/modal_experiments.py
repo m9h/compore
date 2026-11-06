@@ -31,7 +31,7 @@ image = (
     .env({"SBI4DWI_COMMIT": "b7d74c6"})  # bump to bust ALL downstream layers
     .run_commands(
         "rm -rf /opt/sbi4dwi"
-        " && git clone --depth 1 https://github.com/m9h/sbi4dwi.git /opt/sbi4dwi"
+        " && git clone --depth 1 https://github.com/m9h/compore.git /opt/sbi4dwi"
         " && cd /opt/sbi4dwi && git log --oneline -1",
         "echo '/opt/sbi4dwi' > /usr/local/lib/python3.12/site-packages/sbi4dwi.pth",
     )

@@ -38,7 +38,7 @@ image = (
         "pynrrd",
     )
     .run_commands(
-        "git clone --depth 1 https://github.com/m9h/sbi4dwi.git /opt/sbi4dwi",
+        "git clone --depth 1 https://github.com/m9h/compore.git /opt/sbi4dwi",
         "echo '/opt/sbi4dwi' > /usr/local/lib/python3.12/site-packages/sbi4dwi.pth",
     )
     .run_commands(

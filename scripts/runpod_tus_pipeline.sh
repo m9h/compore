@@ -8,7 +8,7 @@
 #      curl -sSL https://raw.githubusercontent.com/m9h/sbi4dwi/master/scripts/runpod_tus_pipeline.sh | bash
 #
 # Or clone and run:
-#   git clone https://github.com/m9h/sbi4dwi.git
+#   git clone https://github.com/m9h/compore.git
 #   cd sbi4dwi
 #   bash scripts/runpod_tus_pipeline.sh
 set -euo pipefail
@@ -28,7 +28,7 @@ fi
 # Clone repo if not already present
 if [ ! -d "sbi4dwi" ] && [ ! -f "pyproject.toml" ]; then
     echo "Cloning sbi4dwi..."
-    git clone https://github.com/m9h/sbi4dwi.git
+    git clone https://github.com/m9h/compore.git
     cd sbi4dwi
 elif [ -f "pyproject.toml" ]; then
     echo "Already in sbi4dwi repo"

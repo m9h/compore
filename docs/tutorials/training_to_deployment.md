@@ -20,7 +20,7 @@ uncertainty quantification.
   attenuation)
 
 ```bash
-git clone https://github.com/m9h/sbi4dwi.git
+git clone https://github.com/m9h/compore.git
 cd sbi4dwi
 uv sync
 ```

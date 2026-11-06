@@ -37,8 +37,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/m9h/sbi4dwi"
-Repository = "https://github.com/m9h/sbi4dwi"
+Homepage = "https://github.com/m9h/compore"
+Repository = "https://github.com/m9h/compore"
 
 [tool.hatch.build.targets.wheel]
 packages = ["compore"]

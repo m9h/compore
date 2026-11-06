@@ -1,6 +1,6 @@
 # compore + lafix
 
-[![CI](https://github.com/m9h/sbi4dwi/actions/workflows/ci.yml/badge.svg)](https://github.com/m9h/sbi4dwi/actions/workflows/ci.yml)
+[![CI](https://github.com/m9h/compore/actions/workflows/ci.yml/badge.svg)](https://github.com/m9h/compore/actions/workflows/ci.yml)
 [![python](https://img.shields.io/badge/Python-3.12%2B-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![JAX](https://img.shields.io/badge/JAX-Accelerated-9cf)](https://github.com/google/jax)
@@ -71,7 +71,7 @@ and is all that compartment models, fitting and `dipy_refine_peaks` need
 (whole-brain refine + posterior in about two minutes on 20 cores).
 
 ```bash
-git clone https://github.com/m9h/sbi4dwi.git && cd sbi4dwi
+git clone https://github.com/m9h/compore.git && cd sbi4dwi
 uv sync                       # core: jax, equinox, optimistix, optax, dipy, nibabel
 uv sync --extra cuda          # + CUDA-13 JAX wheels
 uv sync --extra sbi           # + flowjax, blackjax, numpyro, h5py (SBI pipeline, UQ)

@@ -24,8 +24,8 @@ This guide covers the conventions and workflow we follow.
 ### Clone and install
 
 ```bash
-git clone https://github.com/<org>/sbi4dwi.git
-cd sbi4dwi
+git clone https://github.com/m9h/compore.git
+cd compore
 uv sync                          # install all deps
 uv sync --extra test --extra doc # explicit extras if needed
 ```
