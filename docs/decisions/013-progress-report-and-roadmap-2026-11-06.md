@@ -185,3 +185,106 @@ Items are ordered by what they unblock. Dates are targets, not promises.
 - The flow's NEXI f coverage (0.754 at nominal 0.90) is the one calibration
   miss in phase A; more training steps or a wider SNR range are the first
   things to try before it is reported as a limitation.
+
+## 6. Execution log and background notes (2026-11-06, afternoon)
+
+Done this afternoon on the roadmap of §4: item 1 (batched estimators,
+relaunch), item 3 (WAND arm: δ found, powder extracted, driver generalised),
+item 5 (DIPY issue draft `docs/outreach/dipy-lafix-issue.md`, paper outline
+`docs/paper/outline.md`, both for Morgan to send), item 7 (pushed, GitHub
+repository renamed `m9h/compore`, working directory `~/dev/compore` with a
+`~/dev/sbi4dwi` symlink). Items 2 and 4 wait for the relaunched study.
+
+### 6.1 Batched estimators
+
+`fit_model_laplace_batch` / `laplace_model_posterior_batch` vmap the
+Levenberg–Marquardt solves over (restart, voxel) and the Gauss–Newton Hessian
+over voxels; `AmortisedPosterior.theta_median_batch` samples a batch of
+conditions in one FlowJAX call. On CPU, 16 voxels × 3 models: batch 7 s vs
+serial 30 s. Same optimum in 47 of 48 (voxel, model) pairs at 4 restarts; the
+one miss disappears at 8 restarts, which the driver now uses. The Gauss–Newton
+log-determinant differs by up to ~1 nat between the two paths along flat
+SANDI directions (float32); the test tolerance records this. The serial study
+was stopped after 2 sessions and relaunched (`--dataset nexi_c2` then
+`--dataset wand`); the smoke run of the refactored driver completed all 11
+same-scheme ds008771 sessions on CPU in 13 s each at 400 voxels.
+sub-08 ses-01 (reduced protocol only, 8 features) is skipped and recorded,
+because the amortised posterior is trained on the 15-feature scheme.
+
+### 6.2 WAND arm
+
+δ = 7 ms, from McNabb et al. 2025 (Sci Data), section "Diffusion-weighted
+imaging with variable diffusion time": TR 3.9 s, TE 80 ms, δ 7 ms, Δ 18 (the
+SeriesDescription says 17.3), 30, 42, 55 ms; b pairs 2200/4400, 4000/8000,
+5800/11600, 7750/15500 s/mm², 30 directions each, 6 b0 per shell. Set as
+`compore.io.wand.WAND_AXCALIBER_SMALL_DELTA_S`. One WAND subject is
+preprocessed locally (sub-08033 ses-02: FSL topup + eddy of the four
+AxCaliber shells, FreeSurfer recon). `validation/wand_axcaliber_powder.py`
+registers the FreeSurfer brainmask to the mean b0 (DIPY rigid, mutual
+information; Dice of the FreeSurfer brain against the FSL b0 mask 0.947),
+resamples the DKT labels, and writes 8 powder features for 69 052 cortical
+voxels; median b0 SNR 30.3. Powder medians run from 0.214 (b 2200, Δ 17.3)
+to 0.041 (b 15 500, Δ 55), the last at the Rician floor for this SNR. WAND
+differs from ds008771 in the useful way: one δ, four Δ, two b per Δ, b up to
+15 500. There is no held-out split and no rescan for this subject, so the
+WAND arm tests model choice and parameter agreement between the two
+estimators, not reproducibility.
+
+### 6.3 Background for the SBI-label decision (item 4)
+
+What the label has to mean. Doc 012 §3 records that every headline result
+of the project came from the differentiable fit plus a Laplace posterior,
+and doc 008 §6.3, §7.1 that the amortised flow lost on every orientation
+task (18.5° vs 1.7° at SNR 30; 9.1° after the parameterisation fixes). Doc
+012 §7.4 set the one test on which amortisation should win: model
+structure, where the Laplace evidence failed in doc 008 §6.19.
+
+What phase A already shows (§3.1): on simulated truth the classifier is
+right 78 % of the time against 61 % for the Laplace evidence, is well
+calibrated in its top bin (0.94 accuracy at p ≥ 0.87), and its flows are
+SBC-uniform with parameter RMSE equal to the Laplace fit. This is the first
+task where the amortised estimator is not worse, and on model identity it is
+clearly better. The Laplace evidence's weakness is structural: the
+Gauss–Newton Hessian under a uniform box prior gives an Occam penalty that
+is float32-noisy along flat directions (§6.1) and ignores the box
+boundaries where SANDI and NEXI+soma fits land (f_s → 0).
+
+What the two data phases have to add. The §7.4.1 criterion is about
+reproducibility: p(M) across scan–rescan must be at least as reproducible
+(ICC, Bland–Altman) as f and t_ex. The two finished sessions (§3.2) showed
+the two estimators agree at the ROI level once SNR is accounted for, and
+that NEXI+soma wins the held-out PPC in 41 and 57 of 62 ROIs. The
+relaunched run gives the ICC for 5 rescanned subjects × 62 ROIs; the WAND
+run gives the same two estimators on a different scanner, scheme and δ.
+
+Decision rule, so it is written before the numbers arrive:
+
+- Keep the label if (a) phase A holds on both schemes (classifier ≥ Laplace
+  accuracy, SBC uniform) and (b) on ds008771 the ICC of p(NEXI) amortised is
+  ≥ the ICC of the Laplace p(NEXI) and within 0.1 of the ICC of t_ex. Then
+  `compore.inference.model_selection` is the platform's flagship and the
+  README leads with joint model + parameter posteriors.
+- Drop it if (b) fails on ds008771 regardless of WAND: the amortised model
+  probabilities would then be a simulation-only result, and the honest
+  framing is "SBI as a validation utility" (doc 012 §7.4).
+- WAND cannot rescue (b) because it has no rescan; it can only confirm or
+  contradict the model choice (NEXI+soma at ROI level) on a second scheme.
+
+### 6.4 Background on the step-5 debts (item 6)
+
+Inventory on 2026-11-06 (`compore/`, 40 subpackages, 47 k lines outside
+tests):
+
+| debt | what it is | size | who uses it | proposal |
+|---|---|---|---|---|
+| scico | `inverse/amico.py`, `inverse/global_amico.py`, `inverse/solvers.py`, `examples/clinical/fit_mcdespot_scico.py`; lazily referenced in `compore/__init__` | 1 202 lines in `inverse/` | `pipeline/train.py`, `core/networks.py`, `simulation/phantoms.py`, 3 test files | keep `inverse/` as the `inverse` extra (it already is); replace the scico ADMM in `solvers.py` with the Optimistix/jaxopt path the tests already exercise, then drop the git-source dependency |
+| score posterior | `inference/score_posterior.py`, 909 lines, score matching for diffusion posteriors | 1 file | `inference/__init__` only; no validation script, no result doc | move to `archive/` with its test; it was the step-7 experiment of the January plan and nothing was built on it |
+| qMRI | `signal_models/qmri/` (DESPOT, VFA T1, qMT, mcDESPOT in `models/`), tests in `tests/qmri/` | ~1 500 lines | nothing in lafix or the validation scripts | keep the kernels (they are the multi-TE / relaxometry path the realism ladder needs for the myelin ring, doc 012 §7.4) but move them under `signal_models/relaxometry/` and gate their tests on an extra |
+| zero-user subpackages | `benchmarks`, `examples` (41 files, 6 861 lines), `external`, `gradients`, `pipelines` (one file next to `pipeline/`), `reconstruction` (11 files, 1 441 lines), `docs` (empty) | ~9 900 lines | none outside themselves | `examples/` → `docs/examples/` or delete the stale ones; `pipelines` → merge into `pipeline`; `reconstruction`, `benchmarks`, `gradients`, `external` → `archive/` unless a test covers them |
+| one-user subpackages | `analysis`, `cli`, `diffusion`, `geometry`, `harmonization`, `learning`, `morphogenesis`, `preprocessing`, `tractography`, `viz` | ~2 300 lines | one caller each | collapse into their caller's package with a shim for one release |
+| ADR 002c (unxt) | RFC to wrap quantities in `unxt` for unit safety | — | — | close as "rejected: SI everywhere + `PGSEScheme` rejecting s/mm² gives the safety at zero cost"; the SI convention is in CLAUDE.md and enforced by `PGSEScheme` |
+| runtime jaxtyping | 34 files carry `jaxtyping` annotations; no `install_import_hook`, no typechecker in tests | — | — | add `jaxtyping.install_import_hook("compore", "beartype.beartype")` under a pytest flag, fix what fails, run it in CI only (it slows compiles) |
+
+Order: score posterior and the zero-user subpackages first (pure removal,
+no API change), then scico, then the collapses with shims, then ADR 002c
+and jaxtyping, then the 0.1.0 releases.
