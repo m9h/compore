@@ -215,6 +215,24 @@ class AmortisedPosterior:
         u = self.flows[model].sample(key, (n,), condition=x)
         return np.asarray(lo + (hi - lo) * jax.nn.sigmoid(u))
 
+    def theta_median_batch(self, key, model: str, S, sigma, n: int = 100, chunk: int = 2048) -> np.ndarray:
+        """(B, P) posterior medians for many voxels at once (FlowJAX samples a
+        batch of conditions in one call: sample shape (n, B, P))."""
+        lo, hi = box(model); S = np.asarray(S, np.float32); sigma = np.asarray(sigma, np.float32)
+        if not jnp.issubdtype(jnp.asarray(key).dtype, jax.dtypes.prng_key):
+            key = jax.random.wrap_key_data(key)
+        flow = self.flows[model]
+
+        @jax.jit
+        def med(k, s, sg):
+            u = flow.sample(k, (n,), condition=_features(s, sg))          # (n, B, P)
+            return jnp.median(lo + (hi - lo) * jax.nn.sigmoid(u), axis=0)
+        out = []
+        for i in range(0, len(S), chunk):
+            key, k = jax.random.split(key)
+            out.append(np.asarray(med(k, jnp.asarray(S[i:i + chunk]), jnp.asarray(sigma[i:i + chunk]))))
+        return np.concatenate(out) if out else np.zeros((0, len(lo)), np.float32)
+
     def log_prob_theta(self, model: str, theta, S, sigma):
         lo, hi = box(model); z = jnp.clip((jnp.asarray(theta) - lo) / (hi - lo), 1e-6, 1 - 1e-6)
         u = jnp.log(z) - jnp.log1p(-z)
@@ -290,3 +308,61 @@ def sbc_ranks(post: AmortisedPosterior, key, n_test: int = 300, n_post: int = 20
             ranks.append((samp < np.asarray(theta[i, :P])).sum(0))
         out[m] = np.asarray(ranks)
     return out
+
+
+# ------------------------------------------- batched Laplace (GPU) ----------
+def fit_model_laplace_batch(model: str, Y: jnp.ndarray, sigma: jnp.ndarray, sch: PowderScheme,
+                            n_restarts: int = 6, key=0, max_steps: int = 200) -> Dict[str, np.ndarray]:
+    """Vectorised :func:`fit_model_laplace`: ``Y`` (B, n_shells), ``sigma`` (B,).
+    Every voxel gets the same ``n_restarts`` starting points; the LM solves are
+    vmapped over (restart, voxel) and the best χ² per voxel is kept. Returns
+    arrays with a leading B axis (theta, theta_sd, chi2, logL, logZ, at_bound)."""
+    import optimistix as optx
+    lo, hi = box(model); lo_j, hi_j = jnp.asarray(lo), jnp.asarray(hi); P = len(lo)
+    width = hi_j - lo_j; n_dirs = jnp.asarray(sch.n_dirs)
+    Y = jnp.asarray(Y, jnp.float32); sigma = jnp.asarray(sigma, jnp.float32)
+    U0 = jnp.asarray(np.random.default_rng(key).normal(0, 1.2, (n_restarts, P)), jnp.float32)
+    solver = optx.LevenbergMarquardt(rtol=1e-7, atol=1e-9)
+
+    def resid(u, args):
+        y, sg = args
+        return (gm.rician_mean(forward(model, _unit_to_theta(u, lo_j, hi_j), sch), sg) - y) / (sg / jnp.sqrt(n_dirs))
+
+    def solve_one(u0, y, sg):
+        sol = optx.least_squares(resid, solver, u0, args=(y, sg), max_steps=max_steps, throw=False)
+        c = jnp.sum(resid(sol.value, (y, sg)) ** 2)
+        return jnp.where(jnp.isfinite(c), c, jnp.inf), sol.value
+
+    def solve_voxel(y, sg):
+        cs, us = jax.vmap(solve_one, in_axes=(0, None, None))(U0, y, sg)
+        i = jnp.argmin(cs); u = us[i]; chi2 = cs[i]
+        th = _unit_to_theta(u, lo_j, hi_j); z_hat = (th - lo_j) / width
+        sd = sg / jnp.sqrt(n_dirs)
+
+        def resid_z(z):
+            return (gm.rician_mean(forward(model, lo_j + width * z, sch), sg) - y) / sd
+        Jz = jax.jacfwd(resid_z)(z_hat); Hz = Jz.T @ Jz
+        Hz = Hz + 1e-9 * jnp.eye(P) * jnp.maximum(jnp.mean(jnp.diag(Hz)), 1e-30)
+        _, logdet_z = jnp.linalg.slogdet(Hz)
+        logdet = logdet_z - 2.0 * jnp.sum(jnp.log(width))
+        logL = -0.5 * chi2 - jnp.sum(jnp.log(sd)) - 0.5 * sch.n * jnp.log(2 * jnp.pi)
+        logZ = logL - jnp.sum(jnp.log(width)) + 0.5 * P * jnp.log(2 * jnp.pi) - 0.5 * logdet
+        sd_theta = jnp.sqrt(jnp.maximum(jnp.diag(jnp.linalg.inv(Hz)), 0.0)) * width
+        return th, sd_theta, chi2, logL, logZ, jnp.any(jnp.abs(u) > 6.0)
+
+    th, sd_t, chi2, logL, logZ, ab = jax.jit(jax.vmap(solve_voxel))(Y, sigma)
+    return {"theta": np.asarray(th), "theta_sd": np.asarray(sd_t), "chi2": np.asarray(chi2), "logL": np.asarray(logL),
+            "logZ": np.asarray(logZ), "n_params": P, "at_bound": np.asarray(ab)}
+
+
+def laplace_model_posterior_batch(Y, sigma, sch: PowderScheme, models=MODELS, chunk: int = 4096, **kw) -> Dict:
+    """Batched :func:`laplace_model_posterior`: ``p_model`` is (B, n_models);
+    ``fits[m]`` holds (B, …) arrays. Chunked to bound GPU memory."""
+    Y = np.asarray(Y, np.float32); sigma = np.broadcast_to(np.asarray(sigma, np.float32), (len(Y),))
+    fits = {m: [] for m in models}
+    for i in range(0, len(Y), chunk):
+        for m in models:
+            fits[m].append(fit_model_laplace_batch(m, Y[i:i + chunk], sigma[i:i + chunk], sch, **kw))
+    fits = {m: {k: (np.concatenate([f[k] for f in fs]) if k != "n_params" else fs[0][k]) for k in fs[0]} for m, fs in fits.items()}
+    lz = np.stack([fits[m]["logZ"] for m in models], 1); p = np.exp(lz - lz.max(1, keepdims=True)); p /= p.sum(1, keepdims=True)
+    return {"fits": fits, "p_model": p, "logZ": lz}

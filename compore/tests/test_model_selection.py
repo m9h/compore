@@ -46,3 +46,27 @@ def test_amortised_trains_and_is_sane(sch):
     s = post.sample_theta(jax.random.PRNGKey(3), "nexi", np.asarray(S[0]), float(sigma[0]), 50)
     lo, hi = ms.box("nexi"); assert s.shape == (50, 4) and np.all(s >= lo) and np.all(s <= hi)
     lp = post.log_prob_theta("nexi", s[:5], np.asarray(S[0]), float(sigma[0])); assert np.all(np.isfinite(np.asarray(lp)))
+
+
+def test_batched_laplace_matches_serial(sch):
+    m_idx, theta, sigma, S = ms.simulate_joint(jax.random.PRNGKey(4), sch, 6, (20.0, 60.0))
+    S, sigma = np.asarray(S), np.asarray(sigma)
+    rb = ms.laplace_model_posterior_batch(S, sigma, sch, n_restarts=8)
+    assert rb["p_model"].shape == (6, 3) and np.allclose(rb["p_model"].sum(1), 1.0, atol=1e-5)
+    for i in range(3):
+        rs = ms.laplace_model_posterior(S[i], float(sigma[i]), sch, n_restarts=8)
+        for m in ms.MODELS:                                    # same optimum (χ²) and evidence up to float32 noise
+            assert abs(rs["fits"][m]["chi2"] - rb["fits"][m]["chi2"][i]) < 1e-2 * max(1.0, rs["fits"][m]["chi2"]), m
+            # log|H| of the Gauss–Newton Hessian is float32-noisy along flat directions (≈1 nat seen for SANDI)
+            assert abs(rs["fits"][m]["logZ"] - rb["fits"][m]["logZ"][i]) < 2.0, m
+
+
+def test_theta_median_batch_matches_single_voxel(sch):
+    post = ms.train_amortised(jax.random.PRNGKey(0), sch, n_sims=4000, steps_clf=50, steps_flow=50, batch=256,
+                              flow_layers=2, nn_width=32, log=lambda *a: None)
+    m_idx, theta, sigma, S = ms.simulate_joint(jax.random.PRNGKey(9), sch, 8)
+    S, sigma = np.asarray(S), np.asarray(sigma)
+    mb = post.theta_median_batch(jax.random.PRNGKey(3), "sandi", S, sigma, n=400, chunk=5)
+    lo, hi = ms.box("sandi"); assert mb.shape == (8, 5) and np.all(mb >= lo) and np.all(mb <= hi)
+    one = np.median(post.sample_theta(jax.random.PRNGKey(5), "sandi", S[0], sigma[0], 4000), 0)
+    assert np.all(np.abs(mb[0] - one) <= 0.15 * (hi - lo) + 1e-12)      # Monte Carlo medians of the same flow

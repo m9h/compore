@@ -35,7 +35,12 @@ WAND_GIN_URL = "https://gin.g-node.org/CUBRIC/WAND"
 # Gradient duration of the WAND AxCaliber/CHARMED scans is not in the sidecars
 # (no `t_sdel`); set it from the acquisition documentation before fitting
 # anything that depends on δ. None → loaders return NaN for small_delta.
-WAND_AXCALIBER_SMALL_DELTA_S = None
+#: Gradient pulse duration of the WAND Connectom variable-diffusion-time
+#: ("AxCaliber") acquisition: δ = 7 ms, Δ = 18 (17.3), 30, 42, 55 ms, TE 80 ms,
+#: TR 3.9 s (McNabb et al. 2025, Sci Data 12, "Diffusion-weighted imaging with
+#: variable diffusion time"; not recorded in the BIDS sidecars, which carry only
+#: `t_bdel`).
+WAND_AXCALIBER_SMALL_DELTA_S = 7e-3
 
 
 def wand_timings(meta: dict):

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """
-doc 012 §7.4 step 2: joint model-structure + parameter inference on ds008771.
+doc 012 §7.4 step 2: joint model-structure + parameter inference on ds008771
+(--dataset nexi_c2, default) or WAND AxCaliber (--dataset wand; one δ, four Δ,
+no held-out split, no rescan).
 
 Phase A (simulation, the calibration half)
   * train the amortised posterior (classifier + per-model flows) on the
@@ -26,8 +28,11 @@ from compore.inference import model_selection as ms
 from compore.signal_models import gm_powder as gm
 from compore.io import nexi_c2 as n
 
-POWDER = Path("/data/datasets/compore/ds008771/powder")
-OUT = Path("/data/datasets/compore/ds008771/model_selection")
+DATASETS = {
+    # powder dir, output dir, δ (s), held-out split (features fitted; the rest predicted) or None
+    "nexi_c2": (Path("/data/datasets/compore/ds008771/powder"), Path("/data/datasets/compore/ds008771/model_selection"), 5e-3, "reduced"),
+    "wand": (Path("/data/datasets/compore/wand/powder"), Path("/data/datasets/compore/wand/model_selection"), 7e-3, None),
+}
 
 
 def icc(a, b):
@@ -45,13 +50,18 @@ def main():
     ap.add_argument("--n-sims", type=int, default=300_000); ap.add_argument("--steps-clf", type=int, default=4000)
     ap.add_argument("--steps-flow", type=int, default=6000); ap.add_argument("--n-test", type=int, default=400)
     ap.add_argument("--n-laplace-test", type=int, default=120); ap.add_argument("--voxels-per-session", type=int, default=0, help="0 = all")
-    ap.add_argument("--skip-data", action="store_true"); ap.add_argument("--out", default="validation/nexi_c2_model_selection.json")
-    a = ap.parse_args(); OUT.mkdir(parents=True, exist_ok=True)
+    ap.add_argument("--skip-data", action="store_true"); ap.add_argument("--out", default=None)
+    ap.add_argument("--dataset", choices=sorted(DATASETS), default="nexi_c2"); ap.add_argument("--out-dir", default=None, help="override the per-session map directory")
+    a = ap.parse_args(); POWDER, OUT, delta_s, heldout = DATASETS[a.dataset]; OUT = Path(a.out_dir) if a.out_dir else OUT; OUT.mkdir(parents=True, exist_ok=True)
+    a.out = a.out or f"validation/{a.dataset}_model_selection.json"
     res = {"args": vars(a), "device": str(jax.devices()[0])}
     sessions = sorted(POWDER.glob("sub-*_ses-*.npz"))
     first = np.load(sessions[0], allow_pickle=True)
-    feats = [tuple(int(v) for v in f) for f in first["features"]]; counts = [int(c) for c in first["counts"]]
-    sch = ms.PowderScheme.from_features(feats, counts)
+    feats = [tuple(float(v) for v in f) for f in first["features"]]; counts = [int(c) for c in first["counts"]]
+    # the amortised posterior is trained on one scheme; sessions acquired with another (ds008771 sub-08: reduced protocol only) are skipped
+    skipped = [p.stem for p in sessions if [tuple(float(v) for v in f) for f in np.load(p, allow_pickle=True)["features"]] != feats]
+    sessions = [p for p in sessions if p.stem not in skipped]; res["skipped_sessions_other_scheme"] = skipped
+    sch = ms.PowderScheme.from_features(feats, counts, delta_s=delta_s)
     # measured relative b0 noise across sessions → SNR range for training
     snr_med = [float(np.median(np.load(p)["S_b0"] / np.maximum(np.load(p)["sigma_b0"], 1e-6))) for p in sessions]
     snr_range = (max(8.0, 0.5 * min(snr_med)), 2.5 * max(snr_med)); res["snr_median_per_session"] = dict(zip([p.stem for p in sessions], snr_med)); res["snr_range_train"] = snr_range
@@ -82,12 +92,12 @@ def main():
         rec[m] = {"params": gm.MODEL_PARAMS[m], "rmse": np.sqrt((err ** 2).mean(0)).tolist(), "coverage90": cov.mean(0).tolist(), "n": int(len(sel))}
     A["recovery_amortised"] = rec
     # Laplace on a subset (slow)
-    t0 = time.time(); sel = np.arange(min(a.n_laplace_test, a.n_test)); lp_hit = []; lp_conf = []; lp_rec = {m: [] for m in ms.MODELS}; lp_cov = {m: [] for m in ms.MODELS}
-    for i in sel:
-        r = ms.laplace_model_posterior(S[i], float(sigma[i]), sch, n_restarts=4)
-        p = np.array([r["p_model"][m] for m in ms.MODELS]); lp_hit.append(p.argmax() == m_idx[i]); lp_conf.append(p.max())
-        m = ms.MODELS[m_idx[i]]; P = len(ms.box(m)[0]); f = r["fits"][m]
-        lp_rec[m].append(f["theta"] - theta[i, :P]); lp_cov[m].append(np.abs(f["theta"] - theta[i, :P]) <= 1.645 * f["theta_sd"])
+    t0 = time.time(); sel = np.arange(min(a.n_laplace_test, a.n_test)); lp_rec = {m: [] for m in ms.MODELS}; lp_cov = {m: [] for m in ms.MODELS}
+    rb = ms.laplace_model_posterior_batch(S[sel], sigma[sel], sch, n_restarts=8)
+    lp_hit = rb["p_model"].argmax(1) == m_idx[sel]
+    for k, i in enumerate(sel):
+        m = ms.MODELS[m_idx[i]]; P = len(ms.box(m)[0]); th, sd = rb["fits"][m]["theta"][k], rb["fits"][m]["theta_sd"][k]
+        lp_rec[m].append(th - theta[i, :P]); lp_cov[m].append(np.abs(th - theta[i, :P]) <= 1.645 * sd)
     A["laplace_accuracy"] = float(np.mean(lp_hit)); A["laplace_n"] = int(len(sel)); A["laplace_seconds_per_voxel"] = (time.time() - t0) / len(sel)
     A["recovery_laplace"] = {m: {"rmse": np.sqrt((np.asarray(v) ** 2).mean(0)).tolist(), "coverage90": np.asarray(lp_cov[m]).mean(0).tolist(), "n": len(v)} for m, v in lp_rec.items() if v}
     A["amortised_accuracy_same_subset"] = float(np.mean(pm[sel].argmax(1) == m_idx[sel]))
@@ -100,7 +110,8 @@ def main():
         return
 
     # ---------------- Phase B
-    red = np.array([f in n.REDUCED_FEATURES for f in feats]); B = {"sessions": {}}
+    red = np.array([f in n.REDUCED_FEATURES for f in feats]) if heldout == "reduced" else np.ones(len(feats), bool); B = {"sessions": {}}
+    sch_red = ms.PowderScheme.from_features([f for f, r in zip(feats, red) if r], [c for c, r in zip(counts, red) if r], delta_s=delta_s)
     labels_all = None
     for p in sessions:
         d = np.load(p, allow_pickle=True); tag = p.stem; t0 = time.time()
@@ -113,28 +124,26 @@ def main():
         th_med = np.full((len(S_v), 6), np.nan, np.float32)
         for j, m in enumerate(ms.MODELS):
             sel = np.flatnonzero(pm_v.argmax(1) == j); P = len(ms.box(m)[0])
-            for i in sel:
-                s = post.sample_theta(jax.random.PRNGKey(int(i)), m, S_v[i], sig_v[i], 100); th_med[i, :P] = np.median(s, 0)
-        # ROI medians: both estimators + PPC on the 7 held-out shells
+            if len(sel): th_med[sel, :P] = post.theta_median_batch(jax.random.PRNGKey(j), m, S_v[sel], sig_v[sel], n=100)
+        # ROI medians: both estimators (batched over ROIs) + PPC on the held-out shells
+        Ls = [L for L in np.unique(lab) if (lab == L).sum() >= 20]
+        S_rois = np.stack([np.median(S_v[lab == L], 0) for L in Ls]); n_rois = np.array([(lab == L).sum() for L in Ls])
+        sig_rois = np.maximum(np.array([np.median(sig_v[lab == L]) for L in Ls]) / np.sqrt(n_rois), 1.0 / snr_range[1]).astype(np.float32)
+        pm_rois = post.p_model(S_rois, sig_rois)
+        lap_full = ms.laplace_model_posterior_batch(S_rois, sig_rois, sch, n_restarts=8)
+        # amortised on reduced features only is not available (train-time scheme is the full one), so PPC uses the Laplace fit on the fitted shells
+        lap_red = ms.laplace_model_posterior_batch(S_rois[:, red], sig_rois, sch_red, n_restarts=8) if heldout else lap_full
+        th_nexi = post.theta_median_batch(jax.random.PRNGKey(1), "nexi", S_rois, sig_rois, n=400)
         rois = {}
-        for L in np.unique(lab):
-            sel = lab == L
-            if sel.sum() < 20: continue
-            S_roi = np.median(S_v[sel], 0); sig_roi = float(np.median(sig_v[sel]) / np.sqrt(sel.sum()))
-            sig_roi = max(sig_roi, 1.0 / snr_range[1])
-            pm_roi = post.p_model(S_roi[None], np.array([sig_roi]))[0]
-            # amortised on reduced features only: train-time scheme is the full one, so PPC uses the Laplace fit on reduced shells
-            sch_red = ms.PowderScheme.from_features([f for f, r in zip(feats, red) if r], [c for c, r in zip(counts, red) if r])
-            lap_red = ms.laplace_model_posterior(S_roi[red], sig_roi, sch_red, n_restarts=4)
+        for k, L in enumerate(Ls):
             ppc = {}
             for m in ms.MODELS:
-                pred = np.asarray(gm.rician_mean(ms.forward(m, jnp.asarray(lap_red["fits"][m]["theta"]), sch), sig_roi))
-                ppc[m] = float(np.sqrt(np.mean((pred[~red] - S_roi[~red]) ** 2)))
-            lap_full = ms.laplace_model_posterior(S_roi, sig_roi, sch, n_restarts=4)
-            rois[int(L)] = {"n_vox": int(sel.sum()), "p_amortised": pm_roi.tolist(), "p_laplace_full": [lap_full["p_model"][m] for m in ms.MODELS],
-                            "p_laplace_reduced": [lap_red["p_model"][m] for m in ms.MODELS], "ppc_rmse_heldout": ppc,
-                            "theta_laplace": {m: lap_full["fits"][m]["theta"].tolist() for m in ms.MODELS},
-                            "theta_amortised_nexi": np.median(post.sample_theta(jax.random.PRNGKey(1), "nexi", S_roi, sig_roi, 400), 0).tolist()}
+                pred = np.asarray(gm.rician_mean(ms.forward(m, jnp.asarray(lap_red["fits"][m]["theta"][k]), sch), sig_rois[k]))
+                ppc[m] = float(np.sqrt(np.mean((pred[~red] - S_rois[k, ~red]) ** 2))) if heldout else float("nan")
+            rois[int(L)] = {"n_vox": int(n_rois[k]), "p_amortised": pm_rois[k].tolist(), "p_laplace_full": lap_full["p_model"][k].tolist(),
+                            "p_laplace_reduced": lap_red["p_model"][k].tolist(), "ppc_rmse_heldout": ppc,
+                            "theta_laplace": {m: lap_full["fits"][m]["theta"][k].tolist() for m in ms.MODELS},
+                            "theta_amortised_nexi": th_nexi[k].tolist()}
         np.savez_compressed(OUT / f"{tag}.npz", p_model=pm_v, theta_med=th_med, label=lab, ijk=d["ijk"] if not a.voxels_per_session else d["ijk"][idx], shape=d["shape"], affine=d["affine"])
         B["sessions"][tag] = {"n_vox": int(len(S_v)), "frac_argmax": np.bincount(pm_v.argmax(1), minlength=3).tolist(), "mean_p": pm_v.mean(0).tolist(),
                               "rois": rois, "seconds": time.time() - t0}
@@ -143,11 +152,11 @@ def main():
     # scan–rescan over subjects with both sessions, per ROI
     subs = sorted({t.split("_")[0] for t in B["sessions"]}); pairs = [(s, f"{s}_ses-01", f"{s}_ses-02") for s in subs if f"{s}_ses-01" in B["sessions"] and f"{s}_ses-02" in B["sessions"]]
     rr = {}
-    for key, getter in [("p_nexi_amortised", lambda r: r["p_amortised"][0]), ("p_nexi_laplace", lambda r: r["p_laplace_full"][0]),
+    for key, getter in ([] if not pairs else [("p_nexi_amortised", lambda r: r["p_amortised"][0]), ("p_nexi_laplace", lambda r: r["p_laplace_full"][0]),
                         ("tex_laplace_ms", lambda r: r["theta_laplace"]["nexi"][3] * 1e3), ("tex_amortised_ms", lambda r: r["theta_amortised_nexi"][3] * 1e3),
                         ("f_laplace", lambda r: r["theta_laplace"]["nexi"][0]), ("f_amortised", lambda r: r["theta_amortised_nexi"][0]),
                         ("Di_laplace", lambda r: r["theta_laplace"]["nexi"][1] * 1e9), ("Di_amortised", lambda r: r["theta_amortised_nexi"][1] * 1e9),
-                        ("De_laplace", lambda r: r["theta_laplace"]["nexi"][2] * 1e9), ("De_amortised", lambda r: r["theta_amortised_nexi"][2] * 1e9)]:
+                        ("De_laplace", lambda r: r["theta_laplace"]["nexi"][2] * 1e9), ("De_amortised", lambda r: r["theta_amortised_nexi"][2] * 1e9)]):
         a1, a2 = [], []
         for s, t1, t2 in pairs:
             r1, r2 = B["sessions"][t1]["rois"], B["sessions"][t2]["rois"]
