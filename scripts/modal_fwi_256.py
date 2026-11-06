@@ -67,7 +67,7 @@ def run_fwi_256():
         spec.loader.exec_module(mod)
         return mod
 
-    SBI = "/opt/sbi4dwi/dmipy_jax"
+    SBI = "/opt/sbi4dwi/compore"
     acoustic = _load("acoustic", f"{SBI}/biophysics/acoustic.py")
     jwa = _load("jwave_adapter", f"{SBI}/biophysics/jwave_adapter.py")
     rf = _load("radiation_force", f"{SBI}/biophysics/radiation_force.py")

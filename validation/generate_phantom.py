@@ -3,7 +3,7 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import os
-from dmipy_jax.cylinder import C2Cylinder
+from compore.cylinder import C2Cylinder
 
 def normalize_bvecs(bvecs):
     norms = jnp.linalg.norm(bvecs, axis=-1, keepdims=True)

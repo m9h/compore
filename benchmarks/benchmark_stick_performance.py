@@ -3,8 +3,8 @@ import time
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.cylinder import C1Stick
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.cylinder import C1Stick
+from compore.acquisition import JaxAcquisition
 
 def main():
     print("Setting up benchmark...")

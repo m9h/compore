@@ -3,8 +3,8 @@ import jax.numpy as jnp
 import numpy as np
 import nibabel as nib
 import time
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.gradients.aganj_estimator import fit_aganj_gradients
+from compore.acquisition import JaxAcquisition
+from compore.gradients.aganj_estimator import fit_aganj_gradients
 
 def run_validation():
     print("--- Aganj Gradient Estimator Validation ---")

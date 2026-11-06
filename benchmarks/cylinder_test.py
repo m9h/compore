@@ -1,5 +1,5 @@
 import jax.numpy as jnp
-from dmipy_jax.signal_models import c2_cylinder
+from compore.signal_models import c2_cylinder
 
 # Standard HCP Protocol
 big_delta = 0.0431  # 43.1 ms

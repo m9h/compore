@@ -58,7 +58,7 @@ def run_3d_validation():
         spec.loader.exec_module(mod)
         return mod
 
-    SBI = "/opt/sbi4dwi/dmipy_jax"
+    SBI = "/opt/sbi4dwi/compore"
     acoustic = _load("acoustic", f"{SBI}/biophysics/acoustic.py")
     jwa = _load("jwave_adapter", f"{SBI}/biophysics/jwave_adapter.py")
     exp = _load("tus_experiments", f"{SBI}/biophysics/tus_experiments.py")

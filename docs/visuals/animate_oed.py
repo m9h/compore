@@ -4,9 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import jax.numpy as jnp
-from dmipy_jax.cylinder import C1Stick
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.design import oed
+from compore.cylinder import C1Stick
+from compore.acquisition import JaxAcquisition
+from compore.design import oed
 
 def main():
     # --- Setup ---

@@ -12,7 +12,7 @@ class TestARFISequence:
 
     def test_sequence_has_msg_lobes(self):
         """Sequence must contain bipolar MSG pair."""
-        from dmipy_jax.biophysics.mr_arfi import design_arfi_sequence
+        from compore.biophysics.mr_arfi import design_arfi_sequence
 
         params = design_arfi_sequence()
         assert params["has_msg_lobes"] is True
@@ -20,14 +20,14 @@ class TestARFISequence:
 
     def test_sequence_has_fus_trigger(self):
         """Sequence must have FUS trigger marker."""
-        from dmipy_jax.biophysics.mr_arfi import design_arfi_sequence
+        from compore.biophysics.mr_arfi import design_arfi_sequence
 
         params = design_arfi_sequence()
         assert params["has_fus_trigger"] is True
 
     def test_encoding_coefficient(self):
         """Encoding coefficient = γ · G · δ."""
-        from dmipy_jax.biophysics.mr_arfi import design_arfi_sequence, GAMMA
+        from compore.biophysics.mr_arfi import design_arfi_sequence, GAMMA
 
         params = design_arfi_sequence(msg_amplitude=40e-3, msg_duration=5e-3)
         expected = GAMMA * 40e-3 * 5e-3
@@ -35,7 +35,7 @@ class TestARFISequence:
 
     def test_min_displacement_submicron(self):
         """Minimum detectable displacement should be sub-micron."""
-        from dmipy_jax.biophysics.mr_arfi import design_arfi_sequence
+        from compore.biophysics.mr_arfi import design_arfi_sequence
 
         params = design_arfi_sequence(msg_amplitude=40e-3, msg_duration=5e-3)
         assert params["min_displacement_um"] < 1.0  # sub-micron
@@ -46,7 +46,7 @@ class TestARFIPhase:
 
     def test_phase_proportional_to_displacement(self):
         """2x displacement → 2x phase."""
-        from dmipy_jax.biophysics.mr_arfi import predict_arfi_phase
+        from compore.biophysics.mr_arfi import predict_arfi_phase
 
         u1 = np.array([5e-6])  # 5 µm
         u2 = np.array([10e-6])  # 10 µm
@@ -56,14 +56,14 @@ class TestARFIPhase:
 
     def test_phase_zero_without_displacement(self):
         """No displacement → no phase shift."""
-        from dmipy_jax.biophysics.mr_arfi import predict_arfi_phase
+        from compore.biophysics.mr_arfi import predict_arfi_phase
 
         phi = predict_arfi_phase(np.array([0.0]))
         assert phi[0] == 0.0
 
     def test_phase_magnitude_realistic(self):
         """5µm displacement at 40mT/m, 5ms should give ~0.27 rad."""
-        from dmipy_jax.biophysics.mr_arfi import predict_arfi_phase, GAMMA
+        from compore.biophysics.mr_arfi import predict_arfi_phase, GAMMA
 
         u = 5e-6  # 5 µm
         phi = predict_arfi_phase(np.array([u]), msg_amplitude=40e-3, msg_duration=5e-3)
@@ -73,7 +73,7 @@ class TestARFIPhase:
 
     def test_displacement_recovery_roundtrip(self):
         """Encode then decode displacement should recover original."""
-        from dmipy_jax.biophysics.mr_arfi import predict_arfi_phase, recover_displacement_from_phase
+        from compore.biophysics.mr_arfi import predict_arfi_phase, recover_displacement_from_phase
 
         u_true = np.array([1e-6, 5e-6, 10e-6])  # 1, 5, 10 µm
         phi_on = predict_arfi_phase(u_true, msg_amplitude=40e-3, msg_duration=5e-3)
@@ -89,7 +89,7 @@ class TestARFIPhantom:
 
     def test_phantom_has_motion_data(self):
         """Phantom should include displacement per spin."""
-        from dmipy_jax.biophysics.mr_arfi import create_arfi_phantom_data
+        from compore.biophysics.mr_arfi import create_arfi_phantom_data
 
         labels = np.array([[4, 4], [5, 5]])  # 2x2: GM, WM
         disp = np.array([[5e-6, 3e-6], [8e-6, 2e-6]])
@@ -101,7 +101,7 @@ class TestARFIPhantom:
 
     def test_phantom_filters_background(self):
         """Background spins (label=0) should be excluded."""
-        from dmipy_jax.biophysics.mr_arfi import create_arfi_phantom_data
+        from compore.biophysics.mr_arfi import create_arfi_phantom_data
 
         labels = np.array([[0, 4], [4, 0]])
         disp = np.ones((2, 2)) * 5e-6
@@ -111,7 +111,7 @@ class TestARFIPhantom:
 
     def test_phantom_positions_on_grid(self):
         """Spin positions should be on the voxel grid."""
-        from dmipy_jax.biophysics.mr_arfi import create_arfi_phantom_data
+        from compore.biophysics.mr_arfi import create_arfi_phantom_data
 
         labels = np.ones((4, 4), dtype=int) * 4
         disp = np.zeros((4, 4))
@@ -123,7 +123,7 @@ class TestARFIPhantom:
 
     def test_phantom_tissue_properties(self):
         """GM and WM should have different T1/T2."""
-        from dmipy_jax.biophysics.mr_arfi import create_arfi_phantom_data
+        from compore.biophysics.mr_arfi import create_arfi_phantom_data
 
         labels = np.array([[4, 5]])  # GM, WM
         disp = np.zeros((1, 2))

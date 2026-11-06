@@ -12,9 +12,9 @@ import numpy as np
 import nibabel as nib
 from tqdm import tqdm
 
-from dmipy_jax.models.flow_fcd import FlowUNet
-from dmipy_jax.fitting.flow_trainer import train_step_ot_cfm, generate_flair
-from dmipy_jax.io.deepfcd_loader import DeepFCDLoader
+from compore.models.flow_fcd import FlowUNet
+from compore.fitting.flow_trainer import train_step_ot_cfm, generate_flair
+from compore.io.deepfcd_loader import DeepFCDLoader
 
 def save_bids_derivative(output_dir: str, subject_id: str, flair_data: np.ndarray, meta: dict, affine=None):
     """Saves generated FLAIR in BIDS derivatives format."""
@@ -52,7 +52,7 @@ def main():
             "DatasetType": "derivative",
             "GeneratedBy": [
                 {
-                    "Name": "dmipy-jax-flow",
+                    "Name": "compore-flow",
                     "Version": "0.1.0",
                     "Description": "Conditional Flow Matching for FCD Detection"
                 }

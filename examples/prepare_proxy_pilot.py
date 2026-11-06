@@ -6,9 +6,9 @@ import numpy as np
 import nibabel as nib
 import jax
 import jax.numpy as jnp
-from dmipy_jax.models.ball_stick import BallStick
-from dmipy_jax.fitting.optimization import VoxelFitter
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.models.ball_stick import BallStick
+from compore.fitting.optimization import VoxelFitter
+from compore.acquisition import JaxAcquisition
 
 def get_proxy_subjects(bids_root, n_subjects=10):
     """

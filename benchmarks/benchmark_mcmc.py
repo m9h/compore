@@ -2,9 +2,9 @@ import jax
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
 import corner
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.models.ball_stick import BallStick
-from dmipy_jax.inference.mcmc import MCMCInference
+from compore.acquisition import JaxAcquisition
+from compore.models.ball_stick import BallStick
+from compore.inference.mcmc import MCMCInference
 import time
 
 def benchmark_mcmc_ball_stick():
@@ -20,8 +20,8 @@ def benchmark_mcmc_ball_stick():
     
     # 3. Custom Model (Flexible BallStick)
     # Params: [f_intra, d_intra, d_iso, theta, phi]
-    from dmipy_jax.cylinder import C1Stick
-    from dmipy_jax.gaussian import G1Ball
+    from compore.cylinder import C1Stick
+    from compore.gaussian import G1Ball
     
     stick = C1Stick()
     ball = G1Ball()

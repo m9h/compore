@@ -29,9 +29,9 @@ import numpy as np
 from dipy.data import default_sphere
 from dipy.reconst.force import FORCEModel, load_force_simulations
 
-from dmipy_jax.library.generator import LibraryGenerator
-from dmipy_jax.library.matcher import DictionaryMatcher
-from dmipy_jax.library.storage import SimulationLibrary
+from compore.library.generator import LibraryGenerator
+from compore.library.matcher import DictionaryMatcher
+from compore.library.storage import SimulationLibrary
 from validation.lib.force_baselines import (
     csd_peaks_from_signal,
     dipy_force_peaks_from_signal,

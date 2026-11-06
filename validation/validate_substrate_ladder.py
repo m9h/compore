@@ -25,8 +25,8 @@ import argparse, json, time
 from dataclasses import replace
 import numpy as np
 from validation.lib import substrate_benchmark as sb
-from dmipy_jax.prism import prism_jax as pj
-from dmipy_jax.prism import prism_uncertainty as pu
+from lafix import prism_jax as pj
+from lafix import prism_uncertainty as pu
 
 
 def chuv_scheme(n_dirs=60, seed=0):
@@ -55,7 +55,7 @@ RUNGS = {
 
 
 def generate(rung, box_um, threads):
-    from dmipy_jax.simulation.substrates.caterpillar import CATERPillarCLI
+    from compore.simulation.substrates.caterpillar import CATERPillarCLI
     cli = CATERPillarCLI()
     kw = dict(RUNGS[rung]); kw.setdefault("c2", 0.98)
     cfg = cli.default_config(box_um=box_um, threads=threads, **kw)

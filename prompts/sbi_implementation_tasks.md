@@ -3,7 +3,7 @@
 These prompts are designed to guide an AI agent in implementing the 4 key microstructural models referenced in the SBIDTI repository (Eggl et al., 2024): **DTI**, **DKI**, **NODDI**, and **AxCaliber**.
 
 ## Common Context (Prepend to all prompts)
-> You are working on `dmipy-jax`, a differentiable MRI library using JAX, Equinox, and Optimistix.
+> You are working on `compore`, a differentiable MRI library using JAX, Equinox, and Optimistix.
 > We are implementing Simulation-Based Inference (SBI) as a "Phase 5" feature.
 > Your goal is to create "Amortized Inference" modules that replace voxel-wise fitting with neural network inversion.
 > Use `sbi` (Python library) or simple NF (Normalizing Flow) implementations in JAX (`distrax` or `flowjax` if available, otherwise generic MLP regressors for simple NPE).
@@ -19,7 +19,7 @@ These prompts are designed to guide an AI agent in implementing the 4 key micros
 Implement an SBI inference module for the Diffusion Tensor Imaging (DTI) model.
 
 1.  **Simulation**:
-    *   Use `dmipy_jax.signal_models.gaussian_models.Tensor` (or `G2Zeppelin` if full tensor not avail) to generate 100,000 synthetic signal vectors.
+    *   Use `compore.signal_models.gaussian_models.Tensor` (or `G2Zeppelin` if full tensor not avail) to generate 100,000 synthetic signal vectors.
     *   **Priors**: Sample eigenvalues ($\lambda_1, \lambda_2, \lambda_3$) from standard biological ranges (0.1 - 3.0 um^2/ms). Sample orientation randomly on the sphere.
     *   **Acquisition**: Use a standard single-shell scheme (b=1000, 32 dirs).
     *   **Noise**: Add Rician noise at SNR=30.
@@ -31,7 +31,7 @@ Implement an SBI inference module for the Diffusion Tensor Imaging (DTI) model.
     *   Alternatively: Predict the full lower-triangular tensor components, but augment training data with random rotations.
 
 3.  **Output**:
-    *   Script: `dmipy_jax/examples/sbi/train_dti.py`
+    *   Script: `compore/examples/sbi/train_dti.py`
     *   Validation: Plot Predicted vs True FA and MD for a held-out test set.
 ```
 
@@ -43,7 +43,7 @@ Implement an SBI inference module for the Diffusion Tensor Imaging (DTI) model.
 Implement an SBI inference module for the Diffusion Kurtosis Imaging (DKI) model.
 
 1.  **Simulation**:
-    *   Use `dmipy_jax` to simulate non-Gaussian diffusion signals. If a dedicated DKI analytical model isn't present, simulate using a Multi-Compartment Model (Stick + Ball) which naturally exhibits non-Gaussianity/Kurtosis at high b-values.
+    *   Use `compore` to simulate non-Gaussian diffusion signals. If a dedicated DKI analytical model isn't present, simulate using a Multi-Compartment Model (Stick + Ball) which naturally exhibits non-Gaussianity/Kurtosis at high b-values.
     *   **Acquisition**: Two-shell scheme (b=1000, 2000; 60 dirs total) is required for Kurtosis.
     *   **Priors**: Vary compartment fractions to induce varying levels of Kurtosis.
 
@@ -52,7 +52,7 @@ Implement an SBI inference module for the Diffusion Kurtosis Imaging (DKI) model
     *   Since analytical DKI fitting is often unstable/noise-sensitive, SBI should demonstrate superior robustness.
 
 3.  **Output**:
-    *   Script: `dmipy_jax/examples/sbi/train_dki.py`
+    *   Script: `compore/examples/sbi/train_dki.py`
     *   Validation: Compare SBI estimates of MK against standard linear least squares (LLS) fitting on noisy data.
 ```
 
@@ -77,7 +77,7 @@ Implement an SBI inference module for the NODDI model (Stick + Zeppelin + Ball).
     *   Crucial: Demonstrate that for certain signals, the posterior is multimodal or wide (uncertainty quantification), whereas standard fitting gives a single point estimate.
 
 3.  **Output**:
-    *   Script: `dmipy_jax/examples/sbi/train_noddi.py`
+    *   Script: `compore/examples/sbi/train_noddi.py`
     *   Validation: Show posterior corner plots for a "crossing fiber" or "partial volume" voxel.
 ```
 
@@ -89,7 +89,7 @@ Implement an SBI inference module for the NODDI model (Stick + Zeppelin + Ball).
 Implement an SBI inference module for Axon Diameter estimation (AxCaliber or ActiveAx).
 
 1.  **Simulation**:
-    *   Use `dmipy_jax.signal_models.cylinder_models.Cylinder` (finite radius).
+    *   Use `compore.signal_models.cylinder_models.Cylinder` (finite radius).
     *   **Protocol**: Requires High Gradients (Gmax > 300 mT/m) or multiple diffusion times (Delta).
     *   **Priors**: Axon radii $R \in [0.1, 5.0] \mu m$. Gamma distribution parameters if modeling a distribution.
 
@@ -99,6 +99,6 @@ Implement an SBI inference module for Axon Diameter estimation (AxCaliber or Act
     *   **theoretical limit**: Reference the "theoretical limit" from the paper – show that for standard gradients (G=40-80 mT/m), the posterior for R < 2um is effectively uniform (uninformative), correctly signaling that the data cannot resolve it.
 
 3.  **Output**:
-    *   Script: `dmipy_jax/examples/sbi/train_axcaliber.py`
+    *   Script: `compore/examples/sbi/train_axcaliber.py`
     *   Validation: Sensitivity analysis plot – Posterior width vs Ground Truth Radius.
 ```

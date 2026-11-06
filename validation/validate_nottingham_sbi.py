@@ -19,11 +19,11 @@ import jax.numpy as jnp
 import numpy as np
 import time
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.config import SBIPipelineConfig
-from dmipy_jax.pipeline.simulator import ModelSimulator
-from dmipy_jax.pipeline.train import train_sbi
-from dmipy_jax.inference.mdn import MixtureDensityNetwork
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.config import SBIPipelineConfig
+from compore.pipeline.simulator import ModelSimulator
+from compore.pipeline.train import train_sbi
+from compore.inference.mdn import MixtureDensityNetwork
 import equinox as eqx
 
 
@@ -319,7 +319,7 @@ def main():
     # Push to Hugging Face Hub
     push_hub = "--push-hub" in sys.argv
     if push_hub:
-        from dmipy_jax.pipeline.checkpoint import push_to_hub
+        from compore.pipeline.checkpoint import push_to_hub
         repo_id = "mhough/ball2stick-npe-spline-v1"
         push_to_hub(
             model, config, repo_id,

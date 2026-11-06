@@ -2,7 +2,7 @@ import time
 import numpy as np
 import jax
 import jax.numpy as jnp
-# We use mock functions here to test pure throughput without needing the full dmipy-jax codebase loaded yet
+# We use mock functions here to test pure throughput without needing the full compore codebase loaded yet
 from jax import jit
 
 def generate_synthetic_data(n_voxels=100000, n_shells=3, n_dirs=64):
@@ -14,7 +14,7 @@ def generate_synthetic_data(n_voxels=100000, n_shells=3, n_dirs=64):
     return data, bvals, bvecs
 
 def benchmark_jax(data, bvals, bvecs):
-    print("--- Starting dmipy-jax (GPU) ---")
+    print("--- Starting compore (GPU) ---")
     
     # Unified Memory transfer
     data_gpu = jnp.array(data)

@@ -1,6 +1,6 @@
 # MDT Docker Oracle
 
-This directory contains the Docker configuration and adapter layer for using the **Microstructure Diffusion Toolbox (MDT)** as a "Ground Truth" Test Oracle for benchmarking `dmipy-jax`.
+This directory contains the Docker configuration and adapter layer for using the **Microstructure Diffusion Toolbox (MDT)** as a "Ground Truth" Test Oracle for benchmarking `compore`.
 
 ## Overview
 
@@ -12,7 +12,7 @@ The `mdt-oracle` container provides a standardized environment with:
 ## Files
 
 - `Dockerfile.mdt`: The container definition.
-- `mdt_adapter.py`: Python module bridging `dmipy-jax` parameters to MDT's API.
+- `mdt_adapter.py`: Python module bridging `compore` parameters to MDT's API.
 - `verify_oracle.py`: Script to verify the installation and signal simulation accuracy.
 - `build_and_run.sh`: Helper script to build and verify the container.
 

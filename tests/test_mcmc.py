@@ -1,7 +1,7 @@
 import pytest
 import jax
 import jax.numpy as jnp
-from dmipy_jax.inference.mcmc import MCMCInference
+from compore.inference.mcmc import MCMCInference
 
 
 def fit_mcmc(model_func, data, acquisition, initial_params, sigma, n_samples, n_warmup, rng_key):

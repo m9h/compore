@@ -3,11 +3,11 @@ import time
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.signal_models import gaussian_models, stick
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.fitting.optimization import OptimistixFitter
-from dmipy_jax.fitting.initialization import GlobalBruteInitializer
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.signal_models import gaussian_models, stick
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.fitting.optimization import OptimistixFitter
+from compore.fitting.initialization import GlobalBruteInitializer
+from compore.acquisition import JaxAcquisition
 from dmipy.data import saved_acquisition_schemes
 
 def profile_fitting():
@@ -156,7 +156,7 @@ def profile_fitting():
     scales = jnp.array(scales_list)
     print(f"Scales: {scales}")
 
-    from dmipy_jax.fitting.optimization import CustomLMFitter
+    from compore.fitting.optimization import CustomLMFitter
     print("SWITCHING TO CUSTOM LM FITTER")
     fitter = CustomLMFitter(jax_mcm.model_func, flat_ranges, scales=scales)
     

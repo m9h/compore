@@ -7,7 +7,7 @@ Uses ConductivityPDELoss and Pseudo-CT Priors.
 import jax
 import jax.numpy as jnp
 import equinox as eqx
-from dmipy_jax.biophysics.conductivity_pinn import ConductivityPDELoss
+from compore.biophysics.conductivity_pinn import ConductivityPDELoss
 
 class EITModel(eqx.Module):
     """

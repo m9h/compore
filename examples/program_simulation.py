@@ -9,10 +9,10 @@ the 'DifferentiableWalker' SDE simulation for Connectome acquisition.
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.simulation.differentiable_walker import DifferentiableWalker
-from dmipy_jax.simulation.simulator import EndToEndSimulator
-from dmipy_jax.signal_models.cylinder_models import RestrictedCylinder
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.simulation.differentiable_walker import DifferentiableWalker
+from compore.simulation.simulator import EndToEndSimulator
+from compore.signal_models.cylinder_models import RestrictedCylinder
+from compore.acquisition import JaxAcquisition
 
 def run_simulation_program():
     print("=== Testing Program: Diffrax Simulation Validation ===")

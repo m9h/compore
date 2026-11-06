@@ -10,12 +10,12 @@ import jax.numpy as jnp
 import numpy as np
 import pytest
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.config import SBIPipelineConfig
-from dmipy_jax.pipeline.simulator import ModelSimulator
-from dmipy_jax.pipeline.train import train_sbi
-from dmipy_jax.pipeline.checkpoint import save_checkpoint, load_checkpoint
-from dmipy_jax.inference.mdn import MixtureDensityNetwork
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.config import SBIPipelineConfig
+from compore.pipeline.simulator import ModelSimulator
+from compore.pipeline.train import train_sbi
+from compore.pipeline.checkpoint import save_checkpoint, load_checkpoint
+from compore.inference.mdn import MixtureDensityNetwork
 
 
 def _make_dti_simulator():

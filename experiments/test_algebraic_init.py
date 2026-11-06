@@ -2,7 +2,7 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.fitting.algebraic import dti_algebraic_init
+from compore.fitting.algebraic import dti_algebraic_init
 
 def main():
     print("=== Testing Algebraic Initializers ===")

@@ -5,7 +5,7 @@ These prompts are designed for an Agentic AI (like me) to implement advanced dem
 ## Prompt 1: Whole-Brain High-Throughput NODDI Mapping
 
 **Title:** Implement Whole-Brain NODDI Benchmark
-**Objective:** Demonstrate the extreme speed of `dmipy-jax` by fitting a standard NODDI model to a full whole-brain volume (or single slice) from the EDDEN dataset.
+**Objective:** Demonstrate the extreme speed of `compore` by fitting a standard NODDI model to a full whole-brain volume (or single slice) from the EDDEN dataset.
 
 **Context:**
 We have the EDDEN dataset downloaded at `benchmarks/data/edden`. We want to show that JAX can fit complex models to massive numbers of voxels (e.g. 100k+) in seconds, a task that typically takes minutes or hours.
@@ -13,7 +13,7 @@ We have the EDDEN dataset downloaded at `benchmarks/data/edden`. We want to show
 **Instructions:**
 1.  **Create Script:** `examples/program_high_throughput_noddi.py`.
 2.  **Load Data:** Use `nibabel` to load `sub-01/ses-02/dwi`. Load the whole volume (or a complete middle slice, e.g., z=50).
-3.  **Define Model:** Implement the standard Watson-NODDI model using `dmipy_jax.signal_models`:
+3.  **Define Model:** Implement the standard Watson-NODDI model using `compore.signal_models`:
     *   **Intra-axonal:** `C1Stick` (parameter: `mu`, fixed `lambda_par=1.7e-9`).
     *   **Extra-axonal:** `Zeppelin` (parameter: `lambda_par`, `lambda_perp` linked via tortuosity constraint, shared `mu` with stick).
     *   **CSF:** `Ball` (fixed `lambda_iso=3.0e-9`).
@@ -39,7 +39,7 @@ EDDEN has a dense acquisition (~40+ directions). We want to show that selecting 
 2.  **Load Data:** Load EDDEN `sub-01/ses-02/dwi`.
 3.  **Define Task:** We want to estimate Axon Estimator (Stick parameters).
 4.  **Run OED:**
-    *   Use `dmipy_jax.optimization.oed` (or implement a simple Condition Number minimization wrapper).
+    *   Use `compore.optimization.oed` (or implement a simple Condition Number minimization wrapper).
     *   Select the "Best 15" gradients from the full bvecs list that minimize the Cramer-Rao Bound (CRB) for a standard Stick+Ball model.
     *   Also select a "Random 15" subset.
 5.  **Validation:**

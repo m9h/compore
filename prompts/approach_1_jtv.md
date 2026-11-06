@@ -15,7 +15,7 @@ Where:
 - $\nabla$: Spatial gradient operator.
 
 ## Implementation Details
-- **Library**: `scico` (or `dmipy-jax` wrappers if available).
+- **Library**: `scico` (or `compore` wrappers if available).
 - **Input**:
     - DWI: `derivatives/qsiprep/sub-01/dwi/sub-01*_desc-preproc_dwi.nii.gz` (and .bval/.bvec).
     - Mask: `derivatives/qsiprep/sub-01/dwi/sub-01*_desc-brain_mask.nii.gz`

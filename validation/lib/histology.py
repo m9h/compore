@@ -16,7 +16,7 @@ from typing import Optional, Dict, Tuple, Any
 # Real Zenodo URL structure: https://zenodo.org/record/14559356/files/...
 # I'll use a likely valid one, but allow override.
 HISTO_URL = "https://zenodo.org/records/14559356/files/histo_usim_data.tar.gz?download=1"
-DEFAULT_CACHE_DIR = Path.home() / ".cache" / "dmipy_jax" / "histology"
+DEFAULT_CACHE_DIR = Path.home() / ".cache" / "compore" / "histology"
 
 class HistoDataset(eqx.Module):
     """

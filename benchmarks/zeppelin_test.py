@@ -1,6 +1,6 @@
 import jax.numpy as jnp
-from dmipy_jax.signal_models import g2_zeppelin
-from dmipy_jax.signal_models.zeppelin import Zeppelin
+from compore.signal_models import g2_zeppelin
+from compore.signal_models.zeppelin import Zeppelin
 
 # Test Setups
 bvals = jnp.array([1000.0, 2000.0, 3000.0])

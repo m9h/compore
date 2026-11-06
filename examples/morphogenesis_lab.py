@@ -6,9 +6,9 @@ Integrates sbi4dwi, Toro, and Kuhl models in a JAX-accelerated simulation.
 import jax
 import jax.numpy as jnp
 import jax.random as jr
-from dmipy_jax.morphogenesis.cann import MorphoCANN
-from dmipy_jax.morphogenesis.growth_solver import HyperelasticGrowthSolver
-from dmipy_jax.morphogenesis.utils import map_microstructure_to_stiffness, get_growth_tensor
+from compore.morphogenesis.cann import MorphoCANN
+from compore.morphogenesis.growth_solver import HyperelasticGrowthSolver
+from compore.morphogenesis.utils import map_microstructure_to_stiffness, get_growth_tensor
 
 def run_morphogenesis_lab():
     # 1. Parameter Definitions

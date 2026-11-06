@@ -86,7 +86,7 @@ Given that 3D continuum simulations are memory-intensive (similar to the challen
 
 ### Integration with sbi4dwi
 - **Adapter Layer:** Create a `DWI2Morpho` adapter that transforms `sbi4dwi` posterior samples into the initial state and stiffness tensor for the growth simulation.
-- **Multi-Fidelity Training:** Use fast analytical models (from `dmipy_jax`) for initial simulation rounds, and then refine using high-fidelity "oracle" mechanical simulations for the final NPE training.
+- **Multi-Fidelity Training:** Use fast analytical models (from `compore`) for initial simulation rounds, and then refine using high-fidelity "oracle" mechanical simulations for the final NPE training.
 
 ---
 **References:**

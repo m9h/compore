@@ -20,20 +20,20 @@ class TestTissueAcousticProperties:
 
     def test_tissue_table_has_required_tissues(self):
         """All five SCI head model tissues must be present."""
-        from dmipy_jax.biophysics.acoustic import TISSUE_ACOUSTIC_PROPERTIES
+        from compore.biophysics.acoustic import TISSUE_ACOUSTIC_PROPERTIES
 
         required = {1, 2, 3, 4, 5}  # scalp, skull, CSF, GM, WM
         assert required.issubset(set(TISSUE_ACOUSTIC_PROPERTIES.keys()))
 
     def test_tissue_table_has_background(self):
         """Background label 0 (air/water) must be present."""
-        from dmipy_jax.biophysics.acoustic import TISSUE_ACOUSTIC_PROPERTIES
+        from compore.biophysics.acoustic import TISSUE_ACOUSTIC_PROPERTIES
 
         assert 0 in TISSUE_ACOUSTIC_PROPERTIES
 
     def test_tissue_table_has_required_params(self):
         """Each tissue must define all five acoustic parameters."""
-        from dmipy_jax.biophysics.acoustic import TISSUE_ACOUSTIC_PROPERTIES
+        from compore.biophysics.acoustic import TISSUE_ACOUSTIC_PROPERTIES
 
         params = {
             "sound_speed",
@@ -50,7 +50,7 @@ class TestTissueAcousticProperties:
 
     def test_tissue_table_physical_ranges(self):
         """Sound speed in [300, 5000] m/s, density in [1, 2500] kg/m3."""
-        from dmipy_jax.biophysics.acoustic import TISSUE_ACOUSTIC_PROPERTIES
+        from compore.biophysics.acoustic import TISSUE_ACOUSTIC_PROPERTIES
 
         for label, props in TISSUE_ACOUSTIC_PROPERTIES.items():
             assert 300 <= props["sound_speed"] <= 5000, (
@@ -65,13 +65,13 @@ class TestTissueAcousticProperties:
 
     def test_skull_sound_speed_above_3000(self):
         """Cortical bone sound speed should be well above soft tissue."""
-        from dmipy_jax.biophysics.acoustic import TISSUE_ACOUSTIC_PROPERTIES
+        from compore.biophysics.acoustic import TISSUE_ACOUSTIC_PROPERTIES
 
         assert TISSUE_ACOUSTIC_PROPERTIES[2]["sound_speed"] > 3000
 
     def test_csf_matches_water(self):
         """CSF acoustic properties should be close to water."""
-        from dmipy_jax.biophysics.acoustic import TISSUE_ACOUSTIC_PROPERTIES
+        from compore.biophysics.acoustic import TISSUE_ACOUSTIC_PROPERTIES
 
         csf = TISSUE_ACOUSTIC_PROPERTIES[3]
         assert abs(csf["sound_speed"] - 1500) < 50
@@ -83,7 +83,7 @@ class TestMapLabelsToProperties:
 
     def test_map_labels_to_sound_speed(self):
         """Integer label array -> sound speed array with correct values."""
-        from dmipy_jax.biophysics.acoustic import (
+        from compore.biophysics.acoustic import (
             TISSUE_ACOUSTIC_PROPERTIES,
             map_labels_to_properties,
         )
@@ -119,7 +119,7 @@ class TestMapLabelsToProperties:
 
     def test_map_labels_preserves_shape(self):
         """Output arrays must have same spatial shape as input labels."""
-        from dmipy_jax.biophysics.acoustic import map_labels_to_properties
+        from compore.biophysics.acoustic import map_labels_to_properties
 
         labels = jnp.ones((32, 32, 32), dtype=jnp.int32)
         props = map_labels_to_properties(labels)
@@ -130,7 +130,7 @@ class TestMapLabelsToProperties:
 
     def test_map_labels_returns_all_five_params(self):
         """All five acoustic parameters must be in the output dict."""
-        from dmipy_jax.biophysics.acoustic import map_labels_to_properties
+        from compore.biophysics.acoustic import map_labels_to_properties
 
         labels = jnp.zeros((4, 4, 4), dtype=jnp.int32)
         props = map_labels_to_properties(labels)
@@ -145,7 +145,7 @@ class TestMapLabelsToProperties:
 
     def test_map_labels_background_is_water(self):
         """Label 0 (background) should map to water-like properties."""
-        from dmipy_jax.biophysics.acoustic import map_labels_to_properties
+        from compore.biophysics.acoustic import map_labels_to_properties
 
         labels = jnp.zeros((2, 2, 2), dtype=jnp.int32)
         props = map_labels_to_properties(labels)
@@ -155,7 +155,7 @@ class TestMapLabelsToProperties:
 
     def test_map_labels_output_dtype_float(self):
         """Output arrays should be float, not int."""
-        from dmipy_jax.biophysics.acoustic import map_labels_to_properties
+        from compore.biophysics.acoustic import map_labels_to_properties
 
         labels = jnp.array([1, 2, 3], dtype=jnp.int32)
         props = map_labels_to_properties(labels)
@@ -172,7 +172,7 @@ class TestHUToAcousticProperties:
 
     def test_hu_to_density_range(self):
         """HU 300-2000 should map to density 1000-2200 kg/m3."""
-        from dmipy_jax.biophysics.acoustic import hu_to_acoustic_properties
+        from compore.biophysics.acoustic import hu_to_acoustic_properties
 
         hu = jnp.linspace(300, 2000, 50)
         props = hu_to_acoustic_properties(hu)
@@ -181,7 +181,7 @@ class TestHUToAcousticProperties:
 
     def test_hu_to_sound_speed_range(self):
         """Bone HU range should produce sound speeds in [1500, 4500] m/s."""
-        from dmipy_jax.biophysics.acoustic import hu_to_acoustic_properties
+        from compore.biophysics.acoustic import hu_to_acoustic_properties
 
         hu = jnp.linspace(300, 2000, 50)
         props = hu_to_acoustic_properties(hu)
@@ -190,7 +190,7 @@ class TestHUToAcousticProperties:
 
     def test_hu_to_sound_speed_monotonic(self):
         """Higher HU (denser bone) -> higher sound speed."""
-        from dmipy_jax.biophysics.acoustic import hu_to_acoustic_properties
+        from compore.biophysics.acoustic import hu_to_acoustic_properties
 
         hu = jnp.linspace(300, 2000, 50)
         props = hu_to_acoustic_properties(hu)
@@ -199,7 +199,7 @@ class TestHUToAcousticProperties:
 
     def test_hu_to_density_monotonic(self):
         """Higher HU -> higher density."""
-        from dmipy_jax.biophysics.acoustic import hu_to_acoustic_properties
+        from compore.biophysics.acoustic import hu_to_acoustic_properties
 
         hu = jnp.linspace(300, 2000, 50)
         props = hu_to_acoustic_properties(hu)
@@ -208,7 +208,7 @@ class TestHUToAcousticProperties:
 
     def test_hu_water_baseline(self):
         """HU=0 (water) should give approximately water properties."""
-        from dmipy_jax.biophysics.acoustic import hu_to_acoustic_properties
+        from compore.biophysics.acoustic import hu_to_acoustic_properties
 
         hu = jnp.array([0.0])
         props = hu_to_acoustic_properties(hu)
@@ -217,7 +217,7 @@ class TestHUToAcousticProperties:
 
     def test_hu_returns_all_params(self):
         """Must return sound_speed, density, and attenuation at minimum."""
-        from dmipy_jax.biophysics.acoustic import hu_to_acoustic_properties
+        from compore.biophysics.acoustic import hu_to_acoustic_properties
 
         hu = jnp.array([500.0, 1000.0, 1500.0])
         props = hu_to_acoustic_properties(hu)
@@ -227,7 +227,7 @@ class TestHUToAcousticProperties:
 
     def test_hu_pipeline_differentiable(self):
         """End-to-end HU->acoustic must be JAX-differentiable."""
-        from dmipy_jax.biophysics.acoustic import hu_to_acoustic_properties
+        from compore.biophysics.acoustic import hu_to_acoustic_properties
 
         def pipeline(hu_val):
             props = hu_to_acoustic_properties(hu_val)
@@ -244,7 +244,7 @@ class TestAttenuationUnitConversion:
 
     def test_neper_to_db_conversion(self):
         """1 Np/m = 8.686 dB/m."""
-        from dmipy_jax.biophysics.acoustic import neper_per_m_to_db_per_cm
+        from compore.biophysics.acoustic import neper_per_m_to_db_per_cm
 
         # 1 Np/m = 8.686 dB/m = 0.08686 dB/cm
         result = neper_per_m_to_db_per_cm(1.0)
@@ -252,7 +252,7 @@ class TestAttenuationUnitConversion:
 
     def test_cortical_bone_attenuation_conversion(self):
         """NDK cortical bone: 54.553 Np/m/MHz should be ~4.74 dB/cm/MHz."""
-        from dmipy_jax.biophysics.acoustic import neper_per_m_to_db_per_cm
+        from compore.biophysics.acoustic import neper_per_m_to_db_per_cm
 
         # 54.553 Np/m * 8.686 dB/Np / 100 cm/m = 4.738 dB/cm
         result = neper_per_m_to_db_per_cm(54.553)
@@ -260,7 +260,7 @@ class TestAttenuationUnitConversion:
 
     def test_db_to_neper_roundtrip(self):
         """Convert Np/m -> dB/cm -> Np/m should be identity."""
-        from dmipy_jax.biophysics.acoustic import (
+        from compore.biophysics.acoustic import (
             neper_per_m_to_db_per_cm,
             db_per_cm_to_neper_per_m,
         )
@@ -280,8 +280,8 @@ class TestPseudoCTAcousticIntegration:
 
     def test_pseudoct_to_acoustic_pipeline(self):
         """MRI intensity -> PseudoCT -> HU -> acoustic properties end-to-end."""
-        from dmipy_jax.biophysics.pseudo_ct import PseudoCTMapper
-        from dmipy_jax.biophysics.acoustic import hu_to_acoustic_properties
+        from compore.biophysics.pseudo_ct import PseudoCTMapper
+        from compore.biophysics.acoustic import hu_to_acoustic_properties
 
         mapper = PseudoCTMapper(method="plymouth")
         # Dark T1 region (skull-like): intensity ~0.2
@@ -301,8 +301,8 @@ class TestPseudoCTAcousticIntegration:
 
     def test_pseudoct_pipeline_fully_differentiable(self):
         """Full MRI -> HU -> acoustic pipeline must support jax.grad."""
-        from dmipy_jax.biophysics.pseudo_ct import PseudoCTMapper
-        from dmipy_jax.biophysics.acoustic import hu_to_acoustic_properties
+        from compore.biophysics.pseudo_ct import PseudoCTMapper
+        from compore.biophysics.acoustic import hu_to_acoustic_properties
 
         mapper = PseudoCTMapper(method="plymouth")
 

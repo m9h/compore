@@ -6,9 +6,9 @@ import jax
 import jax.numpy as jnp
 import pytest
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.simulator import ModelSimulator
-from dmipy_jax.library.generator import LibraryGenerator
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.simulator import ModelSimulator
+from compore.library.generator import LibraryGenerator
 
 
 def _make_ball_stick_simulator():

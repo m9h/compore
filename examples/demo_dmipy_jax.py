@@ -3,10 +3,10 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import time
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.models.c_noddi import CNODDI
-from dmipy_jax.fitting.optimization import OptimistixFitter
-from dmipy_jax.core.pinns import BlochTorreyPINN, solve_bloch_torrey, physics_loss
+from compore.acquisition import JaxAcquisition
+from compore.models.c_noddi import CNODDI
+from compore.fitting.optimization import OptimistixFitter
+from compore.core.pinns import BlochTorreyPINN, solve_bloch_torrey, physics_loss
 
 def run_demo():
     print("================================================================")

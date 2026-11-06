@@ -12,7 +12,7 @@ class TestFWILoss:
 
     def test_loss_zero_for_identical_fields(self):
         """Loss should be 0 when predicted == observed."""
-        from dmipy_jax.biophysics.fwi_us import fwi_loss
+        from compore.biophysics.fwi_us import fwi_loss
 
         p = jnp.ones((32, 32)) * 0.5
         loss = fwi_loss(p, p)
@@ -20,7 +20,7 @@ class TestFWILoss:
 
     def test_loss_positive_for_different_fields(self):
         """Loss should be > 0 when fields differ."""
-        from dmipy_jax.biophysics.fwi_us import fwi_loss
+        from compore.biophysics.fwi_us import fwi_loss
 
         p1 = jnp.ones((32, 32)) * 0.5
         p2 = jnp.ones((32, 32)) * 1.0
@@ -29,7 +29,7 @@ class TestFWILoss:
 
     def test_tv_regularization_penalizes_discontinuities(self):
         """TV term should be higher for discontinuous fields."""
-        from dmipy_jax.biophysics.fwi_us import fwi_loss
+        from compore.biophysics.fwi_us import fwi_loss
 
         p = jnp.ones((32, 32))  # dummy observed/predicted
         c_smooth = jnp.ones((32, 32)) * 1500.0
@@ -42,7 +42,7 @@ class TestFWILoss:
 
     def test_loss_differentiable(self):
         """jax.grad through loss function."""
-        from dmipy_jax.biophysics.fwi_us import fwi_loss
+        from compore.biophysics.fwi_us import fwi_loss
 
         def f(c):
             return fwi_loss(c, jnp.ones((8, 8)), c, tv_weight=0.01)
@@ -58,7 +58,7 @@ class TestFWIInversion:
     @pytest.mark.gpu
     def test_fwi_loss_decreases(self):
         """Loss should decrease during optimization."""
-        from dmipy_jax.biophysics.fwi_us import invert_tissue_properties
+        from compore.biophysics.fwi_us import invert_tissue_properties
 
         # Create synthetic observed data from known c=1500
         import importlib.util, sys, os

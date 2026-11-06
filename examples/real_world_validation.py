@@ -6,11 +6,11 @@ import nibabel as nib
 import jax
 import jax.numpy as jnp
 from dmipy.core.modeling_framework import MultiCompartmentModel
-from dmipy_jax.signal_models import gaussian_models, stick
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.fitting.optimization import CustomLMFitter
-from dmipy_jax.fitting.initialization import GlobalBruteInitializer
+from compore.signal_models import gaussian_models, stick
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.acquisition import JaxAcquisition
+from compore.fitting.optimization import CustomLMFitter
+from compore.fitting.initialization import GlobalBruteInitializer
 
 def validate_edden():
     print("--- EDDEN Real World Validation ---")

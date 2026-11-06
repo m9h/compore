@@ -22,7 +22,7 @@ class TestJWaveDomain:
 
     def test_create_domain_3d(self):
         """Create a 3D j-Wave domain from grid shape and spacing."""
-        from dmipy_jax.biophysics.jwave_adapter import create_domain
+        from compore.biophysics.jwave_adapter import create_domain
 
         domain = create_domain(
             grid_shape=(64, 64, 64),
@@ -33,7 +33,7 @@ class TestJWaveDomain:
 
     def test_create_domain_2d(self):
         """Create a 2D domain for fast testing."""
-        from dmipy_jax.biophysics.jwave_adapter import create_domain
+        from compore.biophysics.jwave_adapter import create_domain
 
         domain = create_domain(grid_shape=(128, 128), grid_spacing=0.1e-3)
         assert domain.N == (128, 128)
@@ -44,7 +44,7 @@ class TestJWaveMedium:
 
     def test_create_medium_homogeneous(self):
         """Scalar properties should create a valid medium."""
-        from dmipy_jax.biophysics.jwave_adapter import create_domain, create_medium
+        from compore.biophysics.jwave_adapter import create_domain, create_medium
 
         domain = create_domain((32, 32, 32), 1e-3)
         medium = create_medium(
@@ -58,7 +58,7 @@ class TestJWaveMedium:
 
     def test_create_medium_heterogeneous(self):
         """3D array properties should create FourierSeries-wrapped medium."""
-        from dmipy_jax.biophysics.jwave_adapter import create_domain, create_medium
+        from compore.biophysics.jwave_adapter import create_domain, create_medium
 
         domain = create_domain((32, 32, 32), 1e-3)
         c = jnp.ones((32, 32, 32)) * 1500.0
@@ -79,7 +79,7 @@ class TestJWaveSources:
 
     def test_create_sources_from_positions(self):
         """Element positions should map to j-Wave source grid indices."""
-        from dmipy_jax.biophysics.jwave_adapter import create_domain, create_sources
+        from compore.biophysics.jwave_adapter import create_domain, create_sources
 
         domain = create_domain((64, 64, 64), 0.5e-3)
         # 4 elements at known positions (in meters)
@@ -101,7 +101,7 @@ class TestJWaveSources:
 
     def test_source_signals_shaped_correctly(self):
         """Each element should produce a time-domain signal."""
-        from dmipy_jax.biophysics.jwave_adapter import create_domain, create_sources
+        from compore.biophysics.jwave_adapter import create_domain, create_sources
 
         domain = create_domain((32, 32, 32), 1e-3)
         positions = jnp.array([[0.005, 0.005, 0.005], [0.010, 0.010, 0.010]])
@@ -118,7 +118,7 @@ class TestJWaveSources:
 
     def test_delay_shifts_signal(self):
         """A delayed element's signal peak should arrive later."""
-        from dmipy_jax.biophysics.jwave_adapter import _make_toneburst
+        from compore.biophysics.jwave_adapter import _make_toneburst
 
         freq = 400e3
         dt = 1e-7
@@ -142,7 +142,7 @@ class TestJWaveSimulation:
     @pytest.mark.slow
     def test_simulation_homogeneous_2d(self):
         """2D homogeneous simulation should produce non-zero pressure."""
-        from dmipy_jax.biophysics.jwave_adapter import run_simulation_2d
+        from compore.biophysics.jwave_adapter import run_simulation_2d
 
         result = run_simulation_2d(
             grid_shape=(128, 128),
@@ -159,7 +159,7 @@ class TestJWaveSimulation:
     @pytest.mark.slow
     def test_simulation_heterogeneous_attenuates(self):
         """A high-impedance layer should reduce transmitted pressure."""
-        from dmipy_jax.biophysics.jwave_adapter import run_simulation_2d
+        from compore.biophysics.jwave_adapter import run_simulation_2d
 
         # Homogeneous water
         result_water = run_simulation_2d(
@@ -198,7 +198,7 @@ class TestJWaveSimulation:
     @pytest.mark.slow
     def test_simulation_differentiable(self):
         """jax.grad through the simulation pipeline must not NaN."""
-        from dmipy_jax.biophysics.jwave_adapter import (
+        from compore.biophysics.jwave_adapter import (
             create_domain,
             create_medium,
             run_simulation_jax,

@@ -1,6 +1,6 @@
 import meshio
 import numpy as np
-from dmipy_jax.io.sci_head_loader import load_sci_head_mesh
+from compore.io.sci_head_loader import load_sci_head_mesh
 import time
 
 def generate_dynamic_demo(steps=20):

@@ -2,7 +2,7 @@ import time
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.signal_models import c1_stick, g1_ball, g2_zeppelin
+from compore.signal_models import c1_stick, g1_ball, g2_zeppelin
 
 # 1. Generate Data (Same as before)
 n_voxels = 1_000_000

@@ -64,7 +64,7 @@ def run_tus_pipeline():
     print(f"JAX default backend: {jax.default_backend()}")
     print()
 
-    # Direct file imports to avoid dmipy_jax.__init__ heavy dependency chain
+    # Direct file imports to avoid compore.__init__ heavy dependency chain
     import importlib.util, sys
 
     def _load_module(name, path):
@@ -74,7 +74,7 @@ def run_tus_pipeline():
         spec.loader.exec_module(mod)
         return mod
 
-    SBI = "/opt/sbi4dwi/dmipy_jax"
+    SBI = "/opt/sbi4dwi/compore"
     acoustic = _load_module("acoustic", f"{SBI}/biophysics/acoustic.py")
     jwa = _load_module("jwave_adapter", f"{SBI}/biophysics/jwave_adapter.py")
     optimizer = _load_module("tus_optimizer_mod", f"{SBI}/biophysics/tus_optimizer.py")

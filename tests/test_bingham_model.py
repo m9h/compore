@@ -2,8 +2,8 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.signal_models.bingham import BinghamNODDI
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.signal_models.bingham import BinghamNODDI
+from compore.acquisition import JaxAcquisition
 
 def test_bingham_normalization():
     print("Testing Bingham PDF Normalization...")

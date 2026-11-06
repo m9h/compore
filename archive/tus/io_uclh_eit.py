@@ -12,7 +12,7 @@ from typing import Dict, Any
 
 
 REPO_ZIP_URL = "https://github.com/EIT-team/Stroke_EIT_Dataset/archive/refs/heads/master.zip"
-DEFAULT_DATA_DIR = os.path.join(os.path.expanduser("~"), ".cache", "dmipy_jax", "uclh_eit")
+DEFAULT_DATA_DIR = os.path.join(os.path.expanduser("~"), ".cache", "compore", "uclh_eit")
 
 def download_uclh_dataset(data_dir: str = DEFAULT_DATA_DIR) -> str:
     """

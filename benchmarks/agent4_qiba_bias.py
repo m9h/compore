@@ -4,8 +4,8 @@ import jax.numpy as jnp
 import numpy as np
 import optimistix as optx
 import time
-from dmipy_jax.signal_models.ivim import IVIM
-from dmipy_jax.algebra.initializers import segmented_ivim_init
+from compore.signal_models.ivim import IVIM
+from compore.algebra.initializers import segmented_ivim_init
 
 # QIBA DRO Simulation
 # "Bias Profile" across SNR levels.

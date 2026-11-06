@@ -19,7 +19,7 @@ class TestPointInTetrahedron:
 
     def test_point_known_inside(self):
         """Centroid of unit tet is inside."""
-        from dmipy_jax.biophysics.mesh_rasterizer import point_in_tetrahedron
+        from compore.biophysics.mesh_rasterizer import point_in_tetrahedron
 
         verts = np.array(
             [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float64
@@ -29,7 +29,7 @@ class TestPointInTetrahedron:
 
     def test_point_known_outside(self):
         """A far-away point is outside."""
-        from dmipy_jax.biophysics.mesh_rasterizer import point_in_tetrahedron
+        from compore.biophysics.mesh_rasterizer import point_in_tetrahedron
 
         verts = np.array(
             [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float64
@@ -39,7 +39,7 @@ class TestPointInTetrahedron:
 
     def test_point_on_vertex(self):
         """A vertex is inside (inclusive boundary)."""
-        from dmipy_jax.biophysics.mesh_rasterizer import point_in_tetrahedron
+        from compore.biophysics.mesh_rasterizer import point_in_tetrahedron
 
         verts = np.array(
             [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float64
@@ -48,7 +48,7 @@ class TestPointInTetrahedron:
 
     def test_point_on_edge(self):
         """Midpoint of an edge is inside (inclusive boundary)."""
-        from dmipy_jax.biophysics.mesh_rasterizer import point_in_tetrahedron
+        from compore.biophysics.mesh_rasterizer import point_in_tetrahedron
 
         verts = np.array(
             [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float64
@@ -58,7 +58,7 @@ class TestPointInTetrahedron:
 
     def test_point_just_outside(self):
         """Point slightly beyond a face is outside."""
-        from dmipy_jax.biophysics.mesh_rasterizer import point_in_tetrahedron
+        from compore.biophysics.mesh_rasterizer import point_in_tetrahedron
 
         verts = np.array(
             [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]], dtype=np.float64
@@ -77,7 +77,7 @@ class TestRasterizeMesh:
 
     def test_rasterize_single_tet(self):
         """A single large tet rasterized should fill correct voxels."""
-        from dmipy_jax.biophysics.mesh_rasterizer import rasterize_mesh
+        from compore.biophysics.mesh_rasterizer import rasterize_mesh
 
         points = np.array(
             [[0, 0, 0], [10, 0, 0], [0, 10, 0], [0, 0, 10]], dtype=np.float64
@@ -98,7 +98,7 @@ class TestRasterizeMesh:
 
     def test_rasterize_preserves_tissue_labels(self):
         """Multiple tissue types must appear in output."""
-        from dmipy_jax.biophysics.mesh_rasterizer import rasterize_mesh
+        from compore.biophysics.mesh_rasterizer import rasterize_mesh
 
         # Two non-overlapping tets
         points = np.array(
@@ -131,7 +131,7 @@ class TestRasterizeMesh:
 
     def test_rasterize_output_shape(self):
         """Output shape must match requested grid_shape."""
-        from dmipy_jax.biophysics.mesh_rasterizer import rasterize_mesh
+        from compore.biophysics.mesh_rasterizer import rasterize_mesh
 
         points = np.array(
             [[0, 0, 0], [5, 0, 0], [0, 5, 0], [0, 0, 5]], dtype=np.float64
@@ -150,7 +150,7 @@ class TestRasterizeMesh:
 
     def test_rasterize_background_default_zero(self):
         """Voxels outside all tetrahedra should be label 0."""
-        from dmipy_jax.biophysics.mesh_rasterizer import rasterize_mesh
+        from compore.biophysics.mesh_rasterizer import rasterize_mesh
 
         # Tiny tet in corner of large grid
         points = np.array(
@@ -172,7 +172,7 @@ class TestRasterizeMesh:
 
     def test_rasterize_dtype_int(self):
         """Output must be integer dtype."""
-        from dmipy_jax.biophysics.mesh_rasterizer import rasterize_mesh
+        from compore.biophysics.mesh_rasterizer import rasterize_mesh
 
         points = np.array(
             [[0, 0, 0], [5, 0, 0], [0, 5, 0], [0, 0, 5]], dtype=np.float64
@@ -196,10 +196,10 @@ class TestRasterizeSCIHead:
     @pytest.mark.slow
     def test_rasterize_sci_head_tissue_count(self):
         """SCI head at coarse resolution should produce 5+ tissue types."""
-        from dmipy_jax.biophysics.mesh_rasterizer import rasterize_mesh
+        from compore.biophysics.mesh_rasterizer import rasterize_mesh
 
         try:
-            from dmipy_jax.io.sci_head_loader import load_sci_head_mesh
+            from compore.io.sci_head_loader import load_sci_head_mesh
         except ImportError:
             pytest.skip("SCI head loader not available")
 

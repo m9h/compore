@@ -9,14 +9,14 @@ from typing import Optional
 
 # Adjust imports based on project structure
 try:
-    from dmipy_jax.pulseq.pulse_interpreter import PulseInterpreter
-    from dmipy_jax.simulation.scanner.bloch import simulate_signal, BlochTorreyGeometry
+    from compore.pulseq.pulse_interpreter import PulseInterpreter
+    from compore.simulation.scanner.bloch import simulate_signal, BlochTorreyGeometry
 except ImportError:
     # Fallback if running from root without package installed in editable mode
     import sys
     sys.path.append(os.path.abspath("."))
-    from dmipy_jax.pulseq.pulse_interpreter import PulseInterpreter
-    from dmipy_jax.simulation.scanner.bloch import simulate_signal, BlochTorreyGeometry
+    from compore.pulseq.pulse_interpreter import PulseInterpreter
+    from compore.simulation.scanner.bloch import simulate_signal, BlochTorreyGeometry
 
 def test_pgse_analytical():
     """

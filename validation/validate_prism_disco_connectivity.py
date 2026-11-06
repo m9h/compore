@@ -3,7 +3,7 @@
 PRISM-JAX vs MSMT-CSD vs dmipy-JAX §24 on DiSCo connectivity (doc 006 §4).
 
 All methods go through the identical §21.2 tracker
-(``dmipy_jax.prism.tracking.track_connectivity``), so the only
+(``lafix.tracking.track_connectivity``), so the only
 variable is the per-voxel peaks. Reports Pearson r / CCC / Dice per SNR
 and, crucially, each method's margin over MSMT-CSD — the quantity PRISM
 reports (+1.6 pp at its best tracking angle) and the only one comparable
@@ -30,12 +30,12 @@ from pathlib import Path
 import numpy as np
 
 from validation.lib.connectivity_metrics import summarize_method
-from dmipy_jax.prism.tracking import track_connectivity
+from lafix.tracking import track_connectivity
 from validation.lib.force_disco import disco_subject_path, load_disco_subject
 from validation.lib.force_disco_connectivity import (
     connectivity_pearson, load_gt_connectivity,
 )
-from dmipy_jax.prism.prism_jax import PrismConfig, fit_prism, prism_fit_to_pam
+from lafix.prism_jax import PrismConfig, fit_prism, prism_fit_to_pam
 
 REF = {  # doc 004 §24.2 headline (§22 multi-shell) and PRISM paper
     "dmipy_s24": {10: 0.772, 30: 0.811, 50: 0.851},
@@ -81,10 +81,10 @@ def _cfg_for(method: str, n_fibres: int, n_iter: int, seed: int = 0) -> PrismCon
 def _warm_start(out, acq_bvals, acq_bvecs, n_fibres, library_size):
     """§22 DictionaryMatcher → (init_dirs, init_fracs) for PRISM-plus."""
     import jax, jax.numpy as jnp
-    from dmipy_jax.acquisition import JaxAcquisition
-    from dmipy_jax.library.generator import LibraryGenerator
-    from dmipy_jax.library.matcher import DictionaryMatcher
-    from dmipy_jax.library.storage import SimulationLibrary
+    from compore.acquisition import JaxAcquisition
+    from compore.library.generator import LibraryGenerator
+    from compore.library.matcher import DictionaryMatcher
+    from compore.library.storage import SimulationLibrary
     from validation.lib.dmipy_disco_dict import (
         build_disco_tuned_3d_stick_zeppelin_simulator,
     )

@@ -7,7 +7,7 @@ import jax.numpy as jnp
 import numpy as np
 import pytest
 
-from dmipy_jax.library.derived_metrics import (
+from compore.library.derived_metrics import (
     tensor_to_fa_md,
     eigenvalues_to_ad_rd,
     watson_kappa_to_odi,
@@ -19,7 +19,7 @@ from dmipy_jax.library.derived_metrics import (
     multi_compartment_to_kurtosis_fa,
     micro_fa,
 )
-from dmipy_jax.pipeline.metrics import MultiMetricExtractor
+from compore.pipeline.metrics import MultiMetricExtractor
 
 
 class TestDTIMetrics:

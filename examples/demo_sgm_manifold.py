@@ -5,7 +5,7 @@ import equinox as eqx
 import optax
 import matplotlib.pyplot as plt
 import numpy as np
-from dmipy_jax.simulation.phantoms import SGM
+from compore.simulation.phantoms import SGM
 
 def main():
     print("=== SGM 'Killer Example': Manifold Learning for Virtual Populations ===")

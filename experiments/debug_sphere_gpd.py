@@ -1,7 +1,7 @@
 
 import jax
 import jax.numpy as jnp
-from dmipy_jax.signal_models.sphere_models import SphereGPD
+from compore.signal_models.sphere_models import SphereGPD
 
 def main():
     print("Testing SphereGPD stability...")

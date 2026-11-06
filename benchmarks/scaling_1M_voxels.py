@@ -3,11 +3,11 @@ import jax.numpy as jnp
 import numpy as np
 import time
 import argparse
-from dmipy_jax.composer import compose_models
-from dmipy_jax.gaussian import G1Ball
-from dmipy_jax.cylinder import C1Stick
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.fitting.optimization import OptimistixFitter
+from compore.composer import compose_models
+from compore.gaussian import G1Ball
+from compore.cylinder import C1Stick
+from compore.acquisition import JaxAcquisition
+from compore.fitting.optimization import OptimistixFitter
 
 def run_benchmark(n_voxels: int, use_test_mode: bool = False, solver_name: str = "lm"):
     print(f"Starting Scaling Benchmark with {n_voxels} voxels using {solver_name.upper()}...")
@@ -74,7 +74,7 @@ def run_benchmark(n_voxels: int, use_test_mode: bool = False, solver_name: str =
         )
     else:
         # LBFGS via VoxelFitter (JaxOpt)
-        from dmipy_jax.fitting.optimization import VoxelFitter
+        from compore.fitting.optimization import VoxelFitter
         fitter = VoxelFitter(
             composite_model,
             bounds,

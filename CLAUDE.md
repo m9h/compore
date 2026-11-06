@@ -1,16 +1,25 @@
-# CLAUDE.md — Agent Guide for SBI4DWI
+# CLAUDE.md — Agent Guide for compore + lafix
 
-This file orients new Claude Code agents working on SBI4DWI (formerly
-dmipy-jax). Read this first before touching any code.
+This file orients new Claude Code agents working on this repository (named
+dmipy-jax, then SBI4DWI, until 2026-11-05; doc 012 §7.1). Read this first
+before touching any code.
 
 ## What is this project?
 
-**SBI4DWI** (Simulation-Based Inference for Diffusion-Weighted Imaging) is a
-JAX-accelerated platform for diffusion MRI microstructure estimation. It
-combines differentiable biophysical signal models, multi-fidelity physics
-simulation, and neural posterior estimation to recover tissue properties
-(axon diameter, cell density, fibre orientation) from diffusion-weighted MRI
-data. The codebase spans:
+One repository, two distributions (a uv workspace):
+
+- **compore** (`compore/`, "compartments and pores") is the platform: a
+  JAX library of differentiable diffusion-MRI microstructure physics,
+  Monte Carlo substrate oracles and simulation-based inference (SBI) tooling.
+- **lafix** (`packages/lafix/`, "Laplace fixel") is the product: refine any
+  DIPY peaks with a differentiable multi-fixel fit and return a calibrated
+  per-fixel Laplace posterior. It depends on compore and ships the
+  `dipy_refine_peaks` / `lafix` CLI. Its results are doc 008.
+
+The platform combines differentiable biophysical signal models, multi-fidelity
+physics simulation and neural posterior estimation to recover tissue
+properties (axon diameter, cell density, fibre orientation) from
+diffusion-weighted MRI. The codebase spans:
 
 - **Analytical forward models** (Ball, Stick, Zeppelin, Sphere, NODDI, SANDI)
 - **Differentiable physics simulations** (FEM, Monte Carlo, SDE walkers)
@@ -49,15 +58,15 @@ uv run pytest        # run tests
 
 ### Testing
 ```bash
-uv run pytest                              # full suite (dmipy_jax/tests + tests)
-uv run pytest tests/test_oracle.py -v      # single file
+uv run pytest                              # full suite (compore/tests + tests; tests/validation = lafix)
+uv run pytest compore/tests/test_oracle.py -v   # single file
 uv run pytest docs/tutorials               # markdown tutorials as doctests (sybil)
 JAX_PLATFORMS=cpu uv run pytest            # CPU; use this for compile-heavy or agent-run suites
-uv run pytest --cov=dmipy_jax              # coverage is opt-in
+uv run pytest --cov=compore              # coverage is opt-in
 ```
 The root `conftest.py` loads sybil only if it is installed, so `--noconftest`
 is no longer needed. Equivalence with the original dmipy code is tested
-against vendored closed forms (`dmipy_jax/tests/test_callaghan_reference.py`);
+against vendored closed forms (`compore/tests/test_callaghan_reference.py`);
 the reference source is `git show 7b254f4:dmipy/...`, not a dmipy install.
 
 ### Equinox patterns
@@ -80,17 +89,21 @@ These **must match** or the network sees different distributions at train vs dep
 ## Directory map
 
 ```
-dmipy_jax/                   # the installable package (wheel = this directory only)
+packages/lafix/lafix/        # the product distribution `lafix` (depends on compore)
+├── prism_jax.py             # the differentiable K-fixel model, Rician NLL, priors, fit_prism
+├── prism_uncertainty.py     # Laplace fixel posterior, SIGMA_INFLATION_HCP_YA, cone coverage,
+│                            #   posterior-sampled connectomes, Laplace evidence
+├── dipy_refine.py           # DIPY plug-in: refine_peaks, default_config, fi_config
+├── tracking.py fixel.py     # peaks → PAM / EuDX helpers; MRtrix fixel-directory writer
+└── workflow.py              # `dipy_refine_peaks` / `lafix` CLI (DIPY Workflow)
+
+compore/                     # the platform distribution `compore`
 ├── acquisition.py           # JaxAcquisition (b-values SI, gradient dirs, delta/Delta)
 ├── constants.py             # SPHERE_ROOTS (100-root dmipy table), Bessel-root finders, gamma
 ├── signal_models/           # Analytical forward models (Ball, Stick, Zeppelin, cylinders,
 │                            #   spheres incl. Callaghan, NODDI, SANDI); closed-form tested;
 │                            #   matrix_formalism.py = exact finite-pulse ring (myelin water,
 │                            #   Canales-Rodríguez 2026) / disk / sphere spectral kernels
-├── prism/                   # PRISM-JAX: multi-fixel refine (prism_jax), Laplace fixel
-│   │                        #   posterior (prism_uncertainty), DIPY plug-in (dipy_refine,
-│   │                        #   default_config / fi_config), tracking helpers
-├── workflows/refine_peaks_flow.py   # `dipy_refine_peaks` CLI
 ├── core/                    # modeling_framework (compose), solvers, surrogate
 ├── simulation/              # mesh_sim (FEM), monte_carlo, differentiable_walker, simulator,
 │   │                        #   oracle.py (SubstrateOracle ABC, jax/mcmr/mcds engines, registry,
@@ -110,7 +123,7 @@ validation/                  # paper scripts (validate_*.py, hcp_*.py, design_*.
 └── lib/                     # … and their shared code (FORCE/DiSCo loaders, baselines,
                              #   connectivity metrics, synthetic benchmarks). Importable in a
                              #   dev checkout (`from validation.lib import force_disco`), NOT in the wheel
-tests/                       # top-level tests, incl. tests/validation for prism + validation/lib
+tests/                       # top-level tests, incl. tests/validation for lafix + validation/lib
 archive/                     # transcranial ultrasound / EIT / pulseq code, kept but not imported
 docs/decisions/              # ADRs and result logs (008 = PRISM/HCP results, 009 = orbit design,
                              #   012 = retrospective + landscape by group,
@@ -118,13 +131,13 @@ docs/decisions/              # ADRs and result logs (008 = PRISM/HCP results, 00
 docs/artifacts.md            # where the untracked checkpoints/binaries live
 ```
 
-Dependencies (doc 012 §7, 2026-11-04): the core list is only what
-`dmipy_jax.signal_models` / `fitting` / `prism` and `dipy_refine_peaks` need on
-CPU. Extras: `cuda` (jax[cuda13]), `sbi` (flowjax, blackjax, numpyro, h5py),
+Dependencies (doc 012 §7, 2026-11-04): compore's core list is only what
+`compore.signal_models` / `fitting` and lafix need on CPU; lafix depends on
+compore, dipy, optax. Extras: `cuda` (jax[cuda13]), `sbi` (flowjax, blackjax, numpyro, h5py),
 `sim` (diffrax, jax-md, pandas), `algebra` (sympy), `inverse` (scico, cvxpy),
 `nn` (e3nn, healpy, ttax), `viz` (matplotlib, tqdm), `data`, `baselines`,
 `test`, `doc`, `all`. The dev environment is `uv sync --all-extras`. Keep the
-core import path free of extras: `import dmipy_jax.prism` must not pull in
+core import path free of extras: `import lafix` must not pull in
 diffrax/scico/flowjax (the package `__init__` is lazy for this reason).
 
 ## Key data flow
@@ -195,10 +208,10 @@ Key features:
 ## Oracle system
 
 Status (2026-11-04, doc 012 §7.3): the protocol exists in
-`dmipy_jax/simulation/oracle.py` and wraps three Monte Carlo engines behind one
+`compore/simulation/oracle.py` and wraps three Monte Carlo engines behind one
 interface; the sphere-substrate geometry, SDFs and PGSE walker moved from
 `validation/lib/substrate_benchmark.py` into
-`dmipy_jax/simulation/substrates/spheres.py` (the old path is a re-export shim).
+`compore/simulation/substrates/spheres.py` (the old path is a re-export shim).
 
 - `PGSEScheme(bvals_si, bvecs, delta, Delta)` — SI; rejects s/mm².
 - `SubstrateOracle` (ABC): `check_available()`, `simulate(substrate, scheme, D_intra=, D_extra=, n_particles=, seed=) -> OracleResult(S, S_intra, S_extra, S_glia, engine, seconds, meta)`,
@@ -209,12 +222,12 @@ interface; the sphere-substrate geometry, SDFs and PGSE walker moved from
   `MCDSOracle` ("mcds", Permeable_MCDS CLI, `MCDS_BIN` env or the `_external` build; periodic images of boundary spheres).
   None is a Python dependency; unavailable engines raise on use.
 - Registry: `get_oracle("jax" | "mcmr" | "mcds", **kw)`, `available_oracles()`, `register_oracle(name, cls)`.
-- Adapter: `dmipy_jax/simulation/emulator.py::LibraryEmulator.fit(library)` trains an Equinox MLP
+- Adapter: `compore/simulation/emulator.py::LibraryEmulator.fit(library)` trains an Equinox MLP
   ensemble f(θ, b, ĝ) → log S; `.as_model_simulator(acq)` gives a `ModelSimulator` for `train_sbi`;
   `.invert(y, bvals, bvecs)` is the emulator-in-the-loop LM inversion of doc 008 §11.2;
   `.save/.load` (JSON header + Equinox leaves).
 - Parity of the three engines: doc 008 §11.1 (extra-cellular RMS 0.01–0.015 JAX↔MCMR; MCDS freer;
-  intra MCDS < JAX < MCMR). Tests: `dmipy_jax/tests/test_oracle.py`.
+  intra MCDS < JAX < MCMR). Tests: `compore/tests/test_oracle.py`.
 - Not built: the k-NN `OracleModelSimulator` and `DIPYMultiTensorOracle` / `ReMiDiOracle` named in
   earlier versions of this file (ReMiDi has no public code; DIPY multi-tensor is a closed form, not an oracle).
 

@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import time
-from dmipy_jax.utils.spherical_harmonics import sh_basis_real_analytic, cart2sphere
+from compore.utils.spherical_harmonics import sh_basis_real_analytic, cart2sphere
 
 def hough_benchmark():
     print("--- JAX Hough Tractography Prototype ---")

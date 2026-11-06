@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-message: "If you use SBI4DWI, please cite it together with dmipy (the compartment models) and Manzano-Patrón et al. (the SBI design it follows)."
-title: "SBI4DWI: differentiable diffusion-MRI microstructure, PRISM-JAX fixel refinement and simulation-based inference in JAX"
+message: "If you use compore or lafix, please cite them together with dmipy (the compartment models) and Manzano-Patrón et al. (the SBI design it follows)."
+title: "compore and lafix: differentiable diffusion-MRI microstructure, Laplace fixel refinement and simulation-based inference in JAX"
 type: software
 version: 0.1.0
 date-released: 2026-10-09

@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased (2026-11-05) — rename: compore + lafix (doc 012 §7.1)
+
+### Changed
+- The package `dmipy_jax` is now **compore** ("compartments and pores"); the project name
+  SBI4DWI is retired. `scripts/rename_to_compore_lafix.sh` performed the move.
+- The refine stage is its own distribution **lafix** ("Laplace fixel") in `packages/lafix`
+  (uv workspace member, depends on compore): `lafix.prism_jax`, `lafix.prism_uncertainty`,
+  `lafix.dipy_refine`, `lafix.tracking`, `lafix.fixel`, `lafix.workflow`; entry points
+  `dipy_refine_peaks` and `lafix`. Former paths `dmipy_jax.prism.*`, `dmipy_jax.io.fixel`,
+  `dmipy_jax.workflows.refine_peaks_flow`.
+- Historical logs (docs/decisions, this file's earlier sections) keep the old names.
+- Not changed yet: the GitHub repository URL and the working directory (still `sbi4dwi`).
+
 ## Unreleased (2026-11-04) — product/platform split, step 1–2 (doc 012 §7)
 
 ### Changed

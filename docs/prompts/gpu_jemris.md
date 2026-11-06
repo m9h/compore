@@ -17,7 +17,7 @@
     - Dependencies: `CVODE`, `HDF5`, `CUDA Toolkit`.
 
 3.  **Python Wrapper (Optional but Recommended)**:
-    - Develop a `dmipy_jax.simulation.jemris_wrapper` that:
+    - Develop a `compore.simulation.jemris_wrapper` that:
         - Writes the XML configuration sequence for JEMRIS.
         - Invokes the compiled binary.
         - Reads the output K-Space/Image.
@@ -30,4 +30,4 @@
 ## Deliverables
 - [ ] `docker/Dockerfile.jemris_gpu`
 - [ ] Benchmark Report (Speedup factor).
-- [ ] Integration with `dmipy-jax` via shell wrapper.
+- [ ] Integration with `compore` via shell wrapper.

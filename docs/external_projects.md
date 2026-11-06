@@ -12,7 +12,7 @@ Removed during repo cleanup (2026-03-25) to reduce tracked size.
 - **Was located at**: `benchmarks/external/dmipy_bayesian/`
 - **Purpose**: Legacy benchmarking baseline. Contained the original dmipy
   package plus Bayesian fitting notebooks (`fit_bayes.py`,
-  `bayesian-fitting-HCP-example.ipynb`) used to compare against dmipy-jax
+  `bayesian-fitting-HCP-example.ipynb`) used to compare against compore
   SBI posteriors. Included pre-built eggs (`dmipy-1.0.5-py2.7.egg`,
   `dmipy-1.0.5-py3.9.egg`), Camino simulation data, and example notebooks.
 - **Why removed**: 308 tracked files (~113 MB), including 54 MB of egg
@@ -27,14 +27,14 @@ Removed during repo cleanup (2026-03-25) to reduce tracked size.
   Neto Henriques (DIPY), a name collision with author Jonathan Rafael-Patiño.
 - **Was located at**: `vendor/CATERPillar/` (this repo — placeholder only).
 - **Live checkout**: `/home/mhough/dev/dmipy/vendor/CATERPillar`, cloned and
-  compiled. `dmipy_jax/simulation/substrates/caterpillar.py` (`CATERPillarOracle`)
+  compiled. `compore/simulation/substrates/caterpillar.py` (`CATERPillarOracle`)
   defaults to that binary path.
 - **Purpose**: C++ tool for generating realistic axon + glial numerical
   substrates (**Computational Axonal Threading Engine for Realistic
   Proliferation**). Grows axons from overlapping spheres with controllable
   density, tortuosity and beading. Output: `*_spheres.csv`
   `(x, y, z, radius, type, id)`, consumed by
-  `dmipy_jax/simulation/sphere_sdf.py::MultiSphereSDF`.
+  `compore/simulation/sphere_sdf.py::MultiSphereSDF`.
 - **Why removed from this repo**: the `vendor/` placeholder here was never
   populated; the sibling checkout above is the working copy.
 - **Related**: OCTOPUS (same lab, same primitives, adds neurons/glia with
@@ -52,10 +52,10 @@ Removed during repo cleanup (2026-03-25) to reduce tracked size.
   signal-matching loss can be backpropagated into 3D mesh vertices. It is
   **not** a Monte Carlo random-walk simulator.
 - **Integration status**: no wrapper exists in this repo.
-  `dmipy_jax/simulation/oracles/remidi.py` and `docker/Dockerfile.remidi`
+  `compore/simulation/oracles/remidi.py` and `docker/Dockerfile.remidi`
   were planned (see `docs/prompts/remidi_manager.md`) but never written.
   The same solver family is implemented natively in JAX at
-  `dmipy_jax/simulation/mesh_sim.py::MatrixFormalismSimulator`, so the
+  `compore/simulation/mesh_sim.py::MatrixFormalismSimulator`, so the
   honest comparison is solver-vs-solver on identical meshes rather than an
   oracle wrap.
 - **Successor**: Spinverse (arXiv:2603.04638, Mar 2026) — differentiable

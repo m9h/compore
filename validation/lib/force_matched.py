@@ -24,8 +24,8 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.signal_models.bingham import BinghamNODDI
+from compore.acquisition import JaxAcquisition
+from compore.signal_models.bingham import BinghamNODDI
 
 
 # Single shared Bingham integrator — small grid for speed; tests verify

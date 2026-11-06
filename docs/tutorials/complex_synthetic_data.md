@@ -22,9 +22,9 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.cylinder import C1Stick
-from dmipy_jax.gaussian import G2Zeppelin, G1Ball
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.cylinder import C1Stick
+from compore.gaussian import G2Zeppelin, G1Ball
 
 # Define NODDI-like components (no orientation dispersion in this demo)
 stick = C1Stick()       # Intra-neurite
@@ -101,7 +101,7 @@ the model with the dictionary of per-voxel arrays. The model detects the
 leading voxel dimension and vectorises over it with `jax.vmap`.
 
 ```python
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.acquisition import JaxAcquisition
 
 rng = np.random.default_rng(0)
 n_dirs = 20

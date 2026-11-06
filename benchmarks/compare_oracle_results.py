@@ -16,7 +16,7 @@ def compare_results():
         print("Complex oracle file not found. Checking simple...")
         oracle = np.load("data/oracle_sims.npz")
 
-    jax_data = np.load("data/dmipy_jax_1M.npz")
+    jax_data = np.load("data/compore_1M.npz")
     
     # Extract Signals (Noisy)
     # Oracle saves: signals (noisy), signals_clean

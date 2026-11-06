@@ -5,7 +5,7 @@ import jax.numpy as jnp
 try:
     import equinox as eqx
     import optax
-    from dmipy_jax.fitting.neural import NeuralEstimator, train_estimator, fit_neural
+    from compore.fitting.neural import NeuralEstimator, train_estimator, fit_neural
 except ImportError:
     print("equinox or optax not installed")
     exit(0)

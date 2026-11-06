@@ -2,7 +2,7 @@
 """
 Testing Program Part 4: Real World Validation (EDDEN Dataset).
 
-Validates dmipy-jax fitting on real-world multi-shell data (sub-01, ses-02).
+Validates compore fitting on real-world multi-shell data (sub-01, ses-02).
 Dataset: ds004910 (EDDEN).
 """
 
@@ -11,9 +11,9 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import nibabel as nib
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.signal_models import cylinder_models, gaussian_models
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
+from compore.acquisition import JaxAcquisition
+from compore.signal_models import cylinder_models, gaussian_models
+from compore.core.modeling_framework import JaxMultiCompartmentModel
 
 def load_edden_data(data_dir):
     # Paths

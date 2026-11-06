@@ -20,9 +20,9 @@
         - Executes the ReMiDi reconstruction pipeline.
 
 3.  **Oracle Comparison**:
-    - Develop `dmipy_jax.benchmarks.remidi_comparator` to:
+    - Develop `compore.benchmarks.remidi_comparator` to:
         - Load ReMiDi output maps (FA, MD, ODFs).
-        - Load `dmipy-jax` output maps.
+        - Load `compore` output maps.
         - Compute Voxel-wise Error (RMSE, SSIM).
         - Generate specific "Disagreement Maps" to highlight where JAX differs from ReMiDi.
 

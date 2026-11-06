@@ -17,14 +17,14 @@ import argparse
 import numpy as np
 import nibabel as nib
 from pathlib import Path
-from dmipy_jax.data.public_datasets import (
+from compore.data.public_datasets import (
     fetch_connectome2, fetch_edden, fetch_synaesthesia, get_dwi_path_generic
 )
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.signal_models import cylinder_models, gaussian_models
-from dmipy_jax.fitting.optimization import OptimistixFitter
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.signal_models import cylinder_models, gaussian_models
+from compore.fitting.optimization import OptimistixFitter
 from dipy.io.gradients import read_bvals_bvecs
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.acquisition import JaxAcquisition
 
 def main():
     parser = argparse.ArgumentParser(description="CHAP Real Data Demo")

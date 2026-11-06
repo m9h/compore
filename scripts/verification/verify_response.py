@@ -1,8 +1,8 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.reconstruction.response import ResponseEstimator
-from dmipy_jax.utils.spherical_harmonics import sh_basis_real, cart2sphere
+from compore.reconstruction.response import ResponseEstimator
+from compore.utils.spherical_harmonics import sh_basis_real, cart2sphere
 
 def generate_single_fiber_field(bvecs, bval, response_eigenvalues):
     # Generates a field of single fiber voxels with random orientations.

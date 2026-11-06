@@ -1,7 +1,7 @@
 import jax
 import jax.numpy as jnp
 import jax.random as jr
-from dmipy_jax.morphogenesis.cann import MorphoCANN
+from compore.morphogenesis.cann import MorphoCANN
 
 def test_morpho_cann_identity():
     """Verify that stress and energy are zero at identity deformation."""

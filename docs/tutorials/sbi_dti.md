@@ -9,7 +9,7 @@ simulated data and then amortise inference across all voxels in a single
 forward pass.
 
 The code patterns here are adapted from
-`dmipy_jax/examples/sbi/train_dti.py`. Network and training sizes have been
+`compore/examples/sbi/train_dti.py`. Network and training sizes have been
 shrunk so that the whole page runs in well under a minute on a CPU; the
 production settings are noted where they differ.
 
@@ -57,10 +57,10 @@ where $\mathbf{e}_1, \mathbf{e}_2, \mathbf{e}_3$ are the eigenvectors
 obtained from the Euler-angle rotation matrix.
 
 In SBI4DWI, this is implemented by the `Tensor` class in
-`dmipy_jax.signal_models.gaussian_models`:
+`compore.signal_models.gaussian_models`:
 
 ```python
-from dmipy_jax.signal_models.gaussian_models import Tensor
+from compore.signal_models.gaussian_models import Tensor
 
 # Instantiate with specific parameters
 tensor = Tensor(

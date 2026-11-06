@@ -22,14 +22,14 @@ import jax.numpy as jnp
 import numpy as np
 import nibabel as nib
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.config import SBIPipelineConfig
-from dmipy_jax.pipeline.simulator import ModelSimulator
-from dmipy_jax.pipeline.train import train_sbi
-from dmipy_jax.pipeline.checkpoint import save_checkpoint, load_checkpoint
-from dmipy_jax.pipeline.deploy import SBIPredictor
-from dmipy_jax.data.io import save_nifti
-from dmipy_jax.library.derived_metrics import tensor_to_fa_md
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.config import SBIPipelineConfig
+from compore.pipeline.simulator import ModelSimulator
+from compore.pipeline.train import train_sbi
+from compore.pipeline.checkpoint import save_checkpoint, load_checkpoint
+from compore.pipeline.deploy import SBIPredictor
+from compore.data.io import save_nifti
+from compore.library.derived_metrics import tensor_to_fa_md
 
 
 def make_acquisition():

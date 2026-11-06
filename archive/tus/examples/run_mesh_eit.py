@@ -2,8 +2,8 @@
 Mesh-Integrated EIT Simulation.
 Demonstrates:
 1. Mesh Generation (Trimesh) / Loading.
-2. JAX Mesh Sampling (dmipy_jax.geometry.mesh_ops).
-3. PINN Training on Surface Manifold (dmipy_jax.biophysics).
+2. JAX Mesh Sampling (compore.geometry.mesh_ops).
+3. PINN Training on Surface Manifold (compore.biophysics).
 """
 
 import jax
@@ -12,9 +12,9 @@ import trimesh
 import optax
 from jax.sharding import Mesh, NamedSharding, PartitionSpec as P
 
-from dmipy_jax.biophysics.eit import EITModel, SkullEITInversion
-from dmipy_jax.geometry.mesh_ops import get_mesh_sampler
-from dmipy_jax.pinns.trainer import GB200PINNTrainer
+from compore.biophysics.eit import EITModel, SkullEITInversion
+from compore.geometry.mesh_ops import get_mesh_sampler
+from compore.pinns.trainer import GB200PINNTrainer
 
 def main():
     print("Setting up Mesh-Integrated EIT...")

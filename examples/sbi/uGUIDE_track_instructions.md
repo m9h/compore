@@ -1,7 +1,7 @@
 
 # Track A: Official uGUIDE Benchmark Instructions
 
-This document provides instructions to benchmark the official `uGUIDE` framework against the `dmipy-jax` native implementation.
+This document provides instructions to benchmark the official `uGUIDE` framework against the `compore` native implementation.
 
 ## Prerequisites
 

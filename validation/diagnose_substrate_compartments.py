@@ -147,7 +147,7 @@ def full_fit_ablation(data, b, g, n_iter):
     knob turned at a time. Reports the WM-internal f_i (what doc 008 tabulates),
     the WM / isotropic fractions and the voxel-level intra fraction f_i·f_wm."""
     from dataclasses import replace
-    from dmipy_jax.prism import prism_jax as pj
+    from lafix import prism_jax as pj
     base = replace(pj.PrismConfig(n_fibres=2, n_iter=n_iter, loss="nll"), learn_diffusivities=True,
                    tortuosity=True, use_restricted=False, separate_extra_dpar=True,
                    lam_diffusivity_prior=1.0, diffusivity_prior_centre=2.0e-9, diffusivity_prior_sd=0.2, d_par=2.0e-9)

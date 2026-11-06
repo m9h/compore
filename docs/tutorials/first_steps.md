@@ -1,18 +1,18 @@
 # First Steps with SBI4DWI
 
-This tutorial demonstrates the core advantages of SBI4DWI (import name `dmipy_jax`): high-performance signal prediction using JAX's compilation and vectorization capabilities. We will compare a standard Python loop against JAX's `vmap` and `jit`.
+This tutorial demonstrates the core advantages of SBI4DWI (import name `compore`): high-performance signal prediction using JAX's compilation and vectorization capabilities. We will compare a standard Python loop against JAX's `vmap` and `jit`.
 
 ## 1. Setup
 
-First, let's import the necessary modules. We use `dmipy_jax` for the model and acquisition, and `jax` for the computation.
+First, let's import the necessary modules. We use `compore` for the model and acquisition, and `jax` for the computation.
 
 ```python
 import time
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.cylinder import C1Stick
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.cylinder import C1Stick
+from compore.acquisition import JaxAcquisition
 ```
 
 ## 2. Defining the Acquisition

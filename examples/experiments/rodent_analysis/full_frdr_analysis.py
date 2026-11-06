@@ -7,10 +7,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from glob import glob
 
-from dmipy_jax.io.frdr import FRDRMouseLoader
-from dmipy_jax.io.allen import AllenCCFLoader
-from dmipy_jax.pipelines.rodent import RodentPreprocessing
-from dmipy_jax.core.acquisition import acquisition_scheme_from_bvalues
+from compore.io.frdr import FRDRMouseLoader
+from compore.io.allen import AllenCCFLoader
+from compore.pipelines.rodent import RodentPreprocessing
+from compore.core.acquisition import acquisition_scheme_from_bvalues
 
 # Optional: Set Seaborn theme
 sns.set_theme(style="whitegrid")

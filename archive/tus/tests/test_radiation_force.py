@@ -16,7 +16,7 @@ class TestRadiationForce:
 
     def test_radiation_force_formula(self):
         """F = 2α · I / c with known values."""
-        from dmipy_jax.biophysics.radiation_force import compute_radiation_force
+        from compore.biophysics.radiation_force import compute_radiation_force
 
         # Brain tissue: α=5.3 dB/cm/MHz, c=1560 m/s
         # Convert α to Np/m: 5.3 dB/cm * 100 cm/m / 8.686 dB/Np = 61.0 Np/m
@@ -30,14 +30,14 @@ class TestRadiationForce:
 
     def test_radiation_force_zero_in_water(self):
         """Water has α≈0, so radiation force should be ~0."""
-        from dmipy_jax.biophysics.radiation_force import compute_radiation_force
+        from compore.biophysics.radiation_force import compute_radiation_force
 
         F = compute_radiation_force(intensity=10.0, sound_speed=1500.0, attenuation_np_m=0.0)
         assert F == 0.0
 
     def test_radiation_force_array(self):
         """Force computation should work element-wise on arrays."""
-        from dmipy_jax.biophysics.radiation_force import compute_radiation_force
+        from compore.biophysics.radiation_force import compute_radiation_force
 
         I = jnp.ones((32, 32)) * 10.0
         c = jnp.ones((32, 32)) * 1560.0
@@ -51,8 +51,8 @@ class TestRadiationForce:
 
     def test_radiation_force_from_jwave_output(self):
         """Integration: compute force from j-Wave intensity and acoustic property maps."""
-        from dmipy_jax.biophysics.radiation_force import compute_radiation_force_from_simulation
-        from dmipy_jax.biophysics.acoustic import map_labels_to_properties, db_per_cm_to_neper_per_m
+        from compore.biophysics.radiation_force import compute_radiation_force_from_simulation
+        from compore.biophysics.acoustic import map_labels_to_properties, db_per_cm_to_neper_per_m
 
         # Simulated labels: water=0, brain=4
         labels = jnp.zeros((16, 16), dtype=jnp.int32)
@@ -74,7 +74,7 @@ class TestQuasiStaticDisplacement:
 
     def test_displacement_inversely_proportional_to_stiffness(self):
         """Softer tissue → more displacement for same force."""
-        from dmipy_jax.biophysics.radiation_force import solve_displacement_quasistatic
+        from compore.biophysics.radiation_force import solve_displacement_quasistatic
 
         force = jnp.zeros((32, 32))
         force = force.at[16, 16].set(1.0)  # point force
@@ -88,7 +88,7 @@ class TestQuasiStaticDisplacement:
 
     def test_displacement_shape_preserved(self):
         """Output displacement has same shape as input force."""
-        from dmipy_jax.biophysics.radiation_force import solve_displacement_quasistatic
+        from compore.biophysics.radiation_force import solve_displacement_quasistatic
 
         force = jnp.ones((64, 64)) * 0.1
         u = solve_displacement_quasistatic(force, shear_modulus=1e3, grid_spacing=1e-3)
@@ -97,7 +97,7 @@ class TestQuasiStaticDisplacement:
     @pytest.mark.xfail(reason="known failure, pre-existing, see docs/decisions/010 §7.3: quasi-static displacement 0.002 um, expected >0.01 um", strict=False)
     def test_displacement_range_microns(self):
         """Brain displacement at neuromod intensities should be 0.1-100 µm."""
-        from dmipy_jax.biophysics.radiation_force import (
+        from compore.biophysics.radiation_force import (
             compute_radiation_force,
             solve_displacement_quasistatic,
         )
@@ -119,7 +119,7 @@ class TestQuasiStaticDisplacement:
 
     def test_displacement_differentiable(self):
         """jax.grad through force → displacement chain."""
-        from dmipy_jax.biophysics.radiation_force import solve_displacement_quasistatic
+        from compore.biophysics.radiation_force import solve_displacement_quasistatic
 
         def peak_displacement(mu):
             force = jnp.zeros((16, 16))
@@ -133,7 +133,7 @@ class TestQuasiStaticDisplacement:
 
     def test_zero_force_zero_displacement(self):
         """No force → no displacement."""
-        from dmipy_jax.biophysics.radiation_force import solve_displacement_quasistatic
+        from compore.biophysics.radiation_force import solve_displacement_quasistatic
 
         force = jnp.zeros((16, 16))
         u = solve_displacement_quasistatic(force, shear_modulus=1e3, grid_spacing=1e-3)
@@ -145,7 +145,7 @@ class TestCANNShearModulus:
 
     def test_kuhl_values_cortex_gt_corpus_callosum(self):
         """Cortex (1.82 kPa) should be stiffer than corpus callosum (0.54 kPa)."""
-        from dmipy_jax.biophysics.radiation_force import get_cann_shear_modulus
+        from compore.biophysics.radiation_force import get_cann_shear_modulus
 
         mu = get_cann_shear_modulus()
         assert mu["cortex"] > mu["corpus_callosum"]
@@ -154,7 +154,7 @@ class TestCANNShearModulus:
 
     def test_shear_modulus_from_labels(self):
         """Map tissue labels to regional shear modulus."""
-        from dmipy_jax.biophysics.radiation_force import map_labels_to_shear_modulus
+        from compore.biophysics.radiation_force import map_labels_to_shear_modulus
 
         labels = jnp.array([4, 5, 4, 5])  # GM, WM, GM, WM
         mu = map_labels_to_shear_modulus(labels)
@@ -166,7 +166,7 @@ class TestCANNShearModulus:
 
     def test_corpus_callosum_3x_more_displacement(self):
         """CC should displace ~3.4x more than cortex from same force (Kuhl CANN)."""
-        from dmipy_jax.biophysics.radiation_force import (
+        from compore.biophysics.radiation_force import (
             solve_displacement_quasistatic,
             get_cann_shear_modulus,
         )

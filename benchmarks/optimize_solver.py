@@ -5,9 +5,9 @@ import jax.numpy as jnp
 import optimistix as optx
 import lineax as lx
 import numpy as np
-from dmipy_jax.signal_models import gaussian_models, stick
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.signal_models import gaussian_models, stick
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.acquisition import JaxAcquisition
 from dmipy.data import saved_acquisition_schemes
 
 def benchmark_solver_config():

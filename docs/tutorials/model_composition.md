@@ -53,7 +53,7 @@ So a shell at b = 1000 s/mm^2 becomes 1e9 s/m^2 in code.
 ```python
 import jax
 import jax.numpy as jnp
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.acquisition import JaxAcquisition
 
 # Two-shell acquisition: b=0, b=1000, b=2000 (in s/mm^2)
 # IMPORTANT: convert to SI (s/m^2) before passing to JaxAcquisition
@@ -107,8 +107,8 @@ construction time or passed as keyword arguments at call time. Parameter
 ranges and cardinalities are stored as class attributes.
 
 ```python
-from dmipy_jax.signal_models.stick import Stick
-from dmipy_jax.gaussian import G1Ball, G2Zeppelin
+from compore.signal_models.stick import Stick
+from compore.gaussian import G1Ball, G2Zeppelin
 
 stick = Stick()
 ball = G1Ball()
@@ -147,7 +147,7 @@ automatically:
 4. Builds a composed forward function via `compose_models()`
 
 ```python
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
+from compore.core.modeling_framework import JaxMultiCompartmentModel
 
 model = JaxMultiCompartmentModel([stick, ball])
 

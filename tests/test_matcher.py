@@ -7,11 +7,11 @@ import jax.numpy as jnp
 import numpy as np
 import pytest
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.simulator import ModelSimulator
-from dmipy_jax.library.generator import LibraryGenerator
-from dmipy_jax.library.storage import SimulationLibrary
-from dmipy_jax.library.matcher import DictionaryMatcher
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.simulator import ModelSimulator
+from compore.library.generator import LibraryGenerator
+from compore.library.storage import SimulationLibrary
+from compore.library.matcher import DictionaryMatcher
 
 
 def _build_ball_library():

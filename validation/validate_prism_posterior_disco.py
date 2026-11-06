@@ -10,8 +10,8 @@ from dipy.data import default_sphere
 from validation.lib.connectivity_metrics import summarize_method
 from validation.lib.force_disco import disco_subject_path, load_disco_subject
 from validation.lib.force_disco_connectivity import connectivity_pearson, load_gt_connectivity
-from dmipy_jax.prism.prism_jax import PrismConfig, fit_prism
-from dmipy_jax.prism import prism_uncertainty as pu
+from lafix.prism_jax import PrismConfig, fit_prism
+from lafix import prism_uncertainty as pu
 import importlib
 drv = importlib.import_module("validate_prism_disco_connectivity")
 

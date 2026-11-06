@@ -4,7 +4,7 @@ import numpy as np
 import nibabel as nib
 import os
 import sys
-from dmipy_jax.core.acquisition import SimpleAcquisitionScheme
+from compore.core.acquisition import SimpleAcquisitionScheme
 # Import STE from sibling file (needs path hack if package not installed, but usually okay in scripts)
 # Or define a dummy one if import fails.
 

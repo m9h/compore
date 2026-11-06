@@ -1,9 +1,9 @@
 
 import jax
 import jax.numpy as jnp
-from dmipy_jax.signal_models.stick import Stick
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.composer import compose_models
+from compore.signal_models.stick import Stick
+from compore.acquisition import JaxAcquisition
+from compore.composer import compose_models
 import numpy as np
 
 def debug_gradients():

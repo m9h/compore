@@ -5,9 +5,9 @@ import nibabel as nib
 import jax
 import jax.numpy as jnp
 from dipy.data import fetch_stanford_hardi, read_stanford_hardi
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.models.c_noddi import CNODDI
-from dmipy_jax.fitting.optimization import OptimistixFitter
+from compore.acquisition import JaxAcquisition
+from compore.models.c_noddi import CNODDI
+from compore.fitting.optimization import OptimistixFitter
 
 def main():
     print("================================================================")
@@ -47,7 +47,7 @@ def main():
     print(f"   Masked Voxels to Fit: {n_voxels}")
     
     # 3. Setup Acquisition
-    # dmipy-jax expects bvals/bvecs. 
+    # compore expects bvals/bvecs. 
     # gtab.bvals and gtab.bvecs are available
     acq = JaxAcquisition(gtab.bvals, gtab.bvecs)
     

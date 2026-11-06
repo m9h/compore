@@ -67,15 +67,15 @@ the **tortuosity approximation** (Section 6).
 
 NODDI accounts for fibre dispersion by convolving each compartment signal with
 an orientation distribution function (ODF) on the sphere. In SBI4DWI this is
-handled by {class}`~dmipy_jax.distributions.distribute_models.DistributedModel`,
+handled by {class}`~compore.distributions.distribute_models.DistributedModel`,
 which numerically integrates a base signal model over a spherical distribution
 of the orientation parameter `mu`.
 
 ```python
-from dmipy_jax.distributions.distribute_models import DistributedModel
-from dmipy_jax.distributions.sphere_distributions import SD1Watson
-from dmipy_jax.cylinder import C1Stick
-from dmipy_jax.gaussian import G2Zeppelin, G1Ball
+from compore.distributions.distribute_models import DistributedModel
+from compore.distributions.sphere_distributions import SD1Watson
+from compore.cylinder import C1Stick
+from compore.gaussian import G2Zeppelin, G1Ball
 ```
 
 The intra-cellular compartment is a Stick (zero-radius cylinder) dispersed
@@ -114,10 +114,10 @@ ball = G1Ball()
 ## 3. Composing the Multi-Compartment Model
 
 The three compartments are combined into a single forward model using
-{class}`~dmipy_jax.core.modeling_framework.JaxMultiCompartmentModel`:
+{class}`~compore.core.modeling_framework.JaxMultiCompartmentModel`:
 
 ```python
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
+from compore.core.modeling_framework import JaxMultiCompartmentModel
 
 model = JaxMultiCompartmentModel([intra, extra, ball])
 print(model.parameter_names)
@@ -163,7 +163,7 @@ volumes:
 ```python
 import jax
 import jax.numpy as jnp
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.acquisition import JaxAcquisition
 
 def get_acquisition():
     """Create a standard two-shell NODDI acquisition."""
@@ -315,7 +315,7 @@ The concentration parameter $\kappa$ controls dispersion:
 | $1$--$4$ | Moderate dispersion | Typical cortex / pathology |
 | $> 16$ | Highly concentrated | Coherent white-matter bundles |
 
-In SBI4DWI, {class}`~dmipy_jax.distributions.sphere_distributions.SD1Watson`
+In SBI4DWI, {class}`~compore.distributions.sphere_distributions.SD1Watson`
 evaluates the Watson PDF on a Fibonacci sphere grid (default 200 points) and
 uses it as integration weights inside `DistributedModel`.
 
@@ -452,7 +452,7 @@ covariance for the three NODDI parameters:
 ```python
 import equinox as eqx
 import optax
-from dmipy_jax.inference.mdn import MixtureDensityNetwork, mdn_loss
+from compore.inference.mdn import MixtureDensityNetwork, mdn_loss
 
 key = jax.random.PRNGKey(123)
 k_net, k_train = jax.random.split(key)
@@ -511,7 +511,7 @@ assert losses[-1] < losses[0]
 ```
 
 The loss is the negative log-likelihood of the true parameters under the
-predicted Gaussian mixture (see {func}`~dmipy_jax.inference.mdn.mdn_loss`).
+predicted Gaussian mixture (see {func}`~compore.inference.mdn.mdn_loss`).
 A few hundred iterations are enough to see the loss fall steadily; a
 production run continues until it plateaus.
 
@@ -524,7 +524,7 @@ signal vector. Sampling is straightforward:
 
 ```python
 import numpy as np
-from dmipy_jax.inference.mdn import sample_posterior
+from compore.inference.mdn import sample_posterior
 
 # Generate a test observation
 k_test = jax.random.PRNGKey(999)
@@ -614,7 +614,7 @@ SBI4DWI make it straightforward to experiment with different protocols.
 
 **Scaling to whole-brain.** Once trained, the MDN can be deployed to
 whole-brain NIfTI volumes via
-{class}`~dmipy_jax.pipeline.deploy.SBIPredictor`. A 66-measurement volume
+{class}`~compore.pipeline.deploy.SBIPredictor`. A 66-measurement volume
 with 100k voxels runs in under 5 seconds on GPU.
 
 ---

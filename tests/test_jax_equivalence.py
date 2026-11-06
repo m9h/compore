@@ -4,7 +4,7 @@ unmaintained dmipy wheel."""
 import numpy as np
 import jax.numpy as jnp
 import numpy.testing as npt
-from dmipy_jax.cylinder import C1Stick as JaxStick
+from compore.cylinder import C1Stick as JaxStick
 
 
 def test_stick_equivalence():

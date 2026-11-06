@@ -2,8 +2,8 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import time
-from dmipy_jax.reconstruction.ss3t import SS3T
-from dmipy_jax.utils.spherical_harmonics import sh_basis_real, cart2sphere
+from compore.reconstruction.ss3t import SS3T
+from compore.utils.spherical_harmonics import sh_basis_real, cart2sphere
 
 def generate_synthetic_voxel(bvecs, bval, response_wm, response_gm, response_csf, sh_order):
     # Cross fibers X and Y

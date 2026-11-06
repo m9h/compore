@@ -3,9 +3,9 @@ import jax
 import jax.numpy as jnp
 import equinox as eqx
 import pytest
-from dmipy_jax.inference.amortized import ZeppelinNetwork, self_supervised_loss
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.signal_models.zeppelin import Zeppelin
+from compore.inference.amortized import ZeppelinNetwork, self_supervised_loss
+from compore.acquisition import JaxAcquisition
+from compore.signal_models.zeppelin import Zeppelin
 
 def test_zeppelin_network_output_structure():
     """Test that the network produces the correct output structure and shapes."""

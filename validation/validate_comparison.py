@@ -34,7 +34,7 @@ import sys
 
 import numpy as np
 
-from dmipy_jax.pipeline.comparison import (
+from compore.pipeline.comparison import (
     ComparisonRunner,
     generate_dipy_multitensor_phantom,
 )

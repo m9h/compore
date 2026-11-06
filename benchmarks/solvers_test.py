@@ -1,6 +1,6 @@
 import jax
 import jax.numpy as jnp
-from dmipy_jax.core.solvers import BlochSimulator, solve_diffusion_sde
+from compore.core.solvers import BlochSimulator, solve_diffusion_sde
 import matplotlib.pyplot as plt
 import numpy as np
 

@@ -67,7 +67,7 @@ def karger_watson_pgse(bvals, bvecs, dirs, f_i, d_par, d_par_ex, d_perp, tau_ex,
     Funk–Hecke / Legendre sum PRISM-JAX uses (`prism_jax.dispersed_signal`):
     λ_l(b) = 2π ∫ K(b, t) P_l(t) dt on Gauss–Legendre nodes, K from the 2×2
     matrix exponential per (measurement, node). dirs (3,), odi scalar."""
-    from dmipy_jax.prism import prism_jax as pj
+    from lafix import prism_jax as pj
     bvals = jnp.asarray(bvals); t_d = jnp.broadcast_to(jnp.asarray(Delta) - jnp.asarray(delta) / 3.0, bvals.shape)
     x, w = pj._gauss_legendre(n_quad)
     P = pj._legendre_even(x, n_legendre)                                  # (L,Q)

@@ -3,7 +3,7 @@ import jax
 import jax.numpy as jnp
 import equinox as eqx
 import optax
-from dmipy_jax.inference.flows import FlowNetwork
+from compore.inference.flows import FlowNetwork
 
 def main():
     print("=== Flow Network Verification ===")

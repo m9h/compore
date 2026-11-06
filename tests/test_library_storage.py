@@ -9,7 +9,7 @@ import jax.numpy as jnp
 import numpy as np
 import pytest
 
-from dmipy_jax.library.storage import SimulationLibrary
+from compore.library.storage import SimulationLibrary
 
 
 class TestSimulationLibrary:

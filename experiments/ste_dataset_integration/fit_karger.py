@@ -6,8 +6,8 @@ import nibabel as nib
 import json
 import os
 import time
-from dmipy_jax.models.ste_karger import KargerExchangeModel
-from dmipy_jax.core.acquisition import SimpleAcquisitionScheme
+from compore.models.ste_karger import KargerExchangeModel
+from compore.core.acquisition import SimpleAcquisitionScheme
 
 # Enable float64 for matrix exp stability
 jax.config.update("jax_enable_x64", True)

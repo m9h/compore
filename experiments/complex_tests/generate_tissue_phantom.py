@@ -5,9 +5,9 @@ import h5py
 import numpy as np
 import os
 import pandas as pd
-from dmipy_jax.simulation.substrates.caterpillar import CATERPillarOracle
-from dmipy_jax.simulation.monte_carlo import simulate_trajectories
-from dmipy_jax.simulation.sphere_sdf import MultiSphereSDF
+from compore.simulation.substrates.caterpillar import CATERPillarOracle
+from compore.simulation.monte_carlo import simulate_trajectories
+from compore.simulation.sphere_sdf import MultiSphereSDF
 
 def main():
     print("--- Multi-Compartment Tissue Phantom Generation ---")

@@ -4,8 +4,8 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import pandas as pd
-from dmipy_jax.io.lowfield import load_ds006557_data
-from dmipy_jax.io.mne_data import load_mne_sample_data
+from compore.io.lowfield import load_ds006557_data
+from compore.io.mne_data import load_mne_sample_data
 
 # Algorithms
 def denoise_gaussian(image, sigma=1.0):
@@ -15,7 +15,7 @@ def denoise_gaussian(image, sigma=1.0):
     # We can use a simple kernel for speed benchmark
     # But let's use something that is actually doing 'denoising'
     # For benchmark, we might just use a placeholder if we don't have a library.
-    # But wait, we should check if we can use scico or dmipy_jax's own tools.
+    # But wait, we should check if we can use scico or compore's own tools.
     # If not, let's implement a simple JAX TV denoising.
     return image # Placeholder if not implemented inline, but see below.
 

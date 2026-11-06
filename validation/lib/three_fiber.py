@@ -14,8 +14,8 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.simulator import ModelSimulator
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.simulator import ModelSimulator
 
 
 def make_multishell_acquisition() -> JaxAcquisition:

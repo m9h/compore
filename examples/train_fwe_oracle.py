@@ -8,7 +8,7 @@ import argparse
 import time
 import os
 import glob
-from dmipy_jax.nn.fwe import FreeWaterNet
+from compore.nn.fwe import FreeWaterNet
 
 def main():
     parser = argparse.ArgumentParser(description="Train FreeWaterNet Oracle")

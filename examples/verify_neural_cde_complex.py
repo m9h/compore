@@ -10,10 +10,10 @@ import sys
 import os
 sys.path.append(os.getcwd())
 try:
-    from dmipy_jax.biophysics.neural_cde import NeuralCDE
+    from compore.biophysics.neural_cde import NeuralCDE
 except ImportError:
     # Fallback to relative if running from root
-    from dmipy_jax.biophysics.neural_cde import NeuralCDE
+    from compore.biophysics.neural_cde import NeuralCDE
 
 def generate_random_waveforms(n_samples, t_points, key):
     """Generates random smooth gradient waveforms with variable amplitude and dimensionality."""

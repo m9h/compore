@@ -5,9 +5,9 @@ import optax
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from dmipy_jax.models.flow_fcd import FlowUNet
-from dmipy_jax.fitting.flow_trainer import train_step_ot_cfm, generate_flair
-from dmipy_jax.io.deepfcd_loader import simulated_loader
+from compore.models.flow_fcd import FlowUNet
+from compore.fitting.flow_trainer import train_step_ot_cfm, generate_flair
+from compore.io.deepfcd_loader import simulated_loader
 
 def main():
     print("Initializing OT-CFM verification...")

@@ -4,8 +4,8 @@ import jax.numpy as jnp
 import h5py
 import numpy as np
 import os
-from dmipy_jax.simulation.substrates.caterpillar import CATERPillarOracle
-from dmipy_jax.simulation.monte_carlo import simulate_trajectories
+from compore.simulation.substrates.caterpillar import CATERPillarOracle
+from compore.simulation.monte_carlo import simulate_trajectories
 
 def main():
     print("Generating trajectories for KomaMRI...")

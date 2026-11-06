@@ -446,9 +446,9 @@ Planned analyses:
 
 **Tissue compartments:** scalp (1), skull (2), CSF (3), gray matter (4), white matter (5)
 
-**Loader:** `sbi4dwi/dmipy_jax/io/sci_head_loader.py`
+**Loader:** `sbi4dwi/compore/io/sci_head_loader.py`
 **Data:** `sbi4dwi/data/SCI_headmodel/extracted/HeadMesh.mat` (Google Drive)
-**Verification:** `sbi4dwi/dmipy_jax/tests/verify_sci_loader.py`
+**Verification:** `sbi4dwi/compore/tests/verify_sci_loader.py`
 
 ---
 

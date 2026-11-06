@@ -25,8 +25,8 @@ from scipy.optimize import least_squares
 from validation.lib import substrate_benchmark as sb
 from validation.lib import prism_exchange as px
 from validation.validate_substrate_ladder import chuv_scheme, RUNGS
-from dmipy_jax.prism import prism_jax as pj
-from dmipy_jax.prism import prism_uncertainty as pu
+from lafix import prism_jax as pj
+from lafix import prism_uncertainty as pu
 
 
 def optimised_scheme(n_dirs=32, seed=0):
@@ -123,7 +123,7 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args()
 
-    from dmipy_jax.simulation.substrates.caterpillar import CATERPillarCLI
+    from compore.simulation.substrates.caterpillar import CATERPillarCLI
     kw = dict(RUNGS["beading"]); kw["icvf"] = args.icvf
     import pandas as pd
     cli = CATERPillarCLI()

@@ -5,10 +5,10 @@ import numpy as np
 import sys
 import os
 
-from dmipy_jax.signal_models.cylinder_models import RestrictedCylinder
-from dmipy_jax.signal_models.sphere_models import Sphere
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.signal_models.cylinder_models import RestrictedCylinder
+from compore.signal_models.sphere_models import Sphere
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.acquisition import JaxAcquisition
 
 def run_scalability_benchmark():
     print("=== Dmipy-JAX Scalability Benchmark ===")

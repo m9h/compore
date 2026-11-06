@@ -41,9 +41,9 @@ The key research group bridging geophysical FWI and medical ultrasound CT is **Y
 **Repo:** github.com/lanl/scico — v0.0.7 (Dec 2025). JOSS paper: DOI 10.21105/joss.04722.
 
 SCICO is a JAX-native library from LANL for solving inverse problems. It is **already a dependency** of sbi4dwi (`scico>=0.0.6`) and is used in:
-- `dmipy_jax/inverse/solvers.py` — MicrostructureOperator as SCICO Operator
-- `dmipy_jax/inverse/amico.py` — ADMM solver
-- `dmipy_jax/inverse/global_amico.py` — Spatial TV regularization
+- `compore/inverse/solvers.py` — MicrostructureOperator as SCICO Operator
+- `compore/inverse/amico.py` — ADMM solver
+- `compore/inverse/global_amico.py` — Spatial TV regularization
 
 ### SCICO Capabilities for FWI-US
 

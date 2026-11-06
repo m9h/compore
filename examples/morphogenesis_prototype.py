@@ -6,9 +6,9 @@ Integrates sbi4dwi microstructural parameters with Kuhl-inspired CANNs.
 import jax
 import jax.numpy as jnp
 import jax.random as jr
-from dmipy_jax.morphogenesis.cann import MorphoCANN
-from dmipy_jax.signal_models.sandi import get_sandi_model
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.morphogenesis.cann import MorphoCANN
+from compore.signal_models.sandi import get_sandi_model
+from compore.acquisition import JaxAcquisition
 
 def run_prototype():
     # 1. Setup Synthetic Acquisition (from sbi4dwi patterns)

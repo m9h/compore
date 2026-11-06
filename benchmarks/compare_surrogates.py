@@ -4,8 +4,8 @@ import time
 import numpy as np
 import jax
 import jax.numpy as jnp
-from dmipy_jax.core.surrogate import PolynomialChaosExpansion
-from dmipy_jax.signal_models.stick import Stick
+from compore.core.surrogate import PolynomialChaosExpansion
+from compore.signal_models.stick import Stick
 
 def stick_model_jax(d_par, bvals, gradient_directions):
     """
@@ -62,7 +62,7 @@ def main():
     key = jax.random.PRNGKey(0)
     n_samples = 50 # Generous number of samples
     # We fit on Uniform [0.1e-9, 3.0e-9]
-    # But dmipy-jax surrogate usually assumes Uniform [-1, 1].
+    # But compore surrogate usually assumes Uniform [-1, 1].
     # We need to map [0.1e-9, 3.0e-9] -> [-1, 1].
     
     # Actual phyiscal values

@@ -66,7 +66,7 @@ def optimize_delays(
     # Import from sibling module — use relative import if running as package,
     # or importlib for standalone execution
     try:
-        from dmipy_jax.biophysics.jwave_adapter import (
+        from compore.biophysics.jwave_adapter import (
             create_medium,
             create_sources,
             run_simulation_jax,

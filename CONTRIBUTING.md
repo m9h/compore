@@ -1,6 +1,6 @@
-# Contributing to SBI4DWI
+# Contributing to compore and lafix
 
-SBI4DWI (Simulation-Based Inference for Diffusion-Weighted Imaging) is a
+compore (the platform) and lafix (the product), formerly SBI4DWI, form a
 JAX-accelerated platform for diffusion MRI microstructure estimation. It
 combines differentiable biophysical signal models, multi-fidelity physics
 simulation, and neural posterior estimation to recover tissue properties from
@@ -37,7 +37,7 @@ is automatically installed in editable mode.
 
 ```bash
 uv run pytest                         # run tests
-uv run python -c "import dmipy_jax"   # import smoke test
+uv run python -c "import compore"   # import smoke test
 ```
 
 The root `conftest.py` enables sybil markdown doctests only when sybil is
@@ -134,7 +134,7 @@ def compose_models(models: list[eqx.Module],
   pytrees -- use `eqx.tree_at` for updates, never `__setattr__`.
 - **Plain Python classes** for pipeline orchestration (`ModelSimulator`,
   `ComparisonRunner`, `LibraryGenerator`).
-- Follow existing patterns in `dmipy_jax/` -- look at neighbouring modules
+- Follow existing patterns in `compore/` -- look at neighbouring modules
   for conventions.
 
 ### Units
@@ -164,7 +164,7 @@ uv run pytest -k "test_mdn"                    # by name
 JAX_PLATFORMS=cpu uv run pytest                # CPU only (CI does this)
 ```
 
-Coverage is opt-in: `uv run pytest --cov=dmipy_jax --cov-report=term-missing`
+Coverage is opt-in: `uv run pytest --cov=compore --cov-report=term-missing`
 (configured in `pyproject.toml`).
 
 ### Test requirements
@@ -220,7 +220,7 @@ docs/
 - **Theory pages** go in `docs/theory/` for mathematical derivations.
 - **API reference** is auto-generated via `sphinx-autodoc-typehints`. Write
   good docstrings and the API docs follow.
-- **Cross-references** use MyST syntax: `` {func}`dmipy_jax.signal_models.ball.Ball` ``.
+- **Cross-references** use MyST syntax: `` {func}`compore.signal_models.ball.Ball` ``.
 - **Citations**: add entries to `docs/references.bib` and cite with
   `` {cite}`AuthorYear` ``.
 
@@ -338,7 +338,7 @@ to the areas listed above.
 
 ## 7. Scientific Standards
 
-SBI4DWI implements published methods from the diffusion MRI microstructure
+compore and lafix implement published methods from the diffusion MRI microstructure
 literature. We hold contributions to a high scientific bar.
 
 ### Citations
@@ -409,5 +409,5 @@ def ball_signal(D: Float[Array, ""],
 
 ---
 
-Thank you for contributing to SBI4DWI. If you have questions, open an issue or
+Thank you for contributing. If you have questions, open an issue or
 start a discussion on the repository.

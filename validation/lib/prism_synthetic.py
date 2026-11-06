@@ -22,7 +22,7 @@ from __future__ import annotations
 import numpy as np
 import jax.numpy as jnp
 
-from dmipy_jax.prism.prism_jax import PrismConfig, forward
+from lafix.prism_jax import PrismConfig, forward
 
 ANGLES = tuple(range(15, 91, 5))          # 16 conditions
 SLICE = (10, 20)                          # 200 voxels each
@@ -98,7 +98,7 @@ def make_benchmark(snr: float | None = 30.0, fintra: float = 0.5,
 
 def score_by_angle(pred_dirs, pred_fracs, bench, frac_min: float = 0.05):
     """Per-condition (angle → mean error, recall) plus overall, PRISM-style."""
-    from dmipy_jax.prism.prism_jax import angular_error_best_match
+    from lafix.prism_jax import angular_error_best_match
     out = {}
     for a in list(ANGLES) + [0]:
         m = bench["angle"] == a
@@ -137,11 +137,11 @@ def dictionary_warm_start(bench, library_size: int = 300_000, k_best: int = 10, 
     ``(init_dirs (N,2,3), init_fracs (N,5))``. This is the dictionary-based
     initialisation PRISM proposes; the same mechanism as the DiSCo runs."""
     import jax
-    from dmipy_jax.acquisition import JaxAcquisition
-    from dmipy_jax.library.generator import LibraryGenerator
-    from dmipy_jax.library.matcher import DictionaryMatcher
-    from dmipy_jax.library.storage import SimulationLibrary
-    from dmipy_jax.pipeline.simulator import ModelSimulator
+    from compore.acquisition import JaxAcquisition
+    from compore.library.generator import LibraryGenerator
+    from compore.library.matcher import DictionaryMatcher
+    from compore.library.storage import SimulationLibrary
+    from compore.pipeline.simulator import ModelSimulator
 
     cfg = PrismConfig(n_fibres=2)
     acq = JaxAcquisition(bvalues=jnp.asarray(bench["bvals"]),

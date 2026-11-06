@@ -1,7 +1,7 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.biophysics.network.vbjax_wrapper import VBJaxNetwork
+from compore.biophysics.network.vbjax_wrapper import VBJaxNetwork
 import matplotlib.pyplot as plt
 
 def main():

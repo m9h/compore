@@ -4,7 +4,7 @@ Tests for the dmipy-JAX dictionary matcher on DiSCo.
 This is the dmipy-JAX-vs-FORCE head-to-head on the scalar microstructure
 recovery task (paper-aligned §16 metric). The §17-§19 connectivity work
 applies to FORCE through dipy; dmipy-JAX has its own DictionaryMatcher
-in `dmipy_jax/library/matcher.py` which has never been pointed at DiSCo
+in `compore/library/matcher.py` which has never been pointed at DiSCo
 before this commit.
 
 Tests pin:
@@ -37,7 +37,7 @@ class TestBuildDiSCoTunedSimulator:
     def test_parameter_ranges_match_paper(self):
         """Parallel diffusivity range must match FORCE paper §3.2:
         Uniform(0.54, 0.66) × 10⁻³ mm²/s = (0.54e-9, 0.66e-9) m²/s in SI."""
-        from dmipy_jax.acquisition import JaxAcquisition
+        from compore.acquisition import JaxAcquisition
         import jax.numpy as jnp
         acq = JaxAcquisition(
             bvalues=jnp.array([0.0, 1.9e9]),
@@ -61,7 +61,7 @@ class TestBuildDiSCoTunedSimulator:
         keeps its extra-axonal zeppelin. Our 2-stick model has nothing
         analogous, so we widen f_iso to cover the extracellular range
         directly.)"""
-        from dmipy_jax.acquisition import JaxAcquisition
+        from compore.acquisition import JaxAcquisition
         import jax.numpy as jnp
         acq = JaxAcquisition(
             bvalues=jnp.array([0.0, 1.9e9]),
@@ -104,7 +104,7 @@ class TestFitDmipyDictOnDiSCo:
 class TestBuild3DTwoStickSimulator:
     def test_parameter_layout(self):
         """3D simulator has 8 params: d_par, θ1, φ1, θ2, φ2, ODI, f1, f_iso."""
-        from dmipy_jax.acquisition import JaxAcquisition
+        from compore.acquisition import JaxAcquisition
         import jax.numpy as jnp
         acq = JaxAcquisition(
             bvalues=jnp.array([0.0, 1.9e9]),
@@ -117,7 +117,7 @@ class TestBuild3DTwoStickSimulator:
 
     def test_phi_spans_full_azimuth(self):
         """phi1/phi2 must cover [0, 2π] for full sphere coverage."""
-        from dmipy_jax.acquisition import JaxAcquisition
+        from compore.acquisition import JaxAcquisition
         import jax.numpy as jnp
         import math
         acq = JaxAcquisition(
@@ -198,7 +198,7 @@ class TestBuild3DStickZeppelinSimulator:
     NODDI-style tortuosity coupling (lambda_perp = lambda_par·(1-v_ic))."""
 
     def _acq(self):
-        from dmipy_jax.acquisition import JaxAcquisition
+        from compore.acquisition import JaxAcquisition
         import jax.numpy as jnp
         return JaxAcquisition(
             bvalues=jnp.array([0.0, 1.9e9]),
@@ -250,7 +250,7 @@ class TestBuild3DStickZeppelinSimulator:
         the perpendicular-attenuation work."""
         import jax.numpy as jnp
         import numpy as np
-        from dmipy_jax.acquisition import JaxAcquisition
+        from compore.acquisition import JaxAcquisition
         # Two measurements: b=0 and one b=1900 along +x (perpendicular
         # to a +z fibre).
         acq = JaxAcquisition(

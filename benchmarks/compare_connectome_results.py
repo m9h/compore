@@ -7,7 +7,7 @@ def compare_results():
     print("Loading data...")
     try:
         oracle = np.load('data/connectome_oracle_pytorch.npz')
-        jax_res = np.load('data/dmipy_jax_connectome.npz')
+        jax_res = np.load('data/compore_connectome.npz')
     except FileNotFoundError:
         print("Data not found.")
         return

@@ -81,7 +81,7 @@ normalising flows (via FlowJAX), and score-based diffusion models.
 
 The acquisition scheme describes the MRI experiment: b-values, gradient
 directions, and pulse timings. In SBI4DWI, this is represented by
-{class}`~dmipy_jax.acquisition.JaxAcquisition`, a JAX-compatible dataclass
+{class}`~compore.acquisition.JaxAcquisition`, a JAX-compatible dataclass
 registered as a pytree node.
 
 ```python
@@ -91,7 +91,7 @@ import tempfile
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.acquisition import JaxAcquisition
 
 # Multi-shell acquisition: 6 b=0 + 30 directions at b=1000 + 30 at b=2000
 # b-values in SI units: s/m^2 (FSL uses s/mm^2 -- multiply by 1e6)
@@ -125,7 +125,7 @@ WORK = tempfile.mkdtemp(prefix="sbi4dwi_tutorial_")
 :::{note}
 **Unit convention**: SBI4DWI stores b-values in SI (s/m$^2$) internally.
 When loading FSL-format `.bval` files (which use s/mm$^2$), remember to
-multiply by $10^6$. `dmipy_jax.data.io.load_bvals_bvecs` (used by
+multiply by $10^6$. `compore.data.io.load_bvals_bvecs` (used by
 `SBIPredictor`) does this automatically when the values look like s/mm$^2$.
 :::
 
@@ -145,9 +145,9 @@ S(\mathbf{q}) = f \cdot S_\text{Stick}(\mathbf{q}; d_\parallel, \hat{\mathbf{n}}
 $$
 
 ```python
-from dmipy_jax.signal_models.cylinder_models import C1Stick
-from dmipy_jax.signal_models.gaussian_models import Ball
-from dmipy_jax.core.modeling_framework import compose_models
+from compore.signal_models.cylinder_models import C1Stick
+from compore.signal_models.gaussian_models import Ball
+from compore.core.modeling_framework import compose_models
 
 # Compose the model: a callable (flat_params, acquisition) -> signal whose
 # flat parameter vector is [mu(2), lambda_par, lambda_iso, f_stick, f_ball]
@@ -216,12 +216,12 @@ assert jnp.allclose(hand, composed(flat, acq), atol=1e-6)
 
 ### 3.1 The ModelSimulator
 
-{class}`~dmipy_jax.pipeline.simulator.ModelSimulator` wraps the forward
+{class}`~compore.pipeline.simulator.ModelSimulator` wraps the forward
 function, prior, and noise model into a unified interface that the training
 pipeline consumes:
 
 ```python
-from dmipy_jax.pipeline.simulator import ModelSimulator
+from compore.pipeline.simulator import ModelSimulator
 
 simulator = ModelSimulator(
     forward_fn=forward_fn,
@@ -263,12 +263,12 @@ a different input distribution and predictions will be unreliable.
 ### 3.2 Building a SimulationLibrary
 
 For large-scale experiments or when you want to reuse training data across
-runs, the {class}`~dmipy_jax.library.storage.SimulationLibrary` provides
+runs, the {class}`~compore.library.storage.SimulationLibrary` provides
 HDF5-backed persistence:
 
 ```python
-from dmipy_jax.library.generator import LibraryGenerator
-from dmipy_jax.library.storage import SimulationLibrary
+from compore.library.generator import LibraryGenerator
+from compore.library.storage import SimulationLibrary
 
 # Generate entries in GPU-friendly chunks (production: 200_000 entries,
 # chunk_size=50_000)
@@ -330,12 +330,12 @@ simulator_robust = ModelSimulator(
 ### 4.1 Configuring the Pipeline
 
 All training hyperparameters live in a single
-{class}`~dmipy_jax.pipeline.config.SBIPipelineConfig` dataclass. The
+{class}`~compore.pipeline.config.SBIPipelineConfig` dataclass. The
 `acquisition` dict is stored with the checkpoint so that a model can be
 reloaded without the original Python objects:
 
 ```python
-from dmipy_jax.pipeline.config import SBIPipelineConfig
+from compore.pipeline.config import SBIPipelineConfig
 
 acquisition_spec = {
     "bvalues": acq.bvalues.tolist(),
@@ -384,12 +384,12 @@ config = SBIPipelineConfig(
 
 ### 4.2 Training an MDN Posterior
 
-The {func}`~dmipy_jax.pipeline.train.train_sbi` function is the main
+The {func}`~compore.pipeline.train.train_sbi` function is the main
 training entry point. It handles architecture construction, optimiser setup,
 and the training loop:
 
 ```python
-from dmipy_jax.pipeline.train import train_sbi
+from compore.pipeline.train import train_sbi
 
 model, losses = train_sbi(
     config,
@@ -477,7 +477,7 @@ Good convergence indicators:
 SBI4DWI uses Equinox's tree serialisation with a JSON config sidecar:
 
 ```python
-from dmipy_jax.pipeline.checkpoint import save_checkpoint, load_checkpoint
+from compore.pipeline.checkpoint import save_checkpoint, load_checkpoint
 
 # Save
 save_checkpoint(model, config, config.checkpoint_path)
@@ -500,7 +500,7 @@ For sharing models, push to the Hugging Face Hub (needs network access and a
 token, so this is not executed here):
 
 ```text
-from dmipy_jax.pipeline.checkpoint import push_to_hub, pull_from_hub
+from compore.pipeline.checkpoint import push_to_hub, pull_from_hub
 
 push_to_hub(model, config, repo_id="your-username/ballstick-mdn-v1",
             metrics={"final_loss": losses[-1]})
@@ -527,7 +527,7 @@ $\boldsymbol{\theta}^*$ among the posterior samples should be uniformly
 distributed.
 
 ```python
-from dmipy_jax.pipeline.sbc import SBCDiagnostic
+from compore.pipeline.sbc import SBCDiagnostic
 
 sbc = SBCDiagnostic(
     model=model,
@@ -571,7 +571,7 @@ with the observed data. This complements SBC by checking data-space fit
 quality:
 
 ```python
-from dmipy_jax.pipeline.ppc import PPCDiagnostic
+from compore.pipeline.ppc import PPCDiagnostic
 
 ppc = PPCDiagnostic(
     model=model,
@@ -608,7 +608,7 @@ assert ppc_result.rmse_per_obs.shape == (30,)
 
 ### 6.1 Using SBIPredictor
 
-The {class}`~dmipy_jax.pipeline.deploy.SBIPredictor` class handles the full
+The {class}`~compore.pipeline.deploy.SBIPredictor` class handles the full
 NIfTI-in / NIfTI-out inference pipeline. To exercise it here we first write
 a small synthetic DWI volume to disk from the simulator (in practice these
 are your scanner files):
@@ -637,7 +637,7 @@ nib.save(nib.Nifti1Image(mask, affine), mask_path)
 ```
 
 ```python
-from dmipy_jax.pipeline.deploy import SBIPredictor
+from compore.pipeline.deploy import SBIPredictor
 
 predictor = SBIPredictor(model, config)
 
@@ -735,7 +735,7 @@ For any trained model (MDN or flow), you can draw posterior samples
 conditioned on an observed signal:
 
 ```python
-from dmipy_jax.inference.mdn import sample_posterior
+from compore.inference.mdn import sample_posterior
 
 # For a single voxel signal
 signal_obs = signals[0]  # (66,)
@@ -778,7 +778,7 @@ methods:
   wider where the model is more uncertain.
 
 ```python
-from dmipy_jax.pipeline.conformal import ConformalCalibrator
+from compore.pipeline.conformal import ConformalCalibrator
 
 # 1. Generate calibration data (production: n=5000)
 key_cal = jax.random.key(77)
@@ -817,7 +817,7 @@ assert np.all(intervals["lower"] <= intervals["upper"])
 
 ### 7.3 Out-of-Distribution Detection
 
-The {class}`~dmipy_jax.pipeline.ood.OODDetector` flags voxels where the
+The {class}`~compore.pipeline.ood.OODDetector` flags voxels where the
 input signal falls outside the training distribution. It uses three
 complementary scores:
 
@@ -829,7 +829,7 @@ complementary scores:
    the reference signal distribution.
 
 ```python
-from dmipy_jax.pipeline.ood import OODDetector
+from compore.pipeline.ood import OODDetector
 
 ood = OODDetector(model=model, simulator=simulator)
 
@@ -861,7 +861,7 @@ provide improved calibration and uncertainty estimates through model
 disagreement:
 
 ```python
-from dmipy_jax.pipeline.ensemble import train_ensemble, EnsemblePredictor
+from compore.pipeline.ensemble import train_ensemble, EnsemblePredictor
 
 # Train ensemble members (production: n_members=5)
 members = train_ensemble(
@@ -895,14 +895,14 @@ exposes that library through the `ModelSimulator` interface so that
 `train_sbi` can consume a mixture of analytical and oracle-generated data.
 
 :::{warning}
-The oracle protocol (`dmipy_jax.simulation.oracle`,
-`dmipy_jax.simulation.oracles`, `dmipy_jax.pipeline.oracle_adapter`,
-`dmipy_jax.pipeline.multi_fidelity`, `dmipy_jax.library.hybrid_generator`)
+The oracle protocol (`compore.simulation.oracle`,
+`compore.simulation.oracles`, `compore.pipeline.oracle_adapter`,
+`compore.pipeline.multi_fidelity`, `compore.library.hybrid_generator`)
 is **not yet implemented** -- see
 `docs/decisions/006-octopus-differentiable-substrate-landscape.md` and the
 project `CLAUDE.md` for status. What exists today is the HDF5
 `SimulationLibrary` boundary (Section 3.2), the in-tree simulators
-(`dmipy_jax.simulation.monte_carlo`, `mesh_sim`) and a Julia MCMRSimulator
+(`compore.simulation.monte_carlo`, `mesh_sim`) and a Julia MCMRSimulator
 environment under `julia/mcmr/`.
 :::
 
@@ -931,13 +931,13 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.simulator import ModelSimulator
-from dmipy_jax.pipeline.config import SBIPipelineConfig
-from dmipy_jax.pipeline.train import train_sbi
-from dmipy_jax.pipeline.checkpoint import save_checkpoint
-from dmipy_jax.pipeline.deploy import SBIPredictor
-from dmipy_jax.pipeline.sbc import SBCDiagnostic
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.simulator import ModelSimulator
+from compore.pipeline.config import SBIPipelineConfig
+from compore.pipeline.train import train_sbi
+from compore.pipeline.checkpoint import save_checkpoint
+from compore.pipeline.deploy import SBIPredictor
+from compore.pipeline.sbc import SBCDiagnostic
 
 # --- 1. Acquisition --- (the same scheme as the bval/bvec files on disk)
 acq = JaxAcquisition(bvalues=bvals, gradient_directions=bvecs,

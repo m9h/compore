@@ -18,7 +18,7 @@ print()
 # Step 1: Load SCI Head Model
 # ---------------------------------------------------------------
 print("=== Step 1: Load SCI Head Model ===")
-from dmipy_jax.io.sci_head_loader import load_sci_head_mesh
+from compore.io.sci_head_loader import load_sci_head_mesh
 
 t0 = time.time()
 mesh = load_sci_head_mesh("data/SCI_headmodel/extracted/HeadMesh.mat")
@@ -36,7 +36,7 @@ print()
 # Step 2: Rasterize to Regular Grid
 # ---------------------------------------------------------------
 print("=== Step 2: Rasterize Mesh (2mm grid) ===")
-from dmipy_jax.biophysics.mesh_rasterizer import rasterize_mesh
+from compore.biophysics.mesh_rasterizer import rasterize_mesh
 
 bounds_min = points.min(axis=0)
 bounds_max = points.max(axis=0)
@@ -61,7 +61,7 @@ print()
 # Step 3: Map Acoustic Properties
 # ---------------------------------------------------------------
 print("=== Step 3: Map Acoustic Properties ===")
-from dmipy_jax.biophysics.acoustic import map_labels_to_properties
+from compore.biophysics.acoustic import map_labels_to_properties
 
 props = map_labels_to_properties(jnp.array(labels))
 for param in ["sound_speed", "density", "attenuation"]:
@@ -105,7 +105,7 @@ print()
 # Step 5: j-Wave 2D Simulation (Homogeneous vs Skull-Corrected)
 # ---------------------------------------------------------------
 print("=== Step 5: j-Wave 2D Simulation ===")
-from dmipy_jax.biophysics.jwave_adapter import run_simulation_2d
+from compore.biophysics.jwave_adapter import run_simulation_2d
 
 grid_spacing_m = spacing * 1e-3  # convert mm to meters
 
@@ -158,8 +158,8 @@ print()
 # Step 6: Gradient-Based Delay Optimization
 # ---------------------------------------------------------------
 print("=== Step 6: Delay Optimization (10 iterations) ===")
-from dmipy_jax.biophysics.tus_optimizer import optimize_delays
-from dmipy_jax.biophysics.jwave_adapter import create_domain
+from compore.biophysics.tus_optimizer import optimize_delays
+from compore.biophysics.jwave_adapter import create_domain
 
 domain = create_domain(c_slice.shape, grid_spacing_m)
 
@@ -204,7 +204,7 @@ print()
 # Step 7: Export Solution
 # ---------------------------------------------------------------
 print("=== Step 7: Export Solution ===")
-from dmipy_jax.biophysics.tus_solution_export import export_simulation_result, build_solution_dict
+from compore.biophysics.tus_solution_export import export_simulation_result, build_solution_dict
 
 coords = {
     "x": np.arange(c_slice.shape[0]) * spacing,

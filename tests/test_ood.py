@@ -8,10 +8,10 @@ import numpy as np
 import equinox as eqx
 import pytest
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.simulator import ModelSimulator
-from dmipy_jax.pipeline.ood import OODDetector, OODResult
-from dmipy_jax.pipeline.train import _NormalisedMDN
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.simulator import ModelSimulator
+from compore.pipeline.ood import OODDetector, OODResult
+from compore.pipeline.train import _NormalisedMDN
 
 
 # --------------------------------------------------------------------------- #

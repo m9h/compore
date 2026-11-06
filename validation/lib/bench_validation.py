@@ -15,10 +15,10 @@ except ImportError:
     import sys
     sys.path.append(".") # Ensure dmipy root is in path
     from validation.lib import bench_diffusion_models_patch as bench_models
-# Imports from dmipy_jax
-from dmipy_jax.simulation.sde_models import CurvedTractSDE, solve_restricted_sde_batch
-from dmipy_jax.simulation.simulator import accumulate_phase, trapezoidal_gradient_waveform
-from dmipy_jax.constants import GYRO_MAGNETIC_RATIO
+# Imports from compore
+from compore.simulation.sde_models import CurvedTractSDE, solve_restricted_sde_batch
+from compore.simulation.simulator import accumulate_phase, trapezoidal_gradient_waveform
+from compore.constants import GYRO_MAGNETIC_RATIO
 
 def get_pgse_params(bval: float, delta: float, Delta: float) -> float:
     """

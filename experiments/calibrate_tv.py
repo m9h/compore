@@ -7,12 +7,12 @@ import matplotlib.pyplot as plt
 from skimage.metrics import structural_similarity as ssim
 from skimage.metrics import mean_squared_error as mse
 
-from dmipy_jax.io.connectome2 import load_connectome2_mri
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.core.acquisition import SimpleAcquisitionScheme as JaxAcquisition
-from dmipy_jax.signal_models.cylinder_models import RestrictedCylinder
-from dmipy_jax.signal_models.sphere_models import SphereGPD
-from dmipy_jax.inverse.global_amico import GlobalAMICOSolver
+from compore.io.connectome2 import load_connectome2_mri
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.core.acquisition import SimpleAcquisitionScheme as JaxAcquisition
+from compore.signal_models.cylinder_models import RestrictedCylinder
+from compore.signal_models.sphere_models import SphereGPD
+from compore.inverse.global_amico import GlobalAMICOSolver
 
 # Helper to generate directions
 def get_fibonacci_sphere(samples=1):

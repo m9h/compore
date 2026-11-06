@@ -6,11 +6,11 @@ import time
 import equinox as eqx
 import optax
 import optimistix as optx
-from dmipy_jax.signal_models.stick import Stick
-from dmipy_jax.signal_models.zeppelin import Zeppelin
-from dmipy_jax.signal_models.gaussian_models import Ball
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.signal_models.stick import Stick
+from compore.signal_models.zeppelin import Zeppelin
+from compore.signal_models.gaussian_models import Ball
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.acquisition import JaxAcquisition
 
 def run_validation():
     print("=== Parameter Recovery Validation (Synthetic) ===")

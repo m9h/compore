@@ -3,7 +3,7 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import matplotlib.pyplot as plt
-from dmipy_jax.simulation.monte_carlo import simulate_ground_truth, cylinder_sdf
+from compore.simulation.monte_carlo import simulate_ground_truth, cylinder_sdf
 
 
 def test_free_diffusion():

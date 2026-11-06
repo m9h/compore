@@ -8,12 +8,12 @@ import os
 import unittest
 from unittest.mock import patch, MagicMock
 
-from dmipy_jax.viz.surface_mapper import map_to_surface, generate_pysurfer_script
+from compore.viz.surface_mapper import map_to_surface, generate_pysurfer_script
 
 
 class TestSurfaceMapper(unittest.TestCase):
-    @patch('dmipy_jax.viz.surface_mapper.subprocess.run')
-    @patch('dmipy_jax.viz.surface_mapper.Path')
+    @patch('compore.viz.surface_mapper.subprocess.run')
+    @patch('compore.viz.surface_mapper.Path')
     def test_map_to_surface_command(self, mock_path, mock_subprocess):
         mock_volume = MagicMock()
         mock_volume.resolve.return_value = mock_volume

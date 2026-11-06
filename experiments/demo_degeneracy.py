@@ -4,7 +4,7 @@ import jax.numpy as jnp
 import equinox as eqx
 import optax
 import matplotlib.pyplot as plt
-from dmipy_jax.inference.flows import FlowNetwork
+from compore.inference.flows import FlowNetwork
 
 # 1. Define Model: 1D Bi-Exponential
 # S(b) = f * exp(-b * D1) + (1-f) * exp(-b * D2)

@@ -18,9 +18,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-# dmipy-jax imports
-from dmipy_jax.io.connectome2 import load_connectome2_mri
-from dmipy_jax.simulation.sde_models import CurvedTractSDE, solve_restricted_sde_batch
+# compore imports
+from compore.io.connectome2 import load_connectome2_mri
+from compore.simulation.sde_models import CurvedTractSDE, solve_restricted_sde_batch
 from dipy.reconst.dti import TensorModel
 from dipy.core.gradients import gradient_table
 
@@ -160,8 +160,8 @@ def main():
     signals = []
     bvals = []
     
-    from dmipy_jax.simulation.simulator import accumulate_phase, trapezoidal_gradient_waveform
-    from dmipy_jax.constants import GYRO_MAGNETIC_RATIO
+    from compore.simulation.simulator import accumulate_phase, trapezoidal_gradient_waveform
+    from compore.constants import GYRO_MAGNETIC_RATIO
     
     # Pre-calculate time limits
     T_max_pulse = Delta + delta + 0.001

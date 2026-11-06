@@ -99,7 +99,7 @@ def benchmark_inverse_solver_contest():
     # f(x) = 0.5 * ||Ax - y||^2
     # g(x) = lambda * ||x||_1 + I(x>=0)
     
-    # We will use the dmipy_jax ADMM pattern
+    # We will use the compore ADMM pattern
     # But implement it directly here to ensure exact comparison control
     # (The class wraps this, but we want to be sure of the setup)
     

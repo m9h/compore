@@ -2,7 +2,7 @@ import jax
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
 import equinox as eqx
-from dmipy_jax.biophysics.buckling_layer import BucklingLayer
+from compore.biophysics.buckling_layer import BucklingLayer
 
 def calibrate():
     # 1. Initialize Layer

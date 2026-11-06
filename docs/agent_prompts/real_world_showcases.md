@@ -10,7 +10,7 @@ These prompts guide the implementation of demonstrations using challenging real-
 ## Prompt 1: 7T Voxel-wise Interaction (ds003216)
 
 **Title:** High-Resolution Microstructure Interaction Demo
-**Objective:** Demonstrate that `dmipy-jax` fits physically consistent models across spatially coupled voxels, exploiting the 800µm resolution of 7T data.
+**Objective:** Demonstrate that `compore` fits physically consistent models across spatially coupled voxels, exploiting the 800µm resolution of 7T data.
 
 **Context:**
 We want to use `ds003216` (Comprehensive ultrahigh resolution human phantom). The data is accessible via S3 but paths are non-standard.
@@ -35,7 +35,7 @@ Subject: `sub-our_subject`.
 ## Prompt 2: Massive-Scale Throughput (IXI Dataset)
 
 **Title:** "The 10-Minute Cohort" Benchmark
-**Objective:** Prove `dmipy-jax` can process hundreds of subjects in the time standard tools process one.
+**Objective:** Prove `compore` can process hundreds of subjects in the time standard tools process one.
 
 **Context:**
 The IXI Dataset contains ~600 healthy subjects. It is hosted on `brain-development.org`.

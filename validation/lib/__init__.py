@@ -2,5 +2,5 @@
 connectivity metrics, synthetic PRISM benchmarks, substrate benchmarks.
 
 Research code, importable in a development checkout (``from validation.lib import
-force_disco``) but deliberately outside the ``dmipy_jax`` wheel.
+force_disco``) but deliberately outside the ``compore`` wheel.
 """

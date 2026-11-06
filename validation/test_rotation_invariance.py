@@ -3,8 +3,8 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import os
-from dmipy_jax.core.invariants import compute_invariants
-from dmipy_jax.cylinder import C2Cylinder
+from compore.core.invariants import compute_invariants
+from compore.cylinder import C2Cylinder
 from scipy.spatial.transform import Rotation as R
 
 def normalize_bvecs(bvecs):

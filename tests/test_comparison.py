@@ -9,7 +9,7 @@ import pytest
 class TestComparisonResult:
 
     def test_add_method(self):
-        from dmipy_jax.pipeline.comparison import ComparisonResult
+        from compore.pipeline.comparison import ComparisonResult
 
         result = ComparisonResult(vol_shape=(5, 5, 5))
         result.add_method("A", {"FA": np.random.rand(5, 5, 5)})
@@ -18,7 +18,7 @@ class TestComparisonResult:
         assert "B" in result.methods
 
     def test_metrics_available(self):
-        from dmipy_jax.pipeline.comparison import ComparisonResult
+        from compore.pipeline.comparison import ComparisonResult
 
         result = ComparisonResult()
         result.add_method("A", {"FA": np.zeros(10), "MD": np.zeros(10)})
@@ -27,7 +27,7 @@ class TestComparisonResult:
         assert result.metrics_available() == ["FA"]
 
     def test_correlation(self):
-        from dmipy_jax.pipeline.comparison import ComparisonResult
+        from compore.pipeline.comparison import ComparisonResult
 
         rng = np.random.RandomState(42)
         fa = rng.rand(100)
@@ -38,7 +38,7 @@ class TestComparisonResult:
         assert r > 0.99
 
     def test_rmse_against_gt(self):
-        from dmipy_jax.pipeline.comparison import ComparisonResult
+        from compore.pipeline.comparison import ComparisonResult
 
         gt = {"FA": np.array([0.5, 0.6, 0.7])}
         result = ComparisonResult(ground_truth=gt)
@@ -46,7 +46,7 @@ class TestComparisonResult:
         assert result.rmse("A", "FA") < 1e-10
 
     def test_ssim_perfect(self):
-        from dmipy_jax.pipeline.comparison import ComparisonResult
+        from compore.pipeline.comparison import ComparisonResult
 
         x = np.random.rand(50)
         result = ComparisonResult(ground_truth={"FA": x})
@@ -54,7 +54,7 @@ class TestComparisonResult:
         assert result.ssim_1d("A", "FA") > 0.999
 
     def test_print_summary_runs(self, capsys):
-        from dmipy_jax.pipeline.comparison import ComparisonResult
+        from compore.pipeline.comparison import ComparisonResult
 
         rng = np.random.RandomState(0)
         gt = {"FA": rng.rand(20), "MD": rng.rand(20)}
@@ -73,7 +73,7 @@ class TestDipyDTI:
         """DIPY DTI on simple isotropic data should give FA ~ 0."""
         from dipy.sims.voxel import multi_tensor
         from dipy.core.gradients import gradient_table
-        from dmipy_jax.pipeline.comparison import run_dipy_dti
+        from compore.pipeline.comparison import run_dipy_dti
 
         rng = np.random.RandomState(42)
         bvecs = rng.randn(30, 3)
@@ -97,7 +97,7 @@ class TestComparisonRunner:
 
     def test_runner_with_dipy(self):
         """ComparisonRunner with just DIPY DTI."""
-        from dmipy_jax.pipeline.comparison import (
+        from compore.pipeline.comparison import (
             ComparisonRunner, generate_dipy_multitensor_phantom,
         )
 
@@ -118,7 +118,7 @@ class TestComparisonRunner:
 class TestPhantomGeneration:
 
     def test_dipy_multitensor_phantom_shapes(self):
-        from dmipy_jax.pipeline.comparison import generate_dipy_multitensor_phantom
+        from compore.pipeline.comparison import generate_dipy_multitensor_phantom
 
         data, bvals, bvecs, mask, gt = generate_dipy_multitensor_phantom(
             vol_shape=(6, 6, 2), snr=100,
@@ -131,7 +131,7 @@ class TestPhantomGeneration:
         assert gt["MD"].shape == (6, 6, 2)
 
     def test_phantom_wm_has_high_fa(self):
-        from dmipy_jax.pipeline.comparison import generate_dipy_multitensor_phantom
+        from compore.pipeline.comparison import generate_dipy_multitensor_phantom
 
         data, bvals, bvecs, mask, gt = generate_dipy_multitensor_phantom(
             vol_shape=(9, 3, 1), snr=100,
@@ -141,7 +141,7 @@ class TestPhantomGeneration:
         assert np.mean(wm_fa) > 0.5
 
     def test_phantom_csf_has_low_fa(self):
-        from dmipy_jax.pipeline.comparison import generate_dipy_multitensor_phantom
+        from compore.pipeline.comparison import generate_dipy_multitensor_phantom
 
         data, bvals, bvecs, mask, gt = generate_dipy_multitensor_phantom(
             vol_shape=(9, 3, 1), snr=100,

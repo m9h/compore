@@ -3,8 +3,8 @@ import numpy as np
 import scipy.optimize
 import os
 import argparse
-from dmipy_jax.io.ds004024 import Ds004024Loader
-from dmipy_jax.biophysics.network.connectome_mapper import ConnectomeMapper
+from compore.io.ds004024 import Ds004024Loader
+from compore.biophysics.network.connectome_mapper import ConnectomeMapper
 
 def main():
     parser = argparse.ArgumentParser(description="Demo TMS-EEG Velocity Calibration on ds004024")

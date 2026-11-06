@@ -2,10 +2,10 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.signal_models.stick import Stick
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.composer import compose_models
-from dmipy_jax.fitting.optimization import OptimistixFitter
+from compore.signal_models.stick import Stick
+from compore.acquisition import JaxAcquisition
+from compore.composer import compose_models
+from compore.fitting.optimization import OptimistixFitter
 
 def verify_optimistix_fitter():
     print("Verifying OptimistixFitter...")

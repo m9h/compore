@@ -8,8 +8,8 @@ import numpy as np
 
 # Local Imports
 # Use absolute imports relative to project root in examples
-from dmipy_jax.algebra.initializers import get_monoexponential_initializer
-from dmipy_jax.algebra.wrapper import check_identifiability, print_identifiability_report
+from compore.algebra.initializers import get_monoexponential_initializer
+from compore.algebra.wrapper import check_identifiability, print_identifiability_report
 
 # We need a Tissue Model. Let's define a simple SphereGPD equivalent here for the demo
 # to avoid rigorous dependencies on complex modules if not needed, 

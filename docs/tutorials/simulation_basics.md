@@ -1,7 +1,7 @@
 # Physics Simulation with SBI4DWI
 
 SBI4DWI includes a Monte Carlo diffusion simulator written in JAX
-(`dmipy_jax.simulation.monte_carlo`). It lets you simulate restricted
+(`compore.simulation.monte_carlo`). It lets you simulate restricted
 diffusion in geometries described by signed distance functions, and the same
 code runs on CPU or GPU.
 
@@ -12,13 +12,13 @@ and run on a GPU.
 
 ## 1. Setup
 
-Import the necessary modules from `dmipy_jax.simulation`.
+Import the necessary modules from `compore.simulation`.
 
 ```python
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.simulation.monte_carlo import simulate_ground_truth, cylinder_sdf
+from compore.simulation.monte_carlo import simulate_ground_truth, cylinder_sdf
 ```
 
 ## 2. Define Geometry

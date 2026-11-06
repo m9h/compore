@@ -17,15 +17,15 @@ import optax
 import numpy as np
 from jax.sharding import Mesh, NamedSharding, PartitionSpec as P
 
-from dmipy_jax.biophysics.eit import SkullEITInversion, EITModel
-from dmipy_jax.pinns.trainer import GB200PINNTrainer
-from dmipy_jax.pinns.sampling import DynamicCollocationSampler
+from compore.biophysics.eit import SkullEITInversion, EITModel
+from compore.pinns.trainer import GB200PINNTrainer
+from compore.pinns.sampling import DynamicCollocationSampler
 
 def main():
     print("--- EIT Agent Skill Demonstration ---")
     
     # 1. Load Dataset
-    data_path = os.path.expanduser('~/.cache/dmipy_jax/uclh_eit/extracted/Stroke_EIT_Dataset-master/UCL_Stroke_EIT_Dataset.mat')
+    data_path = os.path.expanduser('~/.cache/compore/uclh_eit/extracted/Stroke_EIT_Dataset-master/UCL_Stroke_EIT_Dataset.mat')
     if not os.path.exists(data_path):
         raise FileNotFoundError(f"Dataset not found at {data_path}. Please running validation first.")
         

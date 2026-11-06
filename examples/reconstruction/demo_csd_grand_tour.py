@@ -4,12 +4,12 @@ import jax.numpy as jnp
 import numpy as np
 import optax
 import equinox as eqx
-from dmipy_jax.utils.spherical_harmonics import sh_basis_real, cart2sphere
-from dmipy_jax.reconstruction.csd.classic.solvers import fit_sos_csd, fit_csd
-from dmipy_jax.reconstruction.csd.classic.response import ResponseEstimator
-from dmipy_jax.reconstruction.csd.bayesian.model import SpectralBayesianCSD
-from dmipy_jax.reconstruction.csd.deep.model import EquivariantCSD
-from dmipy_jax.reconstruction.csd.deep.train import unsupervised_loss
+from compore.utils.spherical_harmonics import sh_basis_real, cart2sphere
+from compore.reconstruction.csd.classic.solvers import fit_sos_csd, fit_csd
+from compore.reconstruction.csd.classic.response import ResponseEstimator
+from compore.reconstruction.csd.bayesian.model import SpectralBayesianCSD
+from compore.reconstruction.csd.deep.model import EquivariantCSD
+from compore.reconstruction.csd.deep.train import unsupervised_loss
 
 def simulate_crossing_fibers(angle_deg, bval=3000, n_dirs=64):
     """
@@ -166,7 +166,7 @@ def run_grand_tour():
         # Convolve (FOD L=8 -> Signal L=8)
         # response is [R0, R2, R4, R6, R8]
         # We need to broadcast R to SH
-        from dmipy_jax.reconstruction.csd.classic.solvers import _get_response_matrix
+        from compore.reconstruction.csd.classic.solvers import _get_response_matrix
         R_diag = _get_response_matrix(response, 8)
         pred_signal_sh_l8 = fod_sh * R_diag
         

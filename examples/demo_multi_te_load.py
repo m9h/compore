@@ -5,7 +5,7 @@ import jax.numpy as jnp
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from dmipy_jax.io.multi_te import MultiTELoader
+from compore.io.multi_te import MultiTELoader
 
 def main():
     base_path = "/home/mhough/dev/dmipy/data/MultiTE/MTE-dMRI"

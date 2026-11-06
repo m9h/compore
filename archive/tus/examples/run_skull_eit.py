@@ -12,10 +12,10 @@ import equinox as eqx
 import optax
 from jax.sharding import Mesh, NamedSharding, PartitionSpec as P
 
-from dmipy_jax.biophysics.eit import EITModel, SkullEITInversion
-from dmipy_jax.biophysics.pseudo_ct import PseudoCTMapper
-from dmipy_jax.pinns.sampling import DynamicCollocationSampler
-from dmipy_jax.pinns.trainer import GB200PINNTrainer
+from compore.biophysics.eit import EITModel, SkullEITInversion
+from compore.biophysics.pseudo_ct import PseudoCTMapper
+from compore.pinns.sampling import DynamicCollocationSampler
+from compore.pinns.trainer import GB200PINNTrainer
 
 def main():
     print("Setting up Skull EIT Simulation...")

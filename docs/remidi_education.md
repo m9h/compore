@@ -4,14 +4,14 @@ description: "ReMiDi Educational Synergies: Lesson Plans and Prompts"
 
 # ReMiDi Educational Synergies
 
-Using ReMiDi as a **Ground Truth Oracle** to teach Differentiable Science with `dmipy-jax`.
+Using ReMiDi as a **Ground Truth Oracle** to teach Differentiable Science with `compore`.
 
 ## 1. The "Model Mismatch" Lesson
 **Concept:** Demonstrate the limits of analytical models (Cylinder) on realistic geometries.
 **Prompt:**
 > "I want to create a demonstration of 'Model Mismatch'. 
 > 1. Use ReMiDi to generate a dataset of 'Beading' cylinders with varying `beading_amplitude` (0.0 to 0.5).
-> 2. Implement a fitting loop using `dmipy-jax`'s `Cylinder` model.
+> 2. Implement a fitting loop using `compore`'s `Cylinder` model.
 > 3. Plot the 'Fitting Error' and 'Estimated Radius' vs `beading_amplitude`.
 > 4. Show that the model breaks down as the geometry deviates from the analytical assumption."
 
@@ -19,7 +19,7 @@ Using ReMiDi as a **Ground Truth Oracle** to teach Differentiable Science with `
 **Concept:** Teach how to create millisecond-fast differentiable surrogates for slow simulations.
 **Prompt:**
 > "I want to demonstrate the power of Neural Surrogates.
-> 1. Create a `NeuralCDE` network in `dmipy-jax`.
+> 1. Create a `NeuralCDE` network in `compore`.
 > 2. Train it on a dataset of ReMiDi signals parameterized by `(beading_amplitude, frequency)`.
 > 3. Compare the inference speed: Benchmark the time to generate 1000 signals using the Neural CDE vs the ReMiDi Monte Carlo simulation.
 > 4. Visualize the accuracy of the surrogate across the parameter space."

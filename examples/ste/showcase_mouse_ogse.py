@@ -10,8 +10,8 @@ import sys
 # Add project root
 sys.path.append(os.getcwd())
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.gradients.spatial import compute_spatial_gradient, predict_spatial_gradient
+from compore.acquisition import JaxAcquisition
+from compore.gradients.spatial import compute_spatial_gradient, predict_spatial_gradient
 
 def showcase_mouse_ogse():
     print("--- Showcase: Spatial Gradients in OGSE Mouse Data (Synthetic Replica) ---")

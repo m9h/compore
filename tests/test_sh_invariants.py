@@ -3,7 +3,7 @@ import numpy as np
 import jax
 import jax.numpy as jnp
 import time
-from dmipy_jax.core.invariants import compute_invariants_jit, associated_legendre
+from compore.core.invariants import compute_invariants_jit, associated_legendre
 
 def test_legendre():
     print("Testing Legendre Polynomials...")

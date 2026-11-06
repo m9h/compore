@@ -4,8 +4,8 @@ import jax.numpy as jnp
 import numpy as np
 import os
 import time
-from dmipy_jax.core.invariants import compute_invariants
-from dmipy_jax.core.tensor_train import mps_decomposition, extract_angular_core, reconstruct_from_mps
+from compore.core.invariants import compute_invariants
+from compore.core.tensor_train import mps_decomposition, extract_angular_core, reconstruct_from_mps
 
 def add_rician_noise(signal, snr):
     """

@@ -5,11 +5,11 @@ import h5py
 import argparse
 from typing import Dict, Tuple
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.signal_models.cylinder_models import CallaghanRestrictedCylinder
-from dmipy_jax.signal_models.zeppelin import Zeppelin
-from dmipy_jax.signal_models.gaussian_models import Ball
-from dmipy_jax.composer import compose_models
+from compore.acquisition import JaxAcquisition
+from compore.signal_models.cylinder_models import CallaghanRestrictedCylinder
+from compore.signal_models.zeppelin import Zeppelin
+from compore.signal_models.gaussian_models import Ball
+from compore.composer import compose_models
 
 def get_acquisition(bvals_shell1=1000, bvals_shell2=2500, n_dirs=64,
                     delta=0.0129, Delta=0.0218):
@@ -221,7 +221,7 @@ def main():
             dset_signals[start_idx:end_idx] = np.array(batch_noisy)
             dset_clean[start_idx:end_idx] = np.array(batch_clean)
             
-    print(f"Done using dmipy-jax. Saved to {args.output}")
+    print(f"Done using compore. Saved to {args.output}")
 
 if __name__ == "__main__":
     main()

@@ -1,7 +1,7 @@
 import pytest
 import jax
 import jax.numpy as jnp
-from dmipy_jax.core.solvers import BlochSimulator, solve_diffusion_sde
+from compore.core.solvers import BlochSimulator, solve_diffusion_sde
 import numpy as np
 
 def test_bloch_simulator_relaxation():

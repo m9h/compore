@@ -9,7 +9,7 @@ RUN pip install "sbi==0.22.0" dipy nibabel scipy
 WORKDIR /app
 COPY . /app
 
-# Install dmipy-jax and its dependencies
+# Install compore and its dependencies
 # Using uv for faster installation if available, or just pip
 # We need to make sure we get the cuda version of jax
 RUN pip install -U "jax[cuda12]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html

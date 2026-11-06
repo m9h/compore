@@ -14,11 +14,11 @@ layer bridging sbi4dwi and [OpenLIFU](https://github.com/OpenwaterHealth/openlif
 
 | Module | Purpose |
 |--------|---------|
-| `dmipy_jax/biophysics/acoustic.py` | Tissue label to acoustic property mapping (ITRUSST values) + HU-based continuous estimation |
-| `dmipy_jax/biophysics/mesh_rasterizer.py` | Tetrahedral mesh to regular grid rasterization (SCI head model) |
-| `dmipy_jax/biophysics/jwave_adapter.py` | j-Wave differentiable simulation adapter |
-| `dmipy_jax/biophysics/tus_optimizer.py` | Gradient-based delay optimization through skull |
-| `dmipy_jax/biophysics/tus_solution_export.py` | Export to openlifu Solution format |
+| `compore/biophysics/acoustic.py` | Tissue label to acoustic property mapping (ITRUSST values) + HU-based continuous estimation |
+| `compore/biophysics/mesh_rasterizer.py` | Tetrahedral mesh to regular grid rasterization (SCI head model) |
+| `compore/biophysics/jwave_adapter.py` | j-Wave differentiable simulation adapter |
+| `compore/biophysics/tus_optimizer.py` | Gradient-based delay optimization through skull |
+| `compore/biophysics/tus_solution_export.py` | Export to openlifu Solution format |
 
 ### openlifu-python (clinical bridge)
 

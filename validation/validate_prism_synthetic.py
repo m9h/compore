@@ -9,7 +9,7 @@ from dataclasses import replace
 from pathlib import Path
 import numpy as np
 
-from dmipy_jax.prism.prism_jax import PrismConfig, fit_prism
+from lafix.prism_jax import PrismConfig, fit_prism
 from validation.lib.prism_synthetic import (
     ANGLES, make_benchmark, msmt_peaks_on_benchmark, score_by_angle,
 )

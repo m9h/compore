@@ -3,7 +3,7 @@ import jax.numpy as jnp
 import equinox as eqx
 import time
 import argparse
-from dmipy_jax.models.sh_model import SphericalHarmonicsFit
+from compore.models.sh_model import SphericalHarmonicsFit
 
 # Enable x64 by default as requested
 jax.config.update("jax_enable_x64", True)

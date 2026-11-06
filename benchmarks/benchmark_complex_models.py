@@ -3,9 +3,9 @@ import time
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.signal_models.plane_models import PlaneStejskalTanner, PlaneCallaghan
-from dmipy_jax.signal_models.sandi import SphereGPD
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.signal_models.plane_models import PlaneStejskalTanner, PlaneCallaghan
+from compore.signal_models.sandi import SphereGPD
+from compore.acquisition import JaxAcquisition
 
 def benchmark_plane_models():
     print("\nBenchmarking Plane Models...")

@@ -2,10 +2,10 @@
 import jax
 import jax.numpy as jnp
 import equinox as eqx
-from dmipy_jax.signal_models.cylinder_models import RestrictedCylinder
-from dmipy_jax.signal_models.sphere_models import SphereGPD, SphereStejskalTanner
-from dmipy_jax.signal_models.zeppelin import Zeppelin
-from dmipy_jax.signal_models.tortuosity_models import TortuosityModel
+from compore.signal_models.cylinder_models import RestrictedCylinder
+from compore.signal_models.sphere_models import SphereGPD, SphereStejskalTanner
+from compore.signal_models.zeppelin import Zeppelin
+from compore.signal_models.tortuosity_models import TortuosityModel
 
 def verify_models():
     print("Verifying Dmipy Parity Models...")

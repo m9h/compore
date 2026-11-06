@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "sbi4dwi"
+name = "compore"
 version = "0.1.0"
-description = "Simulation-Based Inference for Diffusion-Weighted Imaging"
+description = "Compartments and pores: differentiable diffusion-MRI microstructure physics, Monte Carlo oracles and simulation-based inference in JAX"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.12"
@@ -21,7 +21,7 @@ classifiers = [
   "Topic :: Scientific/Engineering",
 ]
 dependencies = [
-  # Core: enough to import dmipy_jax.signal_models / fitting / prism and run
+  # Core: enough to import compore.signal_models / fitting / prism and run
   # `dipy_refine_peaks` on CPU (doc 012 §7, step 1). Everything else is an extra.
   "jax",
   "jaxlib",
@@ -41,11 +41,10 @@ Homepage = "https://github.com/m9h/sbi4dwi"
 Repository = "https://github.com/m9h/sbi4dwi"
 
 [tool.hatch.build.targets.wheel]
-packages = ["dmipy_jax"]
+packages = ["compore"]
 
 [project.scripts]
-dipy_refine_peaks = "dmipy_jax.workflows.refine_peaks_flow:main"
-dmipy-report = "dmipy_jax.cli.bids_report:main"
+dmipy-report = "compore.cli.bids_report:main"
 
 [project.optional-dependencies]
 # GPU wheels (CUDA 13); CPU users need nothing extra
@@ -54,20 +53,23 @@ cuda = ["jax[cuda13]"]
 sbi = ["flowjax>=17.2.1", "blackjax", "numpyro>=0.19.0", "h5py", "chex>=0.1.92"]
 # Differentiable simulation: SDE walkers, Bloch, FEM, substrates
 sim = ["diffrax", "jax-md", "h5py", "pandas>=3.0.0"]
-# Symbolic initialisers / identifiability (dmipy_jax.algebra, fitting.algebraic*)
+# Symbolic initialisers / identifiability (compore.algebra, fitting.algebraic*)
 algebra = ["sympy>=1.14.0"]
-# Linearised inverse problems (dmipy_jax.inverse: scico ADMM / AMICO) and DIPY MSMT-CSD
+# Linearised inverse problems (compore.inverse: scico ADMM / AMICO) and DIPY MSMT-CSD
 inverse = ["scico>=0.0.6", "cvxpy>=1.7.5"]
 # Equivariant / HEALPix networks, tensor trains
 nn = ["e3nn-jax>=0.20.8", "healpy>=1.19.0", "ttax"]
 # Plotting and progress bars used by pipeline.sbc / ppc / comparison and viz
 viz = ["matplotlib>=3.10.8", "tqdm>=4.67.1"]
+# The product (Laplace fixel refine), developed in packages/lafix
+lafix = ["lafix"]
 # Everything above (the development environment)
 all = [
-  "sbi4dwi[sbi,sim,algebra,inverse,nn,viz,data,baselines]",
+  "compore[sbi,sim,algebra,inverse,nn,viz,data,baselines]",
+  "lafix",
   "simpleitk>=2.5.3",
 ]
-# Remote data access (HCP S3, OpenNeuro via datalad): dmipy_jax.io.hcp / lowfield / connectome2, data.openneuro
+# Remote data access (HCP S3, OpenNeuro via datalad): compore.io.hcp / lowfield / connectome2, data.openneuro
 data = ["boto3>=1.42.30", "datalad"]
 # Reference implementations used only by validation scripts and benchmarks
 baselines = ["dmri-amico>=2.1.1", "torch>=2.1.0"]
@@ -86,11 +88,11 @@ doc = [
 ]
 
 [tool.pytest.ini_options]
-# Coverage is opt-in: `uv run pytest --cov=dmipy_jax`. Having it in addopts made
+# Coverage is opt-in: `uv run pytest --cov=compore`. Having it in addopts made
 # the bare command slow and, on the GB10, prone to hanging under tracing.
 addopts = "--import-mode=importlib"
 testpaths = [
-    "dmipy_jax/tests",
+    "compore/tests",
     "tests",
 ]
 # Markdown tutorials are collected by the root conftest (sybil) only when asked:
@@ -104,7 +106,11 @@ markers = [
     "gpu: needs a CUDA device (deselect with -m 'not gpu')",
 ]
 
+[tool.uv.workspace]
+members = ["packages/lafix"]
+
 [tool.uv.sources]
+lafix = { workspace = true }
 # scico's last PyPI release (0.0.7, 2025-12) pins jax<=0.8.1; main lifted the
 # cap to 0.11.1 in lanl/scico#677 (2026-08-20). Track that commit until they
 # release; drop this line once a scico > 0.0.7 lands on PyPI.

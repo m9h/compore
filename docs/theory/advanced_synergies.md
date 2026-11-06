@@ -28,7 +28,7 @@ where $X(t)$ is a driving path. This is the continuous analogue of an RNN.
 **The Question**: "What additional synergy allows us to bring new physics to bear?"
 **The Answer**: **The Simulator trains the Theory.**
 
-We have two powerful engines in `dmipy-jax` that are currently disconnected:
+We have two powerful engines in `compore` that are currently disconnected:
 1.  **JAX-MD Particle Engine** (`core/particle_engine.py`): Ground-truth physics, slow, accurate.
 2.  **Neural Signal / ICNN** (`biophysics/neural_signal.py`): Interpretable approximation, fast, differentiable.
 

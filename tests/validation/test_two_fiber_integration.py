@@ -68,9 +68,9 @@ class TestTwoStickSignal:
 class TestTwoStickLibrarySelfRecovery:
     def test_clean_signal_recovered_from_library(self):
         import jax
-        from dmipy_jax.library.generator import LibraryGenerator
-        from dmipy_jax.library.matcher import DictionaryMatcher
-        from dmipy_jax.library.storage import SimulationLibrary
+        from compore.library.generator import LibraryGenerator
+        from compore.library.matcher import DictionaryMatcher
+        from compore.library.storage import SimulationLibrary
 
         acq = two_fiber.make_multishell_acquisition()
         sim = two_fiber.build_two_stick_simulator(acq)

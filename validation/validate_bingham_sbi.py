@@ -19,13 +19,13 @@ import jax.numpy as jnp
 import numpy as np
 import time
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.train import train_sbi
-from dmipy_jax.pipeline.models.bingham_noddi import (
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.train import train_sbi
+from compore.pipeline.models.bingham_noddi import (
     build_bingham_noddi_simulator,
     get_bingham_noddi_config,
 )
-from dmipy_jax.inference.mdn import MixtureDensityNetwork
+from compore.inference.mdn import MixtureDensityNetwork
 import equinox as eqx
 
 

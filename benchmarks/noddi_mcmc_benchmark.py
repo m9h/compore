@@ -3,8 +3,8 @@ import time
 import jax
 import jax.numpy as jnp
 import blackjax
-from dmipy_jax.signal_models import Stick, Ball, Zeppelin
-from dmipy_jax.distributions.sphere_distributions import SD1Watson
+from compore.signal_models import Stick, Ball, Zeppelin
+from compore.distributions.sphere_distributions import SD1Watson
 
 # -----------------------------------------------------------------------------
 # 1. NODDI Implementation (Stick + Zeppelin + Ball with Watson Dispersion)
@@ -131,7 +131,7 @@ def generate_synthetic_data(key, noddi_model):
                          # So strictly speaking, b=1000 means standard unit-less b-value if d is in um^2/ms?
                          # Usually: b=1000 s/mm^2, d=0.001 mm^2/s = 1 um^2/ms.
                          # 1000 * 0.001 = 1.
-                         # In dmipy-jax code: range is 1e-9.
+                         # In compore code: range is 1e-9.
                          # If I pass b=1000 into model that expects d ~ 1e-9, result is exp(-1000 * 1e-9) = exp(-1e-6) ~= 1.
                          # That's wrong. Diffusion should cause signal decay.
                          # So IF the code expects SI units d (1e-9), THEN bvals MUST be in SI units (1e9).

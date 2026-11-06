@@ -3,14 +3,14 @@
 Generator for the 'Synesthesia' Dataset (Synthetic Connectome 2.0).
 
 Mimics the acquisition protocol of Connectome 2.0 (Massive b-values up to 17,800)
-to test 'dmipy-jax' features in extreme conditions.
+to test 'compore' features in extreme conditions.
 """
 
 import numpy as np
 import jax.numpy as jnp
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.signal_models import cylinder_models, gaussian_models, zeppelin
+from compore.acquisition import JaxAcquisition
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.signal_models import cylinder_models, gaussian_models, zeppelin
 
 def generate_synthetic_connectome(shape=(20, 20, 5), snr=30):
     print("Generating Synthetic Connectome 2.0 Data...")

@@ -1,10 +1,10 @@
-# SBI4DWI
+# compore + lafix
 
 Diffusion-MRI microstructure in JAX: differentiable compartment models
-(ported from dmipy and tested against its closed forms), the PRISM-JAX
-multi-fixel refinement with a calibrated fixel posterior that plugs into DIPY,
+(ported from dmipy and tested against its closed forms) in **compore**, the
+**lafix** multi-fixel refinement with a calibrated Laplace fixel posterior that plugs into DIPY,
 simulation-based inference for amortised posteriors, and Fisher-information
-acquisition design. The import name is `dmipy_jax`.
+acquisition design. The import name is `compore`.
 
 Start with the README quickstart, then the tutorials. The validated results
 and how they were obtained are in the decision records, especially doc 008.
@@ -56,7 +56,8 @@ bibliography
 :maxdepth: 2
 :caption: API reference
 
-reference/dmipy_jax
+lafix_api
+reference/compore
 ```
 
 ## Conventions in one paragraph

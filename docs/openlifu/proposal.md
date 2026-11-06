@@ -253,9 +253,9 @@ The SCI Institute (Scientific Computing and Imaging Institute, University of Uta
 
 We already have a working loader and verification pipeline:
 
-- `sbi4dwi/dmipy_jax/io/sci_head_loader.py` -- Loads the `.mat` mesh into JAX-compatible arrays (handles both scipy and HDF5 formats)
+- `sbi4dwi/compore/io/sci_head_loader.py` -- Loads the `.mat` mesh into JAX-compatible arrays (handles both scipy and HDF5 formats)
 - `sbi4dwi/scripts/visualization/inspect_sci_mesh.py` -- Mesh inspection and validation
-- `sbi4dwi/dmipy_jax/tests/verify_sci_loader.py` -- Automated verification (index bounds, tissue label enumeration)
+- `sbi4dwi/compore/tests/verify_sci_loader.py` -- Automated verification (index bounds, tissue label enumeration)
 - `sbi4dwi/scripts/simulation/run_mmc_pipeline.py` -- Demonstrates scalp surface extraction, source placement, and Kernel Flow optode array layout on the mesh
 
 ### 4.3 From Mesh to Acoustic Simulation

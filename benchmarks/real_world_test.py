@@ -1,7 +1,7 @@
 import numpy as np
 import jax.numpy as jnp
 from dipy.data import read_sherbrooke_3shell
-from dmipy_jax.signal_models import g2_zeppelin
+from compore.signal_models import g2_zeppelin
 import time
 
 def run_benchmark():

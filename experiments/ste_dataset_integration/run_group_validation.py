@@ -6,8 +6,8 @@ import time
 import os
 import glob
 import pandas as pd
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.gradients.aganj_estimator import fit_aganj_gradients
+from compore.acquisition import JaxAcquisition
+from compore.gradients.aganj_estimator import fit_aganj_gradients
 
 def run_group_validation():
     print("--- Aganj Gradient Estimator: Group Validation (10+ Subjects) ---")

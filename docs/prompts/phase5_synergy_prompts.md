@@ -18,7 +18,7 @@ We currently use analytical formulas for PGSE/OGSE. We want a universal model $S
 We will use `diffrax` for the CDE solver ($d\mathbf{z} = f(\mathbf{z}) dX$) and JAX for optimization.
 
 ## Requirements
-1.  **Create `dmipy_jax/biophysics/neural_cde.py`**:
+1.  **Create `compore/biophysics/neural_cde.py`**:
     *   Define `NeuralCDE(eqx.Module)`.
     *   Use `diffrax.ControlTerm` with `diffrax.LinearInterpolation` of the gradient waveform $\mathbf{G}(t)$.
     *   The hidden state $\mathbf{z}(t)$ evolves via an MLP vector field $f_\theta$.
@@ -58,12 +58,12 @@ Running Monte Carlo simulations is too slow for inverse fitting. We need a diffe
 
 ## Requirements
 1.  **Data Generation (`benchmarks/generate_emulator_data.py`)**:
-    *   Use `dmipy_jax/core/particle_engine.py`.
+    *   Use `compore/core/particle_engine.py`.
     *   Simulate restricted diffusion in **Cylinders** of varying radii $R \in [1, 10]\mu m$.
     *   Generate 1,000 parameter combinations (Dataset size: 10k signals).
     *   Save dataset.
 2.  **Emulator Training (`experiments/train_emulator.py`)**:
-    *   Load `dmipy_jax/biophysics/neural_signal.py` (ICNN).
+    *   Load `compore/biophysics/neural_signal.py` (ICNN).
     *   Train `NeuralSignalModel` to regress the JAX-MD outputs.
     *   Loss: MSE + Convexity Regularization is inherent.
 3.  **Emulator Verification**:
@@ -103,7 +103,7 @@ Signal Equation: $S(b, \tau) = \sum f_i \exp(-b D_i - \tau/T_{2,i})$.
 This is a 2D sum-of-exponentials.
 
 ## Requirements
-1.  **Extend `dmipy_jax/algebra/initializers.py`**:
+1.  **Extend `compore/algebra/initializers.py`**:
     *   Implement `get_t2_diffusion_initializer(protocol)`.
     *   Select data points at differing $b$ (Diffusion weighting) and $\tau$ (Echo Time).
     *   Formulate the symbolic system $y_{jk} = \sum f_i X_i^j Y_i^k$.

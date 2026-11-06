@@ -2,7 +2,7 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.models.fw_dti import SpatiallyRegularizedFWDTI, fw_dti_predict
+from compore.models.fw_dti import SpatiallyRegularizedFWDTI, fw_dti_predict
 
 def test_fw_dti_run():
     # 1. Setup small grid

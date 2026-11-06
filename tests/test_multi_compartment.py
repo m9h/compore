@@ -2,10 +2,10 @@ import pytest
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.signal_models.stick import Stick
-from dmipy_jax.gaussian import G1Ball
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.signal_models.stick import Stick
+from compore.gaussian import G1Ball
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.acquisition import JaxAcquisition
 
 # Fixture for setup
 @pytest.fixture

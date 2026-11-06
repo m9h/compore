@@ -5,7 +5,7 @@ import jax.numpy as jnp
 import equinox as eqx
 import pytest
 
-from dmipy_jax.inference.mdn import (
+from compore.inference.mdn import (
     MixtureDensityNetwork,
     ResidualMDN,
     mdn_loss,

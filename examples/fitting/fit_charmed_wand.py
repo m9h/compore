@@ -7,8 +7,8 @@ import nibabel as nib
 import os
 import time
 
-from dmipy_jax.signal_models.cylinder_models import RestrictedCylinder
-from dmipy_jax.signal_models import g2_zeppelin
+from compore.signal_models.cylinder_models import RestrictedCylinder
+from compore.signal_models import g2_zeppelin
 from wand_loader import WandLoader
 
 jax.config.update("jax_enable_x64", False)
@@ -43,7 +43,7 @@ def charmed_model_fn(params, bvals, bvecs, big_delta, small_delta):
     
     # Actually, let's look at cylinder.c2_cylinder signature.
     # It takes mu_cart.
-    from dmipy_jax.signal_models.cylinder_models import c2_cylinder
+    from compore.signal_models.cylinder_models import c2_cylinder
     signal_intra = c2_cylinder(bvals, bvecs, mu_cart, lambda_par_intra, diameter, big_delta, small_delta)
     
     # Extra: Zeppelin

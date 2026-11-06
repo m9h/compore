@@ -5,7 +5,7 @@ import jax.random as jr
 import matplotlib.pyplot as plt
 import equinox as eqx
 import optax
-from dmipy_jax.core.networks import SIREN
+from compore.core.networks import SIREN
 
 def verify_siren():
     key = jr.PRNGKey(0)

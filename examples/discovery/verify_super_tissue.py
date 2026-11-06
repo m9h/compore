@@ -1,9 +1,9 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.models.super_tissue_model import SuperTissueModel
-from dmipy_jax.fitting.sparse import SparsityLMFitter
-from dmipy_jax.core.acquisition import SimpleAcquisitionScheme
+from compore.models.super_tissue_model import SuperTissueModel
+from compore.fitting.sparse import SparsityLMFitter
+from compore.core.acquisition import SimpleAcquisitionScheme
 
 def verify_model_discovery():
     print("Verifying Automated Model Discovery...")

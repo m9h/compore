@@ -2,7 +2,7 @@ import jax.numpy as jnp
 import equinox as eqx
 from jaxtyping import Float, Array
 from typing import Optional, Any
-from dmipy_jax.core.acquisition import SimpleAcquisitionScheme
+from compore.core.acquisition import SimpleAcquisitionScheme
 
 class STEAcquisitionScheme(SimpleAcquisitionScheme):
     """

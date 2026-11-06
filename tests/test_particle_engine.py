@@ -3,7 +3,7 @@ import jax.numpy as jnp
 from jax_md import space
 import numpy as np
 import pytest
-from dmipy_jax.core import particle_engine
+from compore.core import particle_engine
 
 def test_brownian_step_isotropic():
     """Verifies that isotropic diffusion matches MSD = 6*D*t in 3D."""

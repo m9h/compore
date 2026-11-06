@@ -3,11 +3,11 @@ import jax
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
 import numpy as np
-from dmipy_jax.signal_models.ivim import IVIM
-from dmipy_jax.core.acquisition import SimpleAcquisitionScheme
+from compore.signal_models.ivim import IVIM
+from compore.core.acquisition import SimpleAcquisitionScheme
 import optax
 import equinox as eqx
-from dmipy_jax.fitting.optimization import VoxelFitter
+from compore.fitting.optimization import VoxelFitter
 
 # Enable 64-bit precision for stability
 jax.config.update("jax_enable_x64", True)

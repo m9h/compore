@@ -21,7 +21,7 @@ From: nvcr.io/nvidia/pytorch:25.12-py3
 %post
     cd /app
     
-    # Install dmipy-jax and its dependencies
+    # Install compore and its dependencies
     # Using the same command as Dockerfile
     pip install -U "jax[cuda12]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
     pip install .
@@ -33,5 +33,5 @@ From: nvcr.io/nvidia/pytorch:25.12-py3
     python -c "import jax; print(jax.devices())"
 
 %labels
-    Author dmipy-jax-team
+    Author compore
     Version v0.1.0

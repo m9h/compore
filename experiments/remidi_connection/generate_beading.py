@@ -7,10 +7,10 @@ import os
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-from dmipy_jax.simulation.substrates.caterpillar import CATERPillarOracle
-from dmipy_jax.simulation.monte_carlo import simulate_ground_truth
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.cylinder import C1Stick
+from compore.simulation.substrates.caterpillar import CATERPillarOracle
+from compore.simulation.monte_carlo import simulate_ground_truth
+from compore.acquisition import JaxAcquisition
+from compore.cylinder import C1Stick
 
 def main():
     print("--- ReMiDi Connection: Model Mismatch Demo ---")
@@ -100,7 +100,7 @@ def main():
         # 0..delta: G
         # delta..Delta: 0
         # Delta..Delta+delta: -G (if using 180 refoc is handled by signal eq? No, standard PGSE uses -G or effective G)
-        # dmipy-jax simulator accumulates phase `gamma * x * g * dt`.
+        # compore simulator accumulates phase `gamma * x * g * dt`.
         # Standard PGSE (spin echo) effectively reverses phase accumulation.
         # We can mimic this by flipping gradient sign in 2nd lobe.
         

@@ -8,9 +8,9 @@ import nibabel as nib
 import time
 import os
 
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.cylinder import C2Cylinder, C1Stick
-from dmipy_jax.distributions.distributions import DD1Gamma
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.cylinder import C2Cylinder, C1Stick
+from compore.distributions.distributions import DD1Gamma
 from wand_loader import WandLoader
 
 # Set JAX to use 64-bit for precision if needed, or 32 for speed

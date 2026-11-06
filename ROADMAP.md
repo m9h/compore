@@ -8,7 +8,7 @@
 
 Everything from `dmipy` porting to the latest SIREN networks.
 
-- [x] **Core Infrastructure**: `dmipy-jax`, `JaxAcquisition`, `equinox`/`diffrax` stack.
+- [x] **Core Infrastructure**: `compore`, `JaxAcquisition`, `equinox`/`diffrax` stack.
 - [x] **Differentiable Physics**: Bloch Simulator, Particle Engine, Differentiable SDEs.
 - [x] **Optimization & OED**: CRB Minimization, Bayesian OED, Algebraic Protocol Design.
 - [x] **Simulation-Based Inference (SBI)**:
@@ -17,7 +17,7 @@ Everything from `dmipy` porting to the latest SIREN networks.
     -   Hardware acceleration (TPU/GPU).
 - [x] **Advanced Biophysics**:
     -   Neural Exchange (Neural ODEs).
-    -   **SIREN Networks**: Continuous signal representation (implemented in `dmipy_jax/core/networks.py`).
+    -   **SIREN Networks**: Continuous signal representation (implemented in `compore/core/networks.py`).
 
 ---
 
@@ -27,7 +27,7 @@ Everything from `dmipy` porting to the latest SIREN networks.
 
 - [ ] **Differentiable Histology Bridge**:
     -   **Dataset**: [Histo-µSim](https://zenodo.org/records/14559356) (Histology-informed microstructural diffusion simulations).
-    -   **Task**: Create `dmipy_jax/validation/histology.py`.
+    -   **Task**: Create `compore/validation/histology.py`.
     -   **Validation Loop**: Differentiate fitting error w.r.t histology-predicted signals to validate microstructural indices (e.g., cell radius vs. actual radius).
 
 - [ ] **Phanthom Validation**:
@@ -44,7 +44,7 @@ Everything from `dmipy` porting to the latest SIREN networks.
     -   **Context**: Multi-shell HARDI data from glioma patients.
     -   **Objective**: Test if SBI/SIREN models can delineate tumor boundaries better than standard DTI/CSD.
 - [ ] **Pathology-Specific Priors**:
-    -   Adapt `dmipy_jax` priors for infilatrating tumor tissue (e.g., increased diffusivity, reduced anisotropy).
+    -   Adapt `compore` priors for infilatrating tumor tissue (e.g., increased diffusivity, reduced anisotropy).
     -   Implement "Tumor-Aware" SBI networks trained on mixed healthy/pathological simulations.
 - [ ] **Clinical Metrics**:
     -   Compare "Time-to-Inference" vs. standard tools (FSL/Mrtrix).
@@ -56,16 +56,16 @@ Everything from `dmipy` porting to the latest SIREN networks.
 
 ### 1. Differentiable Histology Bridge (Priority 1)
 *   **Goal**: Prove biological accuracy using **Histo-µSim**.
-*   **Action**: Implement `HistoDataset` loader and `HistologySimulator` in `dmipy_jax/validation/histology.py`.
+*   **Action**: Implement `HistoDataset` loader and `HistologySimulator` in `compore/validation/histology.py`.
 
 ### 2. Clinical Dataset Pipeline (Priority 2)
 *   **Goal**: Ingest real clinical data.
-*   **Action**: Create `dmipy_jax/data/openneuro.py` to fetch and preprocess Basic Tumor Center (BTC) datasets from OpenNeuro.
+*   **Action**: Create `compore/data/openneuro.py` to fetch and preprocess Basic Tumor Center (BTC) datasets from OpenNeuro.
 *   **Verification**: Run standard DTI fit on a glioma subject and visualize the tumor leveraging JAX acceleration.
 
 ### 3. Multi-Modal Degeneracy Resolution
 *   **Context**: Combine Diffusion with T1/T2 maps (available in OpenNeuro datasets) to resolve microstructure ambiguity.
-*   **Action**: Implement Joint T1-Diffusion Inversion in `dmipy_jax/core/multimodal.py`.
+*   **Action**: Implement Joint T1-Diffusion Inversion in `compore/core/multimodal.py`.
 
 ---
 

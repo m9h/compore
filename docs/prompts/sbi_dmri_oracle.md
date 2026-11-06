@@ -1,6 +1,6 @@
 # Task: Generate SBI_dMRI Oracle Data
 
-**Objective**: Use the provided Docker/Singularity container to generate a "Gold Standard" test set from the `SBI_dMRI` repository. This dataset will serve as the ground truth oracle for benchmarking `dmipy-jax`.
+**Objective**: Use the provided Docker/Singularity container to generate a "Gold Standard" test set from the `SBI_dMRI` repository. This dataset will serve as the ground truth oracle for benchmarking `compore`.
 
 **Infrastructure**: NVIDIA DGX / Spark Cluster.
 **Container Definition**: `docker/Dockerfile.sbi_dmri`
@@ -32,7 +32,7 @@
     - `protocol.json` or similar metadata.
 
 4.  **Integration**:
-    Once generated, point the `dmipy_jax.benchmarks.oracle_wrapper.SBIdMRIOracle` to the generated posterior files (if training) or use the data directly for "Inverse Validity" testing.
+    Once generated, point the `compore.benchmarks.oracle_wrapper.SBIdMRIOracle` to the generated posterior files (if training) or use the data directly for "Inverse Validity" testing.
 
 ## Deliverables
 - [ ] 10k Samples for HCP Protocol.

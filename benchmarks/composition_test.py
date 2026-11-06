@@ -1,10 +1,10 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.composer import compose_models
-from dmipy_jax.gaussian import G1Ball
-from dmipy_jax.cylinder import C1Stick
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.composer import compose_models
+from compore.gaussian import G1Ball
+from compore.cylinder import C1Stick
+from compore.acquisition import JaxAcquisition
 import time
 
 def test_composition():

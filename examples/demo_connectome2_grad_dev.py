@@ -5,7 +5,7 @@ This script demonstrates:
 1. Loading Connectome 2.0 data (or synthesizing it if not present).
 2. Loading/Synthesizing a Gradient Nonlinearity Tensor (grad_dev).
 3. Applying the gradient nonlinearity to the acquisition scheme (B-value inhomogeneity).
-4. Fitting the data using `dmipy-jax` with spatially varying acquisition.
+4. Fitting the data using `compore` with spatially varying acquisition.
 5. Comparing "Standard" (uncorrected) vs "Corrected" results.
 
 Objective: Flatten the b-value inhomogeneity and recover accurate microstructure.
@@ -17,11 +17,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
 
-from dmipy_jax.io.connectome2 import load_connectome2_mri, load_gradient_nonlinearity, apply_gradient_nonlinearity
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.signal_models import cylinder_models, gaussian_models, zeppelin
-from dmipy_jax.fitting.optimization import OptimistixFitter
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.io.connectome2 import load_connectome2_mri, load_gradient_nonlinearity, apply_gradient_nonlinearity
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.signal_models import cylinder_models, gaussian_models, zeppelin
+from compore.fitting.optimization import OptimistixFitter
+from compore.acquisition import JaxAcquisition
 
 def synthesize_data_and_grad_dev(shape=(20, 20, 1)):
     """

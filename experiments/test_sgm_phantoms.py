@@ -5,7 +5,7 @@ import equinox as eqx
 import optax
 import diffrax
 import matplotlib.pyplot as plt
-from dmipy_jax.simulation.phantoms import SGM
+from compore.simulation.phantoms import SGM
 
 def main():
     print("=== SGM Verification Experiment ===")

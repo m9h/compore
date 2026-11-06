@@ -9,10 +9,10 @@ import jax
 import jax.numpy as jnp
 import pytest
 
-from dmipy_jax.pipeline.config import SBIPipelineConfig
-from dmipy_jax.pipeline.checkpoint import save_checkpoint, load_checkpoint
-from dmipy_jax.pipeline.train import _NormalisedMDN
-from dmipy_jax.inference.mdn import MixtureDensityNetwork
+from compore.pipeline.config import SBIPipelineConfig
+from compore.pipeline.checkpoint import save_checkpoint, load_checkpoint
+from compore.pipeline.train import _NormalisedMDN
+from compore.inference.mdn import MixtureDensityNetwork
 
 
 class TestCheckpointRoundTrip:

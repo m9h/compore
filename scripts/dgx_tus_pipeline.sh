@@ -37,16 +37,16 @@ echo ""
 
 # 4. Tier 1: Fast CPU unit tests
 echo "--- Tier 1: Unit Tests ---"
-uv run pytest dmipy_jax/tests/biophysics/test_acoustic.py \
-              dmipy_jax/tests/biophysics/test_mesh_rasterizer.py \
+uv run pytest compore/tests/biophysics/test_acoustic.py \
+              compore/tests/biophysics/test_mesh_rasterizer.py \
               --noconftest -v --tb=short
 echo ""
 
 # 5. Tier 2: j-Wave adapter tests (includes simulation)
 echo "--- Tier 2: j-Wave Adapter Tests ---"
-uv run pytest dmipy_jax/tests/biophysics/test_jwave_adapter.py \
+uv run pytest compore/tests/biophysics/test_jwave_adapter.py \
               --noconftest -v --tb=short -m "not slow" 2>/dev/null || \
-uv run pytest dmipy_jax/tests/biophysics/test_jwave_adapter.py \
+uv run pytest compore/tests/biophysics/test_jwave_adapter.py \
               --noconftest -v --tb=short
 echo ""
 

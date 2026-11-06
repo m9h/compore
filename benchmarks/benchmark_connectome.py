@@ -4,10 +4,10 @@ import jax.numpy as jnp
 import numpy as np
 import time
 import equinox as eqx
-from dmipy_jax.core.acquisition import acquisition_scheme_from_bvalues
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.signal_models.cylinder_models import CallaghanRestrictedCylinder
-from dmipy_jax.signal_models.gaussian_models import Ball
+from compore.core.acquisition import acquisition_scheme_from_bvalues
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.signal_models.cylinder_models import CallaghanRestrictedCylinder
+from compore.signal_models.gaussian_models import Ball
 
 def run_benchmark():
     print("Loading Oracle Data...")
@@ -56,7 +56,7 @@ def run_benchmark():
     
     # Map input data to dictionary
     # mus: (N, 3). Convert to spherical? 
-    # dmipy-jax models usually take Cartesian if shape is (3,) or spherical if (2,).
+    # compore models usually take Cartesian if shape is (3,) or spherical if (2,).
     # c3_cylinder_callaghan takes mu (3,) cartesian if provided.
     # BUT the Model class __call__ converts spherical to Cartesian!
     # "        # Convert spherical [theta, phi] to cartesian vector
@@ -124,8 +124,8 @@ def run_benchmark():
     print(f"Throughput: {n_samples/duration:.0f} samples/s")
     
     # Save
-    np.savez('data/dmipy_jax_connectome.npz', signals=signals_jax)
-    print("Saved 'data/dmipy_jax_connectome.npz'")
+    np.savez('data/compore_connectome.npz', signals=signals_jax)
+    print("Saved 'data/compore_connectome.npz'")
 
 if __name__ == "__main__":
     run_benchmark()

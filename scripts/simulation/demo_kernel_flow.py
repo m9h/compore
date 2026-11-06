@@ -4,10 +4,10 @@ import os
 import sys
 import jax.numpy as jnp
 
-# Add local path to find dmipy_jax
+# Add local path to find compore
 sys.path.append(os.getcwd())
 
-from dmipy_jax.io.sci_head_loader import load_sci_head_mesh
+from compore.io.sci_head_loader import load_sci_head_mesh
 
 def demo_kernel_flow_v2():
     print("Kernel Flow 2.0: Loading SCI Head Model (Full Topology)...")

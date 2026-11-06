@@ -5,7 +5,7 @@ Tests for Simulation-Based Calibration (SBC) diagnostics.
 import numpy as np
 import pytest
 
-from dmipy_jax.pipeline.sbc import SBCResult, compute_ranks
+from compore.pipeline.sbc import SBCResult, compute_ranks
 
 
 class TestSBCResultShapes:

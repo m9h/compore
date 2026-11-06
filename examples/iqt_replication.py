@@ -19,8 +19,8 @@ import dipy.reconst.dti as dti
 from dipy.core.gradients import gradient_table
 from dipy.io.gradients import read_bvals_bvecs
 
-# dmipy-jax imports
-from dmipy_jax.io.hcp import load_hcp_subject
+# compore imports
+from compore.io.hcp import load_hcp_subject
 
 def compute_psnr(gt, recon, dynamic_range=None):
     """

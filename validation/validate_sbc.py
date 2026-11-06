@@ -18,11 +18,11 @@ import jax.numpy as jnp
 import numpy as np
 import time
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.config import SBIPipelineConfig
-from dmipy_jax.pipeline.simulator import ModelSimulator
-from dmipy_jax.pipeline.train import train_sbi
-from dmipy_jax.pipeline.sbc import SBCDiagnostic
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.config import SBIPipelineConfig
+from compore.pipeline.simulator import ModelSimulator
+from compore.pipeline.train import train_sbi
+from compore.pipeline.sbc import SBCDiagnostic
 
 
 def make_dti_simulator():

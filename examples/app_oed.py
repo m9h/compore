@@ -5,8 +5,8 @@ import jax.numpy as jnp
 from jax import jit
 import matplotlib.pyplot as plt
 import numpy as np
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.design.oed import optimize_protocol
+from compore.acquisition import JaxAcquisition
+from compore.design.oed import optimize_protocol
 from scipy.special import jnp_zeros
 
 # =============================================================================

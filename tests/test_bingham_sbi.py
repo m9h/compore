@@ -9,10 +9,10 @@ import numpy as np
 import pytest
 import equinox as eqx
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.config import SBIPipelineConfig
-from dmipy_jax.pipeline.train import train_sbi
-from dmipy_jax.pipeline.models.bingham_noddi import (
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.config import SBIPipelineConfig
+from compore.pipeline.train import train_sbi
+from compore.pipeline.models.bingham_noddi import (
     build_bingham_noddi_simulator,
     get_bingham_noddi_config,
 )

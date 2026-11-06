@@ -8,8 +8,8 @@ from typing import NamedTuple
 # Add project root
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from dmipy_jax.io.multi_te import MultiTELoader
-from dmipy_jax.models.combined_diff_t2 import CombinedStandardModel
+from compore.io.multi_te import MultiTELoader
+from compore.models.combined_diff_t2 import CombinedStandardModel
 
 class AcquisitionScheme(NamedTuple):
     bvalues: jnp.ndarray

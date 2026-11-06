@@ -1,9 +1,9 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.design.oed import optimize_protocol, d_optimality_loss
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.cylinder import C1Stick
+from compore.design.oed import optimize_protocol, d_optimality_loss
+from compore.acquisition import JaxAcquisition
+from compore.cylinder import C1Stick
 
 def main():
     print("Setting up OED verification...")

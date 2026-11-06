@@ -10,13 +10,13 @@ from dmipy.signal_models import cylinder_models, gaussian_models
 from dmipy.core.modeling_framework import MultiCompartmentModel
 from dmipy.optimizers import amico_cvxpy
 
-# dmipy-jax imports
-from dmipy_jax.inverse.amico import AMICOSolver
-# We need to wrap dmipy signal models or use dmipy-jax equivalents for the JAX solver
+# compore imports
+from compore.inverse.amico import AMICOSolver
+# We need to wrap dmipy signal models or use compore equivalents for the JAX solver
 # The JAX solver expects a JAX-compatible model callable.
-import dmipy_jax.signal_models.cylinder_models as jax_cylinder
-import dmipy_jax.signal_models.gaussian_models as jax_gaussian
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
+import compore.signal_models.cylinder_models as jax_cylinder
+import compore.signal_models.gaussian_models as jax_gaussian
+from compore.core.modeling_framework import JaxMultiCompartmentModel
 
 def benchmark():
     print("Setting up benchmark...")
@@ -153,11 +153,11 @@ def benchmark():
     grid_map['partial_volume_0'][0] = 1
     
     # ----------------------------------------------------------------
-    # 3. Setup SCICO Optimizer (dmipy-jax)
+    # 3. Setup SCICO Optimizer (compore)
     # ----------------------------------------------------------------
     print("\n--- Preparing SCICO/JAX Optimizer ---")
     # For JAX solver, we need to pass dictionary params to generate kernels.
-    # dmipy-jax AMICOSolver takes `dictionary_params`.
+    # compore AMICOSolver takes `dictionary_params`.
     
     # Define equivalent JAX model logic
     # We can pass a simple callable that simulates signal from params

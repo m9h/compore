@@ -1,8 +1,8 @@
 
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.simulation.scanner.sequences import GeneralSequence, SpinEchoSequence
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.simulation.scanner.sequences import GeneralSequence, SpinEchoSequence
+from compore.acquisition import JaxAcquisition
 
 # Try to import pypulseq, but don't fail hard if not installed (soft dependency pattern)
 try:

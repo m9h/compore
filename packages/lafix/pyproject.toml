@@ -1,0 +1,31 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "lafix"
+version = "0.1.0"
+description = "Laplace fixel posteriors: refine any DIPY peaks with a differentiable multi-fixel fit and a calibrated per-fixel uncertainty"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.12"
+authors = [{ name = "Morgan Hough" }]
+dependencies = [
+  "compore",
+  "jax",
+  "numpy",
+  "scipy",
+  "optax>=0.2.6",
+  "dipy>=1.12.1",
+  "nibabel",
+]
+
+[project.scripts]
+dipy_refine_peaks = "lafix.workflow:main"
+lafix = "lafix.workflow:main"
+
+[tool.uv.sources]
+compore = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["lafix"]

@@ -2,12 +2,12 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.signal_models.stick import Stick
-from dmipy_jax.signal_models.zeppelin import Zeppelin
-from dmipy_jax.signal_models.gaussian_models import Ball
-from dmipy_jax.signal_models.sphere_models import SphereStejskalTanner
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.signal_models.stick import Stick
+from compore.signal_models.zeppelin import Zeppelin
+from compore.signal_models.gaussian_models import Ball
+from compore.signal_models.sphere_models import SphereStejskalTanner
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.acquisition import JaxAcquisition
 
 def get_3shell_acquisition_scheme_jax():
     """
@@ -28,7 +28,7 @@ def get_3shell_acquisition_scheme_jax():
 
 def simulate_noddi_like_dataset_jax(dimensions=(10, 10, 10)):
     """
-    Simulates a NODDI-like dataset (Stick + Zeppelin + Ball) using dmipy_jax.
+    Simulates a NODDI-like dataset (Stick + Zeppelin + Ball) using compore.
     """
     print("Constructing JAX NODDI model...")
     # 1. Define Components

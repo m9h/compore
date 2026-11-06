@@ -10,10 +10,10 @@ from pathlib import Path
 # Set JAX to use CPU or GPU as available (default)
 # os.environ["JAX_PLATFORM_NAME"] = "cpu" # Uncomment if GPU issues
 
-from dmipy_jax.data.ixi import load_ixi_subject
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.models import BallStick
-from dmipy_jax.fitting.optimization import OptimistixFitter
+from compore.data.ixi import load_ixi_subject
+from compore.acquisition import JaxAcquisition
+from compore.models import BallStick
+from compore.fitting.optimization import OptimistixFitter
 import optimistix
 
 def main():

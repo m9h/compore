@@ -4,7 +4,7 @@
 the angular uncertainty tracks the actual error."""
 import argparse, time
 import numpy as np
-from dmipy_jax.prism import prism_jax as pj, prism_uncertainty as pu
+from lafix import prism_jax as pj, prism_uncertainty as pu
 from validation.lib import prism_synthetic as ps
 def main():
     ap = argparse.ArgumentParser()

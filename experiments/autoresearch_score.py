@@ -64,7 +64,7 @@ def build_score_net(cfg: ScoreExperimentConfig, key, signal_dim: int,
     """Build a score network according to the experiment config."""
     import e3nn_jax as e3nn
 
-    from dmipy_jax.inference.score_posterior import (
+    from compore.inference.score_posterior import (
         E3Linear, FiLMModulation, VPSchedule,
     )
 
@@ -212,7 +212,7 @@ def run_experiment(cfg: ScoreExperimentConfig, seed: int = 0):
         make_hcp_like_acquisition, build_ball_2stick_simulator,
         angular_error_deg_cartesian,
     )
-    from dmipy_jax.inference.score_posterior import (
+    from compore.inference.score_posterior import (
         VPSchedule, train_score_posterior, sample_posterior,
     )
 

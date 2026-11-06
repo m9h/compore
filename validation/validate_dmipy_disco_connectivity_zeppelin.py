@@ -25,10 +25,10 @@ import numpy as np
 import jax
 import jax.numpy as jnp
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.library.generator import LibraryGenerator
-from dmipy_jax.library.matcher import DictionaryMatcher
-from dmipy_jax.library.storage import SimulationLibrary
+from compore.acquisition import JaxAcquisition
+from compore.library.generator import LibraryGenerator
+from compore.library.matcher import DictionaryMatcher
+from compore.library.storage import SimulationLibrary
 from validation.lib.connectivity_metrics import summarize_method
 from validation.lib.dmipy_disco_dict import (
     build_disco_tuned_3d_stick_zeppelin_simulator,

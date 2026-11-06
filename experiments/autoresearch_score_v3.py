@@ -45,7 +45,7 @@ def run(cfg: Cfg, seed: int = 0):
         make_hcp_like_acquisition, build_ball_2stick_simulator,
         angular_error_deg_cartesian,
     )
-    from dmipy_jax.inference.score_posterior import (
+    from compore.inference.score_posterior import (
         MLPScoreNet, VPSchedule, train_score_posterior, sample_posterior,
     )
 

@@ -1,26 +1,34 @@
-# SBI4DWI
+# compore + lafix
 
 [![CI](https://github.com/m9h/sbi4dwi/actions/workflows/ci.yml/badge.svg)](https://github.com/m9h/sbi4dwi/actions/workflows/ci.yml)
 [![python](https://img.shields.io/badge/Python-3.12%2B-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![JAX](https://img.shields.io/badge/JAX-Accelerated-9cf)](https://github.com/google/jax)
 
-Diffusion-MRI microstructure in JAX: differentiable compartment models, a
-multi-fixel refinement stage with a calibrated fixel posterior that plugs into
-DIPY, simulation-based inference (SBI) for amortised posteriors, and
-Fisher-information acquisition design. The import name is still `dmipy_jax`;
-the compartment models began as a JAX port of
-[dmipy](https://github.com/AthenaEPI/dmipy) and are tested against its closed
-forms.
+Two packages from one repository (doc 012 §7):
+
+- **compore** ("compartments and pores"): differentiable diffusion-MRI
+  microstructure physics in JAX — compartment and pore kernels, Monte Carlo
+  substrate oracles behind one interface, Fisher-information acquisition
+  design, and simulation-based inference (SBI) with uncertainty tooling.
+  The compartment models began as a JAX port of
+  [dmipy](https://github.com/AthenaEPI/dmipy) and are tested against its
+  closed forms.
+- **lafix** ("Laplace fixel", `packages/lafix`): refine any DIPY peaks with a
+  differentiable multi-fixel fit and get a calibrated per-fixel Laplace
+  posterior. Depends on compore. Whole brain in about two minutes on CPU.
+
+Until 2026-11-05 this repository was named dmipy-jax, then SBI4DWI; the
+GitHub URL below still says so until it is renamed.
 
 ## What it does
 
 | | module | what you get |
 |---|---|---|
-| **PRISM-JAX refine** | `dmipy_jax.prism` | Takes any DIPY peaks (CSD, MSMT-CSD, FORCE), fits a K-fixel stick + zeppelin + CSF/GM model per voxel with a Rician likelihood, learned axial diffusivity and spatial priors, and returns refined peaks plus a **Laplace posterior per fixel** (orientation σ, intra-axonal fraction σ). CLI: `dipy_refine_peaks`. |
-| **Compartment models** | `dmipy_jax.signal_models` | Ball, Stick, Zeppelin, Tensor, Soderman and Callaghan cylinders, Stejskal–Tanner / GPD / Callaghan spheres, planes, Watson/Bingham dispersion, NODDI, SANDI. `eqx.Module` pytrees, SI units, `jit`/`vmap`/`grad`-ready. |
-| **SBI pipeline** | `dmipy_jax.pipeline` | `ModelSimulator` (prior → forward → Rician noise → b0-normalised signal) → `train_sbi` (MDN or FlowJAX flow) → checkpoint → `SBIPredictor` on NIfTI volumes. SBC, PPC, conformal, OOD and ensemble checks. |
-| **Simulation** | `dmipy_jax.simulation` | FEM matrix-formalism on meshes, Monte Carlo, differentiable SDE walkers, Karger exchange; CATERPillar and MCMRSimulator.jl substrates behind an oracle boundary. |
+| **lafix refine** | `lafix` | Takes any DIPY peaks (CSD, MSMT-CSD, FORCE), fits a K-fixel stick + zeppelin + CSF/GM model per voxel with a Rician likelihood, learned axial diffusivity and spatial priors, and returns refined peaks plus a **Laplace posterior per fixel** (orientation σ, intra-axonal fraction σ). CLI: `dipy_refine_peaks` or `lafix`. |
+| **Compartment models** | `compore.signal_models` | Ball, Stick, Zeppelin, Tensor, Soderman and Callaghan cylinders, Stejskal–Tanner / GPD / Callaghan spheres, planes, Watson/Bingham dispersion, NODDI, SANDI. `eqx.Module` pytrees, SI units, `jit`/`vmap`/`grad`-ready. |
+| **SBI pipeline** | `compore.pipeline` | `ModelSimulator` (prior → forward → Rician noise → b0-normalised signal) → `train_sbi` (MDN or FlowJAX flow) → checkpoint → `SBIPredictor` on NIfTI volumes. SBC, PPC, conformal, OOD and ensemble checks. |
+| **Simulation** | `compore.simulation` | FEM matrix-formalism on meshes, Monte Carlo, differentiable SDE walkers, Karger exchange; CATERPillar and MCMRSimulator.jl substrates behind an oracle boundary. |
 | **Acquisition design** | `validation/design_*.py` | Fisher / Bayesian-CRLB protocol search (orbital RESOLVE, exchange protocols). |
 
 ## Results that are actually in the repository
@@ -34,7 +42,7 @@ substrates with 30–90° crossings, mean angular error):
 
 | method | crossings | single bundle |
 |---|---|---|
-| PRISM-JAX plus-x (ours) | **2.3–8.0°** | 6.7–6.9° |
+| lafix plus-x (ours) | **2.3–8.0°** | 6.7–6.9° |
 | FORCE (dipy master, seeded) | 9.7–16.6° | 6.7–8.7° |
 | SBI_dMRI amortised NPE | 4.6–13.1° | 1.2–2.8° |
 | MSMT-CSD | 5–23° | 4.5–5.5° |
@@ -48,7 +56,7 @@ fraction f_i vs AMICO-NODDI on the same data):
 
 | estimator | CCC | mean \|Δ\| | within-subject CoV |
 |---|---|---|---|
-| PRISM-JAX with isotropic prior (`fi_config`) | **0.867** | **0.036** | 6.8 % |
+| lafix with isotropic prior (`fi_config`) | **0.867** | **0.036** | 6.8 % |
 | NODDI NDI·(1−FWF) | 0.858 | 0.039 | 6.5 % |
 | DTI FA (reference) | 0.894 | 0.055 | 11.5 % |
 
@@ -78,8 +86,8 @@ uv sync --all-extras          # everything, incl. baselines (dmri-amico, torch)
 
 ```python
 import jax, jax.numpy as jnp, numpy as np
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.cylinder import C1Stick
+from compore.acquisition import JaxAcquisition
+from compore.cylinder import C1Stick
 
 rng = np.random.default_rng(0)
 g = rng.normal(size=(60, 3)); g /= np.linalg.norm(g, axis=1, keepdims=True)
@@ -103,7 +111,7 @@ dipy_refine_peaks dwi.nii.gz dwi.bval dwi.bvec mask.nii.gz msmt_peaks.pam5 \
 or in Python, after any DIPY reconstruction that gives a `PeaksAndMetrics`:
 
 ```python
-from dmipy_jax.prism import dipy_refine as dr
+from lafix import dipy_refine as dr
 
 cfg = dr.fi_config(n_fibres=3)       # recommended for f_i maps (isotropic-fraction prior)
 pam_refined, posterior, fit = dr.refine_peaks(data, gtab, mask, pam, n_fibres=3, cfg=cfg, affine=affine)
@@ -118,12 +126,12 @@ than `fi_config`, which trades that for an f_i map on par with NODDI).
 
 ```python
 import jax.numpy as jnp
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.simulator import ModelSimulator
-from dmipy_jax.pipeline.config import SBIPipelineConfig
-from dmipy_jax.pipeline.train import train_sbi
-from dmipy_jax.pipeline.checkpoint import save_checkpoint, load_checkpoint
-from dmipy_jax.pipeline.deploy import SBIPredictor
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.simulator import ModelSimulator
+from compore.pipeline.config import SBIPipelineConfig
+from compore.pipeline.train import train_sbi
+from compore.pipeline.checkpoint import save_checkpoint, load_checkpoint
+from compore.pipeline.deploy import SBIPredictor
 
 def forward_fn(params, acq):                     # mono-exponential: params = [D in um^2/ms]
     return jnp.exp(-acq.bvalues * params[0] * 1e-9)
@@ -147,19 +155,19 @@ Training and deployment b0-normalise identically inside `ModelSimulator` and
 ## Testing
 
 ```bash
-uv run pytest                      # dmipy_jax/tests + tests (about 6 min on CPU)
+uv run pytest                      # compore/tests + tests (about 6 min on CPU)
 JAX_PLATFORMS=cpu uv run pytest    # what CI runs
 uv run pytest docs/tutorials       # markdown tutorials as doctests (sybil)
 ```
 
 Compartment models are checked against closed forms transcribed from the
-original dmipy code (`dmipy_jax/tests/test_callaghan_reference.py`), not
+original dmipy code (`compore/tests/test_callaghan_reference.py`), not
 against a dmipy install.
 
 ## Layout
 
 ```
-dmipy_jax/        the package: signal_models, prism, pipeline, simulation, inference, fitting, io
+compore/        the package: signal_models, prism, pipeline, simulation, inference, fitting, io
 validation/       paper scripts (validate_*.py, hcp_*.py, design_*.py) and validation/lib (not shipped)
 tests/            top-level tests, incl. tests/validation for the PRISM stack
 docs/decisions/   ADRs and result logs; 008 = PRISM/HCP results, 009 = orbit design, 010 = package review
@@ -189,4 +197,4 @@ the models, cite dmipy:
 ## License
 
 MIT. Copyright (c) 2017 Rutger Fick & Demian Wassermann (dmipy signal models);
-Copyright (c) 2024–2026 Morgan Hough (SBI4DWI).
+Copyright (c) 2024–2026 Morgan Hough (compore / lafix).

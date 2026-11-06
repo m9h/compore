@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import time
 
-from dmipy_jax.distributions.distributions import DD1Gamma
-from dmipy_jax.distributions.distribute_models import DistributedModel
-from dmipy_jax.signal_models import cylinder_models
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
+from compore.distributions.distributions import DD1Gamma
+from compore.distributions.distribute_models import DistributedModel
+from compore.signal_models import cylinder_models
+from compore.core.modeling_framework import JaxMultiCompartmentModel
 
 def main():
     print("=== AxCaliber (Gamma-Distributed Cylinder) Synthetic Verification ===")

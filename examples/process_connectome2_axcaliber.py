@@ -4,11 +4,11 @@ import jax.numpy as jnp
 import numpy as np
 import time
 from pathlib import Path
-from dmipy_jax.io.connectome2 import fetch_connectome2, load_connectome2_mri
-from dmipy_jax.signal_models.cylinder_models import RestrictedCylinder
-from dmipy_jax.distributions.distributions import DD1Gamma
-from dmipy_jax.distributions.distribute_models import DistributedModel
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.io.connectome2 import fetch_connectome2, load_connectome2_mri
+from compore.signal_models.cylinder_models import RestrictedCylinder
+from compore.distributions.distributions import DD1Gamma
+from compore.distributions.distribute_models import DistributedModel
+from compore.acquisition import JaxAcquisition
 import optax
 import equinox as eqx
 

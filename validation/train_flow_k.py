@@ -15,7 +15,7 @@ from pathlib import Path
 import numpy as np, jax, jax.numpy as jnp, equinox as eqx
 sys.path.insert(0, str(Path(__file__).parent))
 from diagnose_flow_variants import build_flow, train
-from dmipy_jax.prism.prism_jax import PrismConfig, forward
+from lafix.prism_jax import PrismConfig, forward
 
 TWO_PI = 2 * np.pi
 

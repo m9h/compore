@@ -5,8 +5,8 @@ import numpy as np
 import jax
 import jax.numpy as jnp
 import pandas as pd
-from dmipy_jax.simulation.substrates.caterpillar import CATERPillarOracle
-from dmipy_jax.simulation.monte_carlo import simulate_ground_truth
+from compore.simulation.substrates.caterpillar import CATERPillarOracle
+from compore.simulation.monte_carlo import simulate_ground_truth
 
 try:
     # We will run this script with `uv run --with disimpy ...` so these should be available
@@ -18,7 +18,7 @@ except ImportError as e:
     DISIMPY_AVAILABLE = False
 
 def run_comparison():
-    print("=== CATERPillar + dmipy-jax vs Disimpy Validation ===")
+    print("=== CATERPillar + compore vs Disimpy Validation ===")
     
     # 1. Generate Substrate
     print("1. Generating CATERPillar Substrate...")
@@ -182,8 +182,8 @@ def run_comparison():
         disimpy_signal_val = None
         disimpy_time = 0.0
 
-    # 4. dmipy-jax Simulation
-    print("3. Running dmipy-jax Simulation...")
+    # 4. compore Simulation
+    print("3. Running compore Simulation...")
     start_time = time.time()
     
     # Init walkers: JAX SDF requires SI unit consistency!
@@ -246,7 +246,7 @@ def run_comparison():
     jax_signal = sim_fn(waveform_jax, D=diffusivity, dt=dt, N_particles=n_walkers, key=key)
     
     dmipy_time = time.time() - start_time
-    print(f"dmipy-jax Signal: {jax_signal:.4f} (Time: {dmipy_time:.2f}s)")
+    print(f"compore Signal: {jax_signal:.4f} (Time: {dmipy_time:.2f}s)")
     
     # 5. Compare
     if disimpy_signal_val is not None:

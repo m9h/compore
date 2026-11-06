@@ -3,9 +3,9 @@ import jax
 import jax.numpy as jnp
 import time
 import argparse
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.models.ball_stick import BallStick
-from dmipy_jax.models.c_noddi import CNODDI
+from compore.acquisition import JaxAcquisition
+from compore.models.ball_stick import BallStick
+from compore.models.c_noddi import CNODDI
 
 def benchmark_models(n_voxels=100_000, batch_size=100_000):
     print(f"Benchmarking on {n_voxels:,} voxels...")

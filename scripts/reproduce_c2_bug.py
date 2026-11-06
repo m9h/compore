@@ -1,6 +1,6 @@
 import jax
 import jax.numpy as jnp
-from dmipy_jax.signal_models.cylinder_models import c2_cylinder
+from compore.signal_models.cylinder_models import c2_cylinder
 
 def test_c2_bug():
     # Setup inputs

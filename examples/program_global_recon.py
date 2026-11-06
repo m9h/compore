@@ -16,9 +16,9 @@ import os
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/../benchmarks'))
 from generate_synthetic_hcp import generate_synthetic_connectome
 
-from dmipy_jax.inverse.global_amico import GlobalAMICOSolver
-from dmipy_jax.signal_models import cylinder_models, gaussian_models
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
+from compore.inverse.global_amico import GlobalAMICOSolver
+from compore.signal_models import cylinder_models, gaussian_models
+from compore.core.modeling_framework import JaxMultiCompartmentModel
 
 def run_global_recon_program():
     print("=== Testing Program: Global AMICO Reconstruction ===")

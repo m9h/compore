@@ -7,9 +7,9 @@ from pathlib import Path
 # Add project root to path
 sys.path.append("/home/mhough/dev/dmipy")
 
-from dmipy_jax.inverse.buckling import BucklingSimulator
-from dmipy_jax.inverse.solver import InverseSolver
-from dmipy_jax.inverse.metrics import compute_stress_fa
+from compore.inverse.buckling import BucklingSimulator
+from compore.inverse.solver import InverseSolver
+from compore.inverse.metrics import compute_stress_fa
 import jax.numpy as jnp
 
 def test_inverse_recovery():

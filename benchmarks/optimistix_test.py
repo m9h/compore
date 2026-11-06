@@ -1,9 +1,9 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.cylinder import C1Stick
-from dmipy_jax.fitting.optimization import OptimistixFitter
+from compore.acquisition import JaxAcquisition
+from compore.cylinder import C1Stick
+from compore.fitting.optimization import OptimistixFitter
 
 # 1. Setup Acquisition (SI Units: s/m^2)
 # 1000 s/mm^2 = 1e9 s/m^2

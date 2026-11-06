@@ -93,9 +93,9 @@ class TestDict3SelfRecovery:
         """Build a small 3-stick library, sample one entry, feed its signal
         back through DictionaryMatcher — must recover the parameters exactly."""
         import jax
-        from dmipy_jax.library.generator import LibraryGenerator
-        from dmipy_jax.library.matcher import DictionaryMatcher
-        from dmipy_jax.library.storage import SimulationLibrary
+        from compore.library.generator import LibraryGenerator
+        from compore.library.matcher import DictionaryMatcher
+        from compore.library.storage import SimulationLibrary
 
         acq = three_fiber.make_multishell_acquisition()
         sim = three_fiber.build_three_stick_simulator(acq)

@@ -5,7 +5,7 @@ import jax.numpy as jnp
 import matplotlib.pyplot as plt
 from gasp import simulation, responses
 import warnings
-from dmipy_jax.models.epg import JAXEPG
+from compore.models.epg import JAXEPG
 
 warnings.filterwarnings("ignore")
 

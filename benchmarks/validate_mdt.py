@@ -4,8 +4,8 @@ import jax
 import os
 import subprocess
 import matplotlib.pyplot as plt
-from dmipy_jax.signal_models import gaussian_models, cylinder_models, sphere_models
-from dmipy_jax import constants
+from compore.signal_models import gaussian_models, cylinder_models, sphere_models
+from compore import constants
 
 def get_bvals_bvecs():
     # Define a standard protocol
@@ -44,7 +44,7 @@ def generate_ballstick_params(n_samples=1000):
     phi = np.random.uniform(0, 2*np.pi, n_samples)
     mu = np.stack([np.sin(theta)*np.cos(phi), np.sin(theta)*np.sin(phi), np.cos(theta)], axis=1)
     
-    # Param dictionary for dmipy-jax and MDT (names must match MDT expectations or be mapped)
+    # Param dictionary for compore and MDT (names must match MDT expectations or be mapped)
     # MDT BallStick: Ball (d_iso) + Stick (d_par, theta, phi)
     # Actually MDT usually uses 'Tensor' for Stick (d_perp=0).
     # Standard MDT 'BallStick' might not exist as a single primitive, usually composite.
@@ -69,7 +69,7 @@ def generate_ballstick_params(n_samples=1000):
         'f_stick': f_stick
     }
 
-def run_dmipy_jax_zeppelin(bvals, bvecs, params):
+def run_compore_zeppelin(bvals, bvecs, params):
     # Zeppelin: Cylindrically symmetric tensor
     # Params: lambda_par, lambda_perp, mu
     d_par = jnp.array(params['d_par'])
@@ -87,7 +87,7 @@ def run_dmipy_jax_zeppelin(bvals, bvecs, params):
     signals = vmap_sim(d_par, d_perp, mu)
     return signals
 
-def run_dmipy_jax_stick(bvals, bvecs, params):
+def run_compore_stick(bvals, bvecs, params):
     # Stick: Zeppelin with d_perp = 0
     d_par = jnp.array(params['d_par'])
     d_perp = jnp.zeros_like(d_par)
@@ -100,7 +100,7 @@ def run_dmipy_jax_stick(bvals, bvecs, params):
     signals = vmap_sim(d_par, d_perp, mu)
     return signals
 
-def run_dmipy_jax_ball(bvals, bvecs, params):
+def run_compore_ball(bvals, bvecs, params):
     d_iso = jnp.array(params['d_iso'])
     
     def sim_one(di):
@@ -143,8 +143,8 @@ def validate_model(model_name, params_mdt, params_jax, runner_jax, bvals, bvecs,
     mdt_res = np.load(output_path)
     mdt_signals = mdt_res['signals']
     
-    # 4. Run dmipy-jax
-    print("Running dmipy-jax...")
+    # 4. Run compore
+    print("Running compore...")
     jax_signals = runner_jax(bvals, bvecs, params_jax)
     jax_signals = np.array(jax_signals)
     
@@ -166,7 +166,7 @@ def validate_model(model_name, params_mdt, params_jax, runner_jax, bvals, bvecs,
     plt.scatter(mdt_signals.flatten(), jax_signals.flatten(), alpha=0.1, s=1)
     plt.plot([0, 1], [0, 1], 'r--')
     plt.xlabel('MDT Signal')
-    plt.ylabel('dmipy-jax Signal')
+    plt.ylabel('compore Signal')
     plt.title(f'{experiment_name} Identity')
     
     plt.subplot(1, 2, 2)
@@ -262,7 +262,7 @@ def main():
     # Our adapter maps 'Zeppelin' -> 'Tensor'.
     # So we pass 'Zeppelin' as model name.
     
-    validate_model('Zeppelin', mdt_zeppelin_params, jax_zeppelin_params, run_dmipy_jax_zeppelin, bvals, bvecs)
+    validate_model('Zeppelin', mdt_zeppelin_params, jax_zeppelin_params, run_compore_zeppelin, bvals, bvecs)
 
     # --- Validate Ball ---
     d_iso = np.random.uniform(0.1e-9, 3.0e-9, n_samples)
@@ -280,7 +280,7 @@ def main():
     jax_ball_params = {'d_iso': d_iso}
     
     print("Validating Ball (via MDT Tensor)...")
-    validate_model('Zeppelin', mdt_ball_params, jax_ball_params, run_dmipy_jax_ball, bvals, bvecs, experiment_name='Ball')
+    validate_model('Zeppelin', mdt_ball_params, jax_ball_params, run_compore_ball, bvals, bvecs, experiment_name='Ball')
     
 
 if __name__ == '__main__':

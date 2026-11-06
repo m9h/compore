@@ -1,6 +1,6 @@
 """Prepare module for agentsciml integration with dmipy.
 
-Provides standardized API for experiment scripts to use dmipy_jax
+Provides standardized API for experiment scripts to use compore
 signal models, simulators, and evaluation metrics.
 """
 import sys
@@ -15,13 +15,13 @@ from typing import Any
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-# Try importing dmipy_jax components (graceful fallback for testing)
+# Try importing compore components (graceful fallback for testing)
 try:
     import jax
     import jax.numpy as jnp
     import numpy as np
-    from dmipy_jax.acquisition import JaxAcquisition
-    from dmipy_jax.pipeline.simulator import ModelSimulator
+    from compore.acquisition import JaxAcquisition
+    from compore.pipeline.simulator import ModelSimulator
     HAS_JAX = True
 except ImportError:
     HAS_JAX = False

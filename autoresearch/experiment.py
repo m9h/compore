@@ -44,7 +44,7 @@ def run_experiment(
     seed: int = 0,
 ):
     """Train a spline NPE flow and evaluate fiber orientation error."""
-    from dmipy_jax.inference.trainer import create_trainer, train_loop
+    from compore.inference.trainer import create_trainer, train_loop
 
     key = jax.random.key(seed)
     k_flow, k_train, k_eval = jax.random.split(key, 3)

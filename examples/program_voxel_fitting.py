@@ -16,9 +16,9 @@ import numpy as np
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/../benchmarks'))
 from generate_synthetic_hcp import generate_synthetic_connectome
 
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.signal_models import cylinder_models, gaussian_models
-from dmipy_jax.fitting.optimization import OptimistixFitter
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.signal_models import cylinder_models, gaussian_models
+from compore.fitting.optimization import OptimistixFitter
 
 def run_voxel_program():
     print("=== Testing Program: Optimistix Voxel Fitting ===")

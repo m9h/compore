@@ -1,9 +1,9 @@
 """Compatibility shim (2026-11-04, doc 012 §7.3): the sphere-substrate geometry,
 SDFs and PGSE walker moved into the wheel as
-:mod:`dmipy_jax.simulation.substrates.spheres` so the oracle protocol can use
+:mod:`compore.simulation.substrates.spheres` so the oracle protocol can use
 them. Validation scripts keep importing ``validation.lib.substrate_benchmark``."""
-from dmipy_jax.simulation.substrates.spheres import *  # noqa: F401,F403
-from dmipy_jax.simulation.substrates import spheres as _s
+from compore.simulation.substrates.spheres import *  # noqa: F401,F403
+from compore.simulation.substrates import spheres as _s
 
 # private helpers some scripts and tests reach into
 for _n in dir(_s):

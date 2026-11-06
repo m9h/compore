@@ -4,7 +4,7 @@ import pytest
 import numpy as np
 import nibabel as nib
 import jax.numpy as jnp
-from dmipy_jax.io.multi_te import MultiTELoader
+from compore.io.multi_te import MultiTELoader
 
 @pytest.fixture
 def mock_multi_te_dataset(tmp_path):

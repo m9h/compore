@@ -3,7 +3,7 @@ dmipy-JAX dictionary matcher on DiSCo — scalar microstructure recovery.
 
 Counterpart to `validation/lib/force_disco.py` (which fits dipy's
 upstream `dipy.reconst.force.FORCEModel`) — this module uses sbi4dwi's
-own `dmipy_jax.library.matcher.DictionaryMatcher` for the same task.
+own `compore.library.matcher.DictionaryMatcher` for the same task.
 
 Library design (matches FORCE paper §3.2's tuned DiSCo protocol):
   - 2-stick + Bingham dispersion + isotropic (small ceiling)
@@ -25,12 +25,12 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.simulator import ModelSimulator
-from dmipy_jax.signal_models.bingham import (
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.simulator import ModelSimulator
+from compore.signal_models.bingham import (
     BinghamNODDI, get_rotation_matrix_from_z_to_vector,
 )
-from dmipy_jax.signal_models import g2_zeppelin
+from compore.signal_models import g2_zeppelin
 
 
 def build_disco_tuned_two_stick_simulator(acq: JaxAcquisition) -> ModelSimulator:
@@ -341,9 +341,9 @@ def fit_dmipy_dict_on_disco(
     dict with keys: ``ndi``, ``fa_proxy``, ``odi``, ``params``, ``mask``,
     ``gtab``, ``snr``, ``library_size``.
     """
-    from dmipy_jax.library.generator import LibraryGenerator
-    from dmipy_jax.library.matcher import DictionaryMatcher
-    from dmipy_jax.library.storage import SimulationLibrary
+    from compore.library.generator import LibraryGenerator
+    from compore.library.matcher import DictionaryMatcher
+    from compore.library.storage import SimulationLibrary
 
     from validation.lib.force_disco import load_disco_subject
 

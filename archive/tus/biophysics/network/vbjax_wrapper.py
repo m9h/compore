@@ -6,7 +6,7 @@ import equinox as eqx
 
 class VBJaxNetwork(eqx.Module):
     """
-    A unified wrapper for running VBJAX simulations within the dmipy-jax ecosystem.
+    A unified wrapper for running VBJAX simulations within the compore ecosystem.
     
     This class handles:
     1. Construction of the connectivity matrix (weights & delays).

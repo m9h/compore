@@ -1,0 +1,544 @@
+"""Multi-compartment model composition and fitting framework.
+
+Provides the object-oriented interface for building multi-compartment dMRI
+signal models from individual compartment modules, and for fitting them to
+data via Optimistix-based optimisation.
+
+Key classes:
+
+* :class:`CompartmentModel` -- abstract base ``eqx.Module`` defining the
+  interface that all signal model compartments must implement
+  (``__call__``, ``parameter_names``, ``parameter_cardinality``,
+  ``parameter_ranges``).
+* :class:`JaxMultiCompartmentModel` -- wraps :func:`~compore.composer.compose_models`
+  with a user-friendly dictionary-based parameter interface.  Supports
+  volume-fraction-weighted signal composition, parameter bounds, and
+  integration with :class:`~compore.fitting.optimization.OptimistixFitter`
+  and :class:`~compore.fitting.optimization.VoxelFitter`.
+
+This is the central modelling abstraction used throughout the SBI pipeline
+for defining forward models.
+"""
+
+import jax
+import jax
+import jax.numpy as jnp
+import numpy as np
+from compore.composer import compose_models
+from compore.fitting.optimization import OptimistixFitter, VoxelFitter
+import equinox as eqx
+
+class CompartmentModel(eqx.Module):
+    """
+    Abstract base class for all signal models (compartments).
+    """
+    def __call__(self, bvals, gradient_directions, **kwargs):
+        raise NotImplementedError
+
+    @property
+    def parameter_names(self):
+        raise NotImplementedError
+    
+    @property
+    def parameter_cardinality(self):
+        raise NotImplementedError
+
+    @property
+    def parameter_ranges(self):
+        raise NotImplementedError
+
+class JaxMultiCompartmentModel:
+    """
+    A class for combining multiple signal models into a Multi-Compartment Model (MCM).
+    
+    This class wraps the `compose_models` functional composition with an object-oriented
+    interface compatible with the `OptimistixFitter` and user-friendly parameter
+    management (dictionaries).
+    """
+    
+    def __init__(self, models):
+        """
+        Args:
+            models (list): List of JAX-based signal model instances.
+                           Each model must have `parameter_names` and `parameter_cardinality`.
+        """
+        self.models = models
+        self.model_func = compose_models(models)
+        
+        self.parameter_names = []
+        self.parameter_cardinality = {}
+        self.parameter_ranges = {}
+        self.parameter_map = [] # To map flat array back to names
+        
+        # Build parameter metadata
+        # We need to map the flat array index to (name, sub_index)
+        
+        # 1. Model Parameters
+        for i, model in enumerate(models):
+            # Resolve name collisions if any (though typically users might construct models 
+            # with distinct names or we assign them).
+            # Here we just iterate. If multiple models have same param names, 
+            # we need to disambiguate for the dictionary representation.
+            
+            # Simple disambiguation strategy: append _{index} if collision
+            # OR better: usage of model name prefix?
+            # For this implementation, we will check for collisions and append _{model_index}
+            
+            for pname in model.parameter_names:
+                unique_name = pname
+                if unique_name in self.parameter_names:
+                    # Collision
+                    unique_name = f"{pname}_{i+1}"
+                
+                self.parameter_names.append(unique_name)
+                card = model.parameter_cardinality[pname]
+                self.parameter_cardinality[unique_name] = card
+                
+                # Handle Ranges
+                # Expecting model.parameter_ranges to be a dict: {name: (min, max)} or {name: [(min, max), ...]}
+                if hasattr(model, 'parameter_ranges') and pname in model.parameter_ranges:
+                    rng = model.parameter_ranges[pname]
+                    self.parameter_ranges[unique_name] = rng
+                else:
+                    # Default defaults
+                    if card == 1:
+                        self.parameter_ranges[unique_name] = (-jnp.inf, jnp.inf)
+                    else:
+                        self.parameter_ranges[unique_name] = [(-jnp.inf, jnp.inf)] * card
+
+        # 2. Partial Volume Fractions
+        # compose_models appends N fractions at the end
+        for i in range(len(models)):
+            fname = f'partial_volume_{i}'
+            # Check collision
+            if fname in self.parameter_names:
+                fname = f'partial_volume_{i}_frac' # Fallback
+            
+            self.parameter_names.append(fname)
+            self.parameter_cardinality[fname] = 1
+            self.parameter_ranges[fname] = (0.0, 1.0)
+
+    def get_flat_bounds(self):
+        """
+        Returns flat lists of lower and upper bounds for all parameters.
+        Returns:
+            (jnp.ndarray, jnp.ndarray): lower_bounds, upper_bounds
+        """
+        lows = []
+        highs = []
+        
+        for name in self.parameter_names:
+            card = self.parameter_cardinality[name]
+            rng = self.parameter_ranges[name]
+            
+            if card == 1:
+                l, h = rng
+                lows.append(l)
+                highs.append(h)
+            else:
+                if isinstance(rng, tuple) and len(rng) == 2 and isinstance(rng[0], (int, float)):
+                    # Uniform range for vector
+                    l, h = rng
+                    lows.extend([l] * card)
+                    highs.extend([h] * card)
+                else:
+                    # List of ranges
+                    for r in rng:
+                        l, h = r
+                        lows.append(l)
+                        highs.append(h)
+                        
+        return jnp.array(lows), jnp.array(highs)
+
+
+
+    def parameter_dictionary_to_array(self, parameter_dictionary):
+        """
+        Converts a dictionary of parameters to the flat array expected by the kernel.
+        """
+        params_list = []
+        for name in self.parameter_names:
+            if name not in parameter_dictionary:
+                raise ValueError(f"Missing parameter '{name}' in dictionary.")
+            
+            val = parameter_dictionary[name]
+            card = self.parameter_cardinality[name]
+            
+            if card == 1:
+                # Scalar check
+                # Check for vector input where scalar expected
+                # Use jnp.size to catch arrays with >1 element safely
+                if jnp.size(val) > 1:
+                     raise ValueError(f"Parameter '{name}' expects scalar, got {val} with size {jnp.size(val)}")
+                
+                # Append as scalar (squeeze handles 0-d or 1-d of size 1)
+                params_list.append(jnp.squeeze(val))
+            else:
+                # Vector
+                # Flatten
+                if isinstance(val, (list, tuple)):
+                    params_list.extend(val)
+                else:
+                    params_list.extend(jnp.ravel(val))
+                    
+        return jnp.concatenate([jnp.atleast_1d(p) for p in params_list])
+
+    def __call__(self, parameter_dictionary, acquisition):
+        """
+        Simulates signal for the given parameters and acquisition scheme.
+        Supports both single-voxel (scalars) and multi-voxel (arrays) parameter inputs.
+        
+        Args:
+            parameter_dictionary (dict): Dictionary of parameters.
+            acquisition (JaxAcquisition): Acquisition scheme.
+            
+        Returns:
+            jnp.ndarray: Simulated signal (N_meas,) or (N_vox, N_meas).
+        """
+        # 1. Determine if inputs are batched
+        # Check first parameter in dictionary
+        first_key = self.parameter_names[0]
+        if first_key not in parameter_dictionary:
+             # Try finding any valid key
+             found = False
+             for k in self.parameter_names:
+                 if k in parameter_dictionary:
+                     first_key = k
+                     found = True
+                     break
+             if not found:
+                 raise ValueError(f"No valid parameters found in dictionary. Expected {self.parameter_names}")
+
+        val = parameter_dictionary[first_key]
+        card = self.parameter_cardinality[first_key]
+        
+        # Check dimensionality relative to cardinality
+        # If card=1, scalar is ndim=0. Batch is ndim=1.
+        # If card>1, vector is ndim=1 (or flattened). Batch is ndim=2.
+        # We assume vectors are never flattened to scalars in the input dict, they should be arrays.
+        
+        if card == 1:
+            is_batched = jnp.ndim(val) > 0
+        else:
+            is_batched = jnp.ndim(val) > 1
+        
+        # 2. Convert to Array
+        if is_batched:
+            # Setup vmapped conversion
+            # parameter_dictionary_to_array expects scalars. 
+            # We vmap it.
+            # But parameter_dictionary is a dict of arrays. 
+            # jax.vmap(func)(dict_of_arrays) works if structure matches.
+            
+            converter = jax.vmap(self.parameter_dictionary_to_array)
+            params_flat = converter(parameter_dictionary) # (N, n_params)
+            
+            # 3. Simulate (Vmapped)
+            simulator = jax.vmap(self.model_func, in_axes=(0, None))
+            return simulator(params_flat, acquisition)
+            
+        else:
+            # Single voxel
+            params_flat = self.parameter_dictionary_to_array(parameter_dictionary)
+            return self.model_func(params_flat, acquisition)
+
+
+    def parameter_array_to_dictionary(self, parameter_array):
+        """
+        Converts the flat result array back to a user-friendly dictionary.
+        """
+        ret = {}
+        idx = 0
+        for name in self.parameter_names:
+            card = self.parameter_cardinality[name]
+            if card == 1:
+                ret[name] = parameter_array[idx]
+                idx += 1
+            else:
+                ret[name] = parameter_array[idx : idx + card]
+                idx += card
+        return ret
+
+
+    def fit(self, acquisition, data, method="Levenberg-Marquardt", compute_uncertainty=True, batch_size=None,
+            initialization_method="brute", library=None, trained_model=None):
+        """
+        Fits the model to data.
+
+        Args:
+            acquisition: JaxAcquisition object
+            data: Signal data array. Shape (N_meas,) for single voxel or (N_vox, N_meas) for multiple.
+            method: Optimization method (default: "Levenberg-Marquardt").
+            compute_uncertainty: If True, computes CRLB standard deviations (default: True).
+            initialization_method: One of "brute" (default), "dictionary", or "sbi".
+            library: SimulationLibrary instance (required if initialization_method="dictionary").
+            trained_model: Trained SBI model (required if initialization_method="sbi").
+
+        Returns:
+            dict: Fitted parameters in dictionary format.
+                  If compute_uncertainty is True, includes keys with '_std' suffix.
+        """
+        # 1. Prepare Ranges for Fitter
+        # OptimistixFitter expects a list of (min, max) for every single scalar parameter in the flat array.
+
+        flat_ranges = []
+        scales_list = []
+        for name in self.parameter_names:
+            card = self.parameter_cardinality[name]
+            rng = self.parameter_ranges[name]
+            
+            # Determine scale for this parameter
+            # Heuristic: use order of magnitude of the upper bound, or 1.0
+            # If (low, high), scale = high if high < 1e-2 or high > 1e2
+            
+            current_scales = []
+            
+            if card == 1:
+                # rng is (min, max)
+                flat_ranges.append(rng)
+                low, high = rng
+                # Pick scale
+                if not np.isinf(high) and (high != 0):
+                    s = high
+                elif not np.isinf(low) and (low != 0):
+                    s = low
+                else:
+                    s = 1.0
+                current_scales.append(s)
+            else:
+                # rng is list
+                if isinstance(rng, tuple) and len(rng) == 2 and isinstance(rng[0], (int, float)):
+                     # Replicate
+                     flat_ranges.extend([rng] * card)
+                     low, high = rng
+                     s = high if not np.isinf(high) and high!=0 else 1.0
+                     current_scales.extend([s] * card)
+                else:
+                     flat_ranges.extend(rng)
+                     for r in rng:
+                         l, h = r
+                         s = h if not np.isinf(h) and h!=0 else 1.0
+                         current_scales.append(s)
+            
+            scales_list.extend(current_scales)
+
+        scales = jnp.array(scales_list)
+
+        # 2. Instantiate Fitter
+        # Pass scales to OptimistixFitter
+        if method in ["LBFGSB", "VoxelFitter"]:
+            fitter = VoxelFitter(self.model_func, flat_ranges, scales=scales)
+        else:
+            # Default to Optimistix (Levenberg-Marquardt)
+            fitter = OptimistixFitter(self.model_func, flat_ranges, scales=scales)
+        
+        # 3. Initial Guess — dispatch on initialization_method
+        from compore.fitting.initialization import GlobalBruteInitializer
+
+        if initialization_method == "dictionary":
+            from compore.fitting.hybrid_initializer import DictionaryInitializer
+            if library is None:
+                raise ValueError("library must be provided for initialization_method='dictionary'")
+            initializer = DictionaryInitializer(library)
+            candidates = None  # not used by DictionaryInitializer
+        elif initialization_method == "sbi":
+            from compore.fitting.hybrid_initializer import SBIInitializer
+            if trained_model is None:
+                raise ValueError("trained_model must be provided for initialization_method='sbi'")
+            initializer = SBIInitializer(trained_model)
+            candidates = None
+        else:
+            initializer = GlobalBruteInitializer(self)
+            key = jax.random.PRNGKey(42)
+            candidates = initializer.generate_random_grid(n_samples=2000, key=key)
+        
+        if data.ndim == 1:
+            init_params = initializer.compute_initial_guess(data, acquisition, candidates)
+            
+            # Fit Single Voxel
+            fitted_params, _ = fitter.fit(data, acquisition, init_params)
+            
+            # Calculate Uncertainty
+            stds = None
+            if compute_uncertainty:
+                residuals = data - self.model_func(fitted_params, acquisition)
+                sigma_est = jnp.sqrt(jnp.mean(residuals**2))
+                from compore.core.uncertainty_utils import compute_jacobian, compute_crlb_std
+                J = compute_jacobian(self.model_func, fitted_params, acquisition)
+                stds = compute_crlb_std(J, sigma=sigma_est)
+
+            # Pack Results
+            ret = {}
+            idx = 0
+            for name in self.parameter_names:
+                card = self.parameter_cardinality[name]
+                if card == 1:
+                    ret[name] = fitted_params[idx]
+                    idx += 1
+                else:
+                    ret[name] = fitted_params[idx:idx+card]
+                    idx += card
+            
+            if compute_uncertainty and stds is not None:
+                idx = 0
+                for name in self.parameter_names:
+                    card = self.parameter_cardinality[name]
+                    if card == 1:
+                        ret[f"{name}_std"] = stds[idx]
+                        idx += 1
+                    else:
+                        ret[f"{name}_std"] = stds[idx:idx+card]
+                        idx += card
+            
+            return ret
+        else:
+            # Multi-voxel
+            data = data.reshape(-1, data.shape[-1])
+            N_vox = data.shape[0]
+            
+            # Multi-voxel
+            data = data.reshape(-1, data.shape[-1])
+            N_vox = data.shape[0]
+            
+            # Detect Batched Acquisition
+            # Check if bvalues has same leading dim as N_vox
+            is_batched_acq = (acquisition.bvalues.ndim > 1) and (acquisition.bvalues.shape[0] == N_vox)
+            
+            # Define vmap axes based on acquisition batching
+            # if batched: (0, 0, 0), else: (0, None, 0)
+            if is_batched_acq:
+                acq_in_axis = 0
+                select_acq_axis = 0
+            else:
+                acq_in_axis = None
+                select_acq_axis = None
+            
+            # --- Initialization Strategy ---
+            # If acq is static: Precompute predictions once (C, M), then select.
+            # If acq is batched: We cannot precompute (C, M). 
+            # We must compute (N, C, M) or do it on the fly.
+            # Memory risk if doing (N, C, M).
+            # We'll handle it inside the selection/chunking.
+
+            if not is_batched_acq:
+                # Static Scheme Optimization
+                # vmap over candidates (0), acquisition fixed (None)
+                simulator = jax.vmap(self.model_func, in_axes=(0, None))
+                candidate_predictions = simulator(candidates, acquisition) # (C, M)
+                
+                # Selection: vmap over data(0), predictions fixed, candidates fixed
+                selector = jax.jit(jax.vmap(initializer.select_best_candidate, in_axes=(0, None, None)))
+                
+                # We can pre-calculate global selection function
+                def get_init_params(data_batch, acq_batch=None): 
+                    # acq_batch ignored here since we use precomputed predictions
+                    return selector(data_batch, candidate_predictions, candidates)
+            else:
+                # Batched Scheme
+                # We must compute predictions per voxel (or batch/chunk)
+                # selector needs to take (data, acquisition) and run simulation internally?
+                # Or we reformulate select_best_candidate to take acq.
+                
+                # initializer.select_best_candidate takes (data, candidate_predictions, candidates).
+                # We need a function: select_best_dynamic(data, acq, candidates)
+                
+                def select_best_dynamic(data_single, acq_single, candidates_all):
+                    # Simulate candidates for THIS acquisition
+                    # vmap over candidates
+                    sim_func = jax.vmap(self.model_func, in_axes=(0, None))
+                    cand_preds = sim_func(candidates_all, acq_single)
+                    # Select
+                    return initializer.select_best_candidate(data_single, cand_preds, candidates_all)
+                
+                # vmap over data(0), acq(0), candidates(None)
+                selector = jax.jit(jax.vmap(select_best_dynamic, in_axes=(0, 0, None)))
+                
+                def get_init_params(data_batch, acq_batch):
+                    return selector(data_batch, acq_batch, candidates)
+
+            # Define Fit Vmap
+            fit_vmapped = jax.jit(jax.vmap(fitter.fit, in_axes=(0, acq_in_axis, 0)))
+            
+            # Define Uncertainty Vmap
+            from compore.core.uncertainty_utils import compute_jacobian, compute_crlb_std
+            def single_pixel_uncertainty(params, data_voxel, acq_voxel):
+                prediction = self.model_func(params, acq_voxel)
+                residuals = data_voxel - prediction
+                sigma_est = jnp.sqrt(jnp.mean(residuals**2))
+                J = compute_jacobian(self.model_func, params, acq_voxel)
+                return compute_crlb_std(J, sigma=sigma_est)
+            
+            calc_uncertainty_vmapped = jax.jit(jax.vmap(single_pixel_uncertainty, in_axes=(0, 0, acq_in_axis)))
+
+            # Determine if batching is needed
+            if batch_size is None and not is_batched_acq: 
+                # If static, we can try full batch (risk of OOM if N is huge, but let JAX handle it)
+                # If batched, high memory pressure, maybe force chunking?
+                # Let's default to logic: if invalid batch_size, assume FULL.
+                batch_size = N_vox
+            
+            if batch_size is None:
+                 batch_size = N_vox
+
+            import math
+            n_chunks = math.ceil(N_vox / batch_size)
+            fitted_chunks = []
+            stds_chunks = []
+            
+            for i in range(n_chunks):
+                start_idx = i * batch_size
+                end_idx = min((i + 1) * batch_size, N_vox)
+                
+                data_chunk = data[start_idx:end_idx]
+                
+                # Handle Acquisition Chunking
+                if is_batched_acq:
+                    acq_chunk = jax.tree_map(lambda x: x[start_idx:end_idx] if hasattr(x, 'shape') and x.shape[0]==N_vox else x, acquisition)
+                else:
+                    acq_chunk = acquisition
+                
+                # Compute Init
+                if is_batched_acq:
+                    init_chunk = get_init_params(data_chunk, acq_chunk)
+                else:
+                    init_chunk = get_init_params(data_chunk)
+                
+                # Run Fit
+                res_chunk, _ = fit_vmapped(data_chunk, acq_chunk, init_chunk)
+                fitted_chunks.append(res_chunk)
+                
+                if compute_uncertainty:
+                    std_chunk = calc_uncertainty_vmapped(res_chunk, data_chunk, acq_chunk)
+                    stds_chunks.append(std_chunk)
+            
+            fitted_batch = jnp.concatenate(fitted_chunks, axis=0)
+            if compute_uncertainty:
+                stds_batch = jnp.concatenate(stds_chunks, axis=0)
+            else:
+                stds_batch = None
+            
+            
+            # 5. Pack results
+            ret = {}
+            idx = 0
+            for name in self.parameter_names:
+                card = self.parameter_cardinality[name]
+                if card == 1:
+                    ret[name] = fitted_batch[:, idx]
+                    idx += 1
+                else:
+                    ret[name] = fitted_batch[:, idx:idx+card]
+                    idx += card
+            
+            if compute_uncertainty and stds_batch is not None:
+                idx = 0
+                for name in self.parameter_names:
+                    card = self.parameter_cardinality[name]
+                    if card == 1:
+                        ret[f"{name}_std"] = stds_batch[:, idx]
+                        idx += 1
+                    else:
+                        ret[f"{name}_std"] = stds_batch[:, idx:idx+card]
+                        idx += card
+                        
+            return ret

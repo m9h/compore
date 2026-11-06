@@ -3,8 +3,8 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import pytest
-from dmipy_jax.signal_models.sandi import SphereGPD, get_sandi_model
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.signal_models.sandi import SphereGPD, get_sandi_model
+from compore.acquisition import JaxAcquisition
 
 # Mock data
 @pytest.fixture

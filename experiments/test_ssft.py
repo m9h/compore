@@ -4,10 +4,10 @@ import jax.numpy as jnp
 import numpy as np
 import equinox as eqx
 import matplotlib.pyplot as plt
-from dmipy_jax.inference.amortized import ZeppelinNetwork
-from dmipy_jax.inference.ssft import SSFTTrainer
-from dmipy_jax.core.acquisition import SimpleAcquisitionScheme as JaxAcquisition
-from dmipy_jax.signal_models.zeppelin import Zeppelin
+from compore.inference.amortized import ZeppelinNetwork
+from compore.inference.ssft import SSFTTrainer
+from compore.core.acquisition import SimpleAcquisitionScheme as JaxAcquisition
+from compore.signal_models.zeppelin import Zeppelin
 
 def main():
     print("=== SSFT Verification Experiment ===")

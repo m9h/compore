@@ -34,7 +34,7 @@ def run_cartesian(name, n_steps, seed=0):
         make_hcp_like_acquisition, build_ball_2stick_simulator,
         angular_error_deg_cartesian,
     )
-    from dmipy_jax.inference.score_posterior import (
+    from compore.inference.score_posterior import (
         MLPScoreNet, VPSchedule, train_score_posterior, sample_posterior,
     )
 
@@ -118,7 +118,7 @@ def run_spherical(name, n_steps, seed=0):
         make_hcp_like_acquisition, build_ball_2stick_simulator,
         angular_error_deg_cartesian,
     )
-    from dmipy_jax.inference.score_posterior import (
+    from compore.inference.score_posterior import (
         MLPScoreNetSpherical, VPSchedule, train_score_posterior,
         sample_posterior, spherical_to_cartesian_batch,
         cartesian_to_spherical_batch,

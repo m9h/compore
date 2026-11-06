@@ -3,9 +3,9 @@ import pytest
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.components.exchange import KargerExchange
-from dmipy_jax.gaussian import G1Ball
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.components.exchange import KargerExchange
+from compore.gaussian import G1Ball
+from compore.acquisition import JaxAcquisition
 
 def test_karger_exchange():
     print("Initializing Karger Exchange Test...")

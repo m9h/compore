@@ -4,9 +4,9 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import pandas as pd
-from dmipy_jax.io.datasets import load_stanford_hardi, load_sherbrooke_3shell, load_bigmac_mri
-from dmipy_jax.signal_models import cylinder_models, sphere_models, Stick, Ball, Zeppelin
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
+from compore.io.datasets import load_stanford_hardi, load_sherbrooke_3shell, load_bigmac_mri
+from compore.signal_models import cylinder_models, sphere_models, Stick, Ball, Zeppelin
+from compore.core.modeling_framework import JaxMultiCompartmentModel
 
 def benchmark_dataset(dataset_name, load_func, voxel_slice=None):
     print(f"\n--- Benchmarking {dataset_name} ---")

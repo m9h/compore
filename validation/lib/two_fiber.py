@@ -13,8 +13,8 @@ import jax.numpy as jnp
 import numpy as np
 from jaxtyping import Array, Float, PRNGKeyArray
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.simulator import ModelSimulator
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.simulator import ModelSimulator
 
 # Re-export so call sites only have to import from one place
 from validation.lib.three_fiber import (  # noqa: F401

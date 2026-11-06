@@ -5,9 +5,9 @@ import sys
 import subprocess
 import meshio
 
-# Add local path to find dmipy_jax
+# Add local path to find compore
 sys.path.append(os.getcwd())
-from dmipy_jax.io.sci_head_loader import load_sci_head_mesh
+from compore.io.sci_head_loader import load_sci_head_mesh
 
 def run_mmc_pipeline():
     print("MMC Pipeline: Initialization...")

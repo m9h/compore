@@ -2,8 +2,8 @@
 import jax
 import jax.numpy as jnp
 import pytest
-from dmipy_jax.biophysics.material_map import BrainMaterialMap
-from dmipy_jax.fitting.losses import prior_loss
+from compore.biophysics.material_map import BrainMaterialMap
+from compore.fitting.losses import prior_loss
 
 def test_material_map_initialization():
     mmap = BrainMaterialMap()

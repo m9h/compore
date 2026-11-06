@@ -4,8 +4,8 @@ import jax.numpy as jnp
 from jax.experimental import mesh_utils
 # from jax.sharding import PositionalSharding
 
-# Use dmipy-jax models
-from dmipy_jax.signal_models import stick, gaussian_models
+# Use compore models
+from compore.signal_models import stick, gaussian_models
 from dmipy.core.acquisition_scheme import acquisition_scheme_from_bvalues
 import dmipy.utils.spherical_mean
 import numpy as np
@@ -106,14 +106,14 @@ def vec2ang_jax(mu):
 # JAX Model Definition
 def simulate_voxel(mu1, mu2, f1, f2, f_iso, bvals, bvecs):
     """
-    Simulates a single voxel signal using dmipy-jax models.
+    Simulates a single voxel signal using compore models.
     """
     # Parameters
     lambda_par = 1.7e-3
     lambda_iso = 1.7e-3
     
     # Models
-    # Note: dmipy_jax classes might be stateless or functional.
+    # Note: compore classes might be stateless or functional.
     # Looking at stick.py: class Stick -> __call__(bvals, dirs, **kwargs) -> c1_stick
     # We can use the functional interface or the class.
     

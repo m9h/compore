@@ -2,10 +2,10 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.cylinder import C1Stick
-from dmipy_jax.composer import compose_models
-from dmipy_jax.fitting import fit_voxel
+from compore.acquisition import JaxAcquisition
+from compore.cylinder import C1Stick
+from compore.composer import compose_models
+from compore.fitting import fit_voxel
 
 # Constants
 # Roots of the Bessel function derivative equation J'1(x) = 0 for Cylinder GPD approximation

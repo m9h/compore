@@ -69,10 +69,10 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.simulator import ModelSimulator
-from dmipy_jax.pipeline.config import SBIPipelineConfig
-from dmipy_jax.pipeline.train import train_sbi
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.simulator import ModelSimulator
+from compore.pipeline.config import SBIPipelineConfig
+from compore.pipeline.train import train_sbi
 
 WORK = tempfile.mkdtemp(prefix="sbi4dwi_uq_")
 
@@ -163,7 +163,7 @@ The `SBCResult` dataclass holds rank statistics and exposes diagnostics
 directly.
 
 ```python
-from dmipy_jax.pipeline.sbc import SBCResult, compute_ranks
+from compore.pipeline.sbc import SBCResult, compute_ranks
 
 # After running SBC (n_sbc repetitions, L posterior samples each)
 n_sbc, n_params, L = 1000, 3, 200
@@ -281,7 +281,7 @@ repetitions in Python, so we use a small count here (production: 1000):
 ```python
 import matplotlib
 matplotlib.use("Agg")
-from dmipy_jax.pipeline.sbc import SBCDiagnostic
+from compore.pipeline.sbc import SBCDiagnostic
 
 diagnostic = SBCDiagnostic(
     model=trained_model,        # _NormalisedMDN or _NormalisedFlow
@@ -350,7 +350,7 @@ underestimated uncertainty.
 ### 3.3 Using `PPCResult`
 
 ```python
-from dmipy_jax.pipeline.ppc import PPCResult
+from compore.pipeline.ppc import PPCResult
 
 # Construct from pre-computed diagnostics
 n_checks = 200
@@ -408,7 +408,7 @@ assert abs(result_ideal.reduced_chi_squared - 1.0) < 1e-10
 ### 3.5 Running PPC on a Trained Model
 
 ```python
-from dmipy_jax.pipeline.ppc import PPCDiagnostic
+from compore.pipeline.ppc import PPCDiagnostic
 
 diagnostic = PPCDiagnostic(
     model=trained_model,
@@ -476,7 +476,7 @@ no model object required. This is the easiest way to get started.
 **Absolute conformal intervals:**
 
 ```python
-from dmipy_jax.pipeline.conformal import (
+from compore.pipeline.conformal import (
     calibrate_from_predictions,
     predict_intervals_from_predictions,
 )
@@ -656,7 +656,7 @@ in-distribution reference signals during the `fit()` step.
 `OODDetector` follows a scikit-learn-style fit/score pattern:
 
 ```python
-from dmipy_jax.pipeline.ood import OODDetector
+from compore.pipeline.ood import OODDetector
 
 # Create detector from a trained model and its simulator
 detector = OODDetector(model=trained_model, simulator=simulator)
@@ -739,7 +739,7 @@ thresholds from the reference distribution and returns a structured
 `OODResult`:
 
 ```python
-from dmipy_jax.pipeline.ood import OODResult
+from compore.pipeline.ood import OODResult
 
 result = detector.flag_volume(signals, threshold_percentile=95.0)
 
@@ -825,7 +825,7 @@ $$
 ### 6.3 `EnsemblePredictor`
 
 ```python
-from dmipy_jax.pipeline.ensemble import (
+from compore.pipeline.ensemble import (
     EnsemblePredictor,
     train_ensemble,
     save_ensemble,

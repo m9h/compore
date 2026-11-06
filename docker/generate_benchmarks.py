@@ -58,7 +58,7 @@ def create_full_protocol():
 bvals, bvecs, protocol_params = create_full_protocol()
 
 # List of models to test
-# We focus on models we can map to dmipy-jax or that are requested
+# We focus on models we can map to compore or that are requested
 models_to_test = [
     # Top priority
     ('Stick', 'BallStick_r1', {'S0.s0': 1.0, 'w_stick0.w': 1.0, 'Stick0.theta': 0.0, 'Stick0.phi': 0.0}), # Pure stick using BallStick

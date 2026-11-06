@@ -73,7 +73,7 @@ class TestAbsoluteCoverage:
 
     def test_absolute_coverage_guarantee(self):
         """Calibrate on 1000 samples, test on 500 new; coverage >= 1-alpha."""
-        from dmipy_jax.pipeline.conformal import (
+        from compore.pipeline.conformal import (
             calibrate_from_predictions,
             predict_intervals_from_predictions,
         )
@@ -110,7 +110,7 @@ class TestAbsoluteCoverage:
 
     def test_absolute_calibration_coverage(self):
         """Empirical coverage on calibration set should be >= 1-alpha."""
-        from dmipy_jax.pipeline.conformal import calibrate_from_predictions
+        from compore.pipeline.conformal import calibrate_from_predictions
 
         alpha = 0.1
         theta_cal, preds_cal, _ = _make_synthetic_calibration_data(n=1000)
@@ -124,7 +124,7 @@ class TestCQRCoverage:
 
     def test_cqr_coverage_guarantee(self):
         """Calibrate on 1000, test on 500; coverage >= 1-alpha."""
-        from dmipy_jax.pipeline.conformal import (
+        from compore.pipeline.conformal import (
             calibrate_from_predictions,
             predict_intervals_from_predictions,
         )
@@ -161,7 +161,7 @@ class TestCQRCoverage:
 
     def test_cqr_calibration_coverage(self):
         """CQR empirical coverage on calibration set should be >= 1-alpha."""
-        from dmipy_jax.pipeline.conformal import calibrate_from_predictions
+        from compore.pipeline.conformal import calibrate_from_predictions
 
         alpha = 0.1
         theta_cal, preds_cal, _, lo_cal, hi_cal = _make_synthetic_cqr_data(
@@ -180,7 +180,7 @@ class TestIntervalShapes:
     @pytest.mark.parametrize("method", ["absolute", "cqr"])
     def test_interval_shapes(self, method):
         """predict_intervals returns correct shapes."""
-        from dmipy_jax.pipeline.conformal import (
+        from compore.pipeline.conformal import (
             calibrate_from_predictions,
             predict_intervals_from_predictions,
         )
@@ -235,7 +235,7 @@ class TestIntervalMonotonicity:
 
     def test_wider_intervals_for_lower_alpha(self):
         """alpha=0.01 intervals should be wider than alpha=0.1."""
-        from dmipy_jax.pipeline.conformal import (
+        from compore.pipeline.conformal import (
             calibrate_from_predictions,
             predict_intervals_from_predictions,
         )
@@ -267,7 +267,7 @@ class TestIntervalMonotonicity:
 
     def test_wider_intervals_for_lower_alpha_cqr(self):
         """CQR: alpha=0.01 intervals should be wider than alpha=0.1."""
-        from dmipy_jax.pipeline.conformal import (
+        from compore.pipeline.conformal import (
             calibrate_from_predictions,
             predict_intervals_from_predictions,
         )
@@ -305,7 +305,7 @@ class TestConformalResultSummary:
 
     def test_conformal_result_summary(self, capsys):
         """print_summary should produce output without crashing."""
-        from dmipy_jax.pipeline.conformal import calibrate_from_predictions
+        from compore.pipeline.conformal import calibrate_from_predictions
 
         theta_cal, preds_cal, _ = _make_synthetic_calibration_data(n=200)
         result = calibrate_from_predictions(
@@ -327,7 +327,7 @@ class TestEdgeCases:
 
     def test_single_parameter(self):
         """Conformal should work with theta_dim=1."""
-        from dmipy_jax.pipeline.conformal import (
+        from compore.pipeline.conformal import (
             calibrate_from_predictions,
             predict_intervals_from_predictions,
         )
@@ -346,7 +346,7 @@ class TestEdgeCases:
 
     def test_cqr_requires_bounds_at_prediction_time(self):
         """CQR predict_intervals should raise if bounds are missing."""
-        from dmipy_jax.pipeline.conformal import (
+        from compore.pipeline.conformal import (
             calibrate_from_predictions,
             predict_intervals_from_predictions,
         )
@@ -367,7 +367,7 @@ class TestEdgeCases:
         # are provided, so this test verifies the ConformalCalibrator class
         # directly would reject an unknown method.  We test via a small
         # integration path instead.
-        from dmipy_jax.pipeline.conformal import ConformalResult
+        from compore.pipeline.conformal import ConformalResult
 
         # Manually construct a result with an invalid method and ensure
         # that predict_intervals_from_predictions still works (it just
@@ -382,7 +382,7 @@ class TestEdgeCases:
         )
         # This should not raise because predict_intervals_from_predictions
         # falls through to the else (absolute) path for unknown methods.
-        from dmipy_jax.pipeline.conformal import (
+        from compore.pipeline.conformal import (
             predict_intervals_from_predictions,
         )
         preds = np.ones((10, 2))
@@ -391,7 +391,7 @@ class TestEdgeCases:
 
     def test_high_dimensional_parameters(self):
         """Conformal should work with many parameters (theta_dim=10)."""
-        from dmipy_jax.pipeline.conformal import (
+        from compore.pipeline.conformal import (
             calibrate_from_predictions,
             predict_intervals_from_predictions,
         )
@@ -413,7 +413,7 @@ class TestEdgeCases:
 
     def test_perfect_predictor_narrow_intervals(self):
         """A perfect predictor (zero noise) should yield very narrow intervals."""
-        from dmipy_jax.pipeline.conformal import calibrate_from_predictions
+        from compore.pipeline.conformal import calibrate_from_predictions
 
         rng = np.random.RandomState(42)
         theta = rng.uniform(0, 1, (500, 2))

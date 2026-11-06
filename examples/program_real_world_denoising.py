@@ -10,9 +10,9 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import nibabel as nib
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.signal_models import cylinder_models, gaussian_models
-from dmipy_jax.inverse.global_amico import GlobalAMICOSolver
+from compore.acquisition import JaxAcquisition
+from compore.signal_models import cylinder_models, gaussian_models
+from compore.inverse.global_amico import GlobalAMICOSolver
 
 def run_denoising_demo():
     print("=== Testing Program: Real World Denoising (Global TV) ===")

@@ -1,6 +1,6 @@
 
 import sympy
-from dmipy_jax.algebra.identifiability import construct_polynomial_system, analyze_identifiability
+from compore.algebra.identifiability import construct_polynomial_system, analyze_identifiability
 
 def main():
     print("Analyzing Bi-Exponential Identifiability with Grobner Bases...")

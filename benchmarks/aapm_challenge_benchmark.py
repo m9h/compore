@@ -7,10 +7,10 @@ import optax
 import optimistix as optx
 import time
 from pathlib import Path
-from dmipy_jax.signal_models.ivim import IVIM
-from dmipy_jax.core.acquisition import SimpleAcquisitionScheme
-from dmipy_jax.fitting.optimization import VoxelFitter
-from dmipy_jax.algebra.initializers import segmented_ivim_init
+from compore.signal_models.ivim import IVIM
+from compore.core.acquisition import SimpleAcquisitionScheme
+from compore.fitting.optimization import VoxelFitter
+from compore.algebra.initializers import segmented_ivim_init
 
 # Configuration
 # AAPM Challenge usually has diffusion values in mm^2/s or 10^-3 mm^2/s

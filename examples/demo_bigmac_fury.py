@@ -14,7 +14,7 @@ Requirements:
 
 import numpy as np
 import matplotlib.pyplot as plt
-from dmipy_jax.io.datasets import load_bigmac_mri
+from compore.io.datasets import load_bigmac_mri
 from dipy.reconst.csdeconv import auto_response_ssst
 from dipy.reconst.csdeconv import ConstrainedSphericalDeconvModel
 from dipy.data import get_sphere

@@ -6,7 +6,7 @@ import numpy as np
 import pickle
 
 # Local imports
-from dmipy_jax.core.particle_engine import brownian_step, create_neighbor_list, periodic_box
+from compore.core.particle_engine import brownian_step, create_neighbor_list, periodic_box
 
 def run_simulation_batch(key, radius, diffusion_coeff, n_walkers=1000, n_steps=200, dt=0.01):
     """

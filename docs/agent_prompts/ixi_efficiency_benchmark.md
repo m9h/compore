@@ -3,7 +3,7 @@
 **Title:** The "10-Minute Cohort" Challenge (Efficiency, Accuracy, & Advanced Inference)
 
 **Objective:**
-Utilize the **IXI Dataset** (approx. 600 healthy subjects) to demonstrate the massive scalability and numerical robustness of `dmipy-jax`. The goal is to prove that we can fit an entire population study in minutes while maintaining higher physical accuracy than standard tools, and showcase advanced "Next-Gen" capabilities (Deep Learning & Uncertainty).
+Utilize the **IXI Dataset** (approx. 600 healthy subjects) to demonstrate the massive scalability and numerical robustness of `compore`. The goal is to prove that we can fit an entire population study in minutes while maintaining higher physical accuracy than standard tools, and showcase advanced "Next-Gen" capabilities (Deep Learning & Uncertainty).
 
 **Dataset Info:**
 -   **Source:** [IXI Dataset](https://brain-development.org/ixi-dataset/)
@@ -29,7 +29,7 @@ Utilize the **IXI Dataset** (approx. 600 healthy subjects) to demonstrate the ma
         *   **Biophysical:** `C1Stick + Ball` (Simple 2-compartment).
 
 3.  **Efficiency Demonstration (Speed):**
-    *   Compare `dmipy-jax` (compiled) vs `standard loop` (simulated by disabling JIT or simple Loop).
+    *   Compare `compore` (compiled) vs `standard loop` (simulated by disabling JIT or simple Loop).
     *   **Metric:** "Voxels per Second" and "Estimated Time for 600 Subjects".
     *   **Target:** fitting 600 subjects should be estimated to take < 10 minutes on a GPU.
 

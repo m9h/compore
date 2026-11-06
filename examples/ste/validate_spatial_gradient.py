@@ -14,13 +14,13 @@ import os
 sys.path.append(os.getcwd())
 
 try:
-    from dmipy_jax.acquisition import STEAcquisitionScheme
-    from dmipy_jax.gradients.spatial import compute_spatial_gradient, predict_spatial_gradient
+    from compore.acquisition import STEAcquisitionScheme
+    from compore.gradients.spatial import compute_spatial_gradient, predict_spatial_gradient
 except ImportError:
     # Fallback if run inside examples/ste and root not in path
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-    from dmipy_jax.acquisition import STEAcquisitionScheme
-    from dmipy_jax.gradients.spatial import compute_spatial_gradient, predict_spatial_gradient
+    from compore.acquisition import STEAcquisitionScheme
+    from compore.gradients.spatial import compute_spatial_gradient, predict_spatial_gradient
 
 def synthetic_experiment():
     print("--- Starting Spatial Gradient Validation (Aganj et al. Logic) ---")

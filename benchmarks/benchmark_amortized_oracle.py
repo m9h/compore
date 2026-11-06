@@ -4,10 +4,10 @@ import jax.numpy as jnp
 import equinox as eqx
 import time
 import numpy as np
-from dmipy_jax.signal_models.zeppelin import Zeppelin
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.inference.amortized import ZeppelinNetwork
-from dmipy_jax.fitting.optimization import OptimistixFitter
+from compore.signal_models.zeppelin import Zeppelin
+from compore.acquisition import JaxAcquisition
+from compore.inference.amortized import ZeppelinNetwork
+from compore.fitting.optimization import OptimistixFitter
 
 def main():
     print("Benchmarking Amortized Inference vs NLLS Oracle (Zeppelin)...")

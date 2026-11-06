@@ -2,10 +2,10 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import os
-from dmipy_jax.cylinder import C1Stick
-from dmipy_jax.gaussian import G2Zeppelin
-from dmipy_jax.sphere import S2SphereStejskalTannerApproximation as S2Sphere
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.cylinder import C1Stick
+from compore.gaussian import G2Zeppelin
+from compore.sphere import S2SphereStejskalTannerApproximation as S2Sphere
+from compore.acquisition import JaxAcquisition
 
 def generate_hcp_b_table(shells, directions_per_shell, b0_count=20):
     """

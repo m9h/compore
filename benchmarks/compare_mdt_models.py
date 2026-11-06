@@ -2,12 +2,12 @@ import json
 import numpy as np
 import jax
 import jax.numpy as jnp
-from dmipy_jax.signal_models.gaussian_models import Tensor, Ball
-from dmipy_jax.signal_models.zeppelin import Zeppelin
-from dmipy_jax.signal_models.stick import Stick
-from dmipy_jax.signal_models.cylinder_models import RestrictedCylinder, CallaghanRestrictedCylinder
-from dmipy_jax.signal_models.ivim import IVIM
-from dmipy_jax.core.acquisition import acquisition_scheme_from_bvalues
+from compore.signal_models.gaussian_models import Tensor, Ball
+from compore.signal_models.zeppelin import Zeppelin
+from compore.signal_models.stick import Stick
+from compore.signal_models.cylinder_models import RestrictedCylinder, CallaghanRestrictedCylinder
+from compore.signal_models.ivim import IVIM
+from compore.core.acquisition import acquisition_scheme_from_bvalues
 
 # Helper to load benchmarks
 def load_benchmarks(path='docker/mdt_benchmarks.json'):
@@ -26,7 +26,7 @@ for name, data in benchmarks.items():
     params = data['params']
     protocol_params = data.get('protocol_params', {})
     
-    # dmipy-jax models expect (bvals, bvecs, **kwargs)
+    # compore models expect (bvals, bvecs, **kwargs)
     # Some models need Delta/delta in kwargs.
     
     # Common kwargs
@@ -97,14 +97,14 @@ for name, data in benchmarks.items():
             zep = Zeppelin()
             
             # Orientation (Watson distributed? MDT NODDI uses Watson.)
-            # dmipy-jax has BinghamNODDI, maybe has Watson?
+            # compore has BinghamNODDI, maybe has Watson?
             # If not, let's treat it as a single Stick if kappa is high, OR skip orientation dispersion for now if hard.
             # MDT "NODDI" usually implies orientation dispersion.
             # But the MDT adapter generated 'NODDI_IC.kappa' = 1.0 (very dispersed).
             # Without a Watson/Bingahm integration, we can't match exactly.
-            # But we can try 'Stick' + 'Zeppelin' as a "Parallel NODDI" (AMICO style) approximation if no dispersion implemented in dmipy-jax yet.
+            # But we can try 'Stick' + 'Zeppelin' as a "Parallel NODDI" (AMICO style) approximation if no dispersion implemented in compore yet.
             # Wait, `mte_noddi.py` had MTE_NODDI but presumably without dispersion integration? 
-            # Or maybe MTE_NODDI in dmipy-jax handles it?
+            # Or maybe MTE_NODDI in compore handles it?
             # `mte_noddi.py` shows it uses `C1Stick` and `G2Zeppelin`, no convolution. So it equates to "Parallel NODDI" (un-dispersed).
             # MDT "NODDI" simulates WITH dispersion.
             # So comparisons will fail unless we set kappa -> infinity (aligned).

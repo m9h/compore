@@ -6,7 +6,7 @@ import equinox as eqx
 import numpy as np
 
 # Local Imports
-from dmipy_jax.biophysics.neural_cde import NeuralCDE, GaussianPhaseApproximation
+from compore.biophysics.neural_cde import NeuralCDE, GaussianPhaseApproximation
 
 def generate_random_waveforms(n_samples, t_points, key):
     """

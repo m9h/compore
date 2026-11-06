@@ -102,8 +102,8 @@ def run_msmt(d):
 
 def run_prism_plus(d, n_fibres, n_iter, library_size, n_samples, key=0):
     import jax
-    from dmipy_jax.prism import prism_uncertainty as pu
-    from dmipy_jax.prism.prism_jax import PrismConfig, fit_prism, prism_fit_to_pam
+    from lafix import prism_uncertainty as pu
+    from lafix.prism_jax import PrismConfig, fit_prism, prism_fit_to_pam
     import importlib.util, sys
     spec = importlib.util.spec_from_file_location(
         "vpdc", Path(__file__).with_name("validate_prism_disco_connectivity.py"))
@@ -119,7 +119,7 @@ def run_prism_plus(d, n_fibres, n_iter, library_size, n_samples, key=0):
     post = pu.laplace_fixel_posterior(fit, d["data"], bvals_si, bvecs)
     # posterior direction samples → connectomes under the protocol tracker
     S = post.sample_dirs(jax.random.PRNGKey(key), n_samples)
-    from dmipy_jax.prism.tracking import peaks_to_pam
+    from lafix.tracking import peaks_to_pam
     idx = np.argwhere(d["mask"]); K = post.dirs.shape[1]
     cms = []
     for s in range(n_samples):
@@ -147,7 +147,7 @@ def main():
     ap.add_argument("--n-samples", type=int, default=20)
     args = ap.parse_args()
 
-    from dmipy_jax.prism import prism_uncertainty as pu
+    from lafix import prism_uncertainty as pu
     rows = []
     for snr in args.snrs:
         d = load_protocol_data(snr)

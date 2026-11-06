@@ -3,8 +3,8 @@ import argparse
 import nibabel as nib
 import numpy as np
 
-from dmipy_jax.io.frdr import FRDRMouseLoader
-from dmipy_jax.pipelines.rodent import RodentPreprocessing
+from compore.io.frdr import FRDRMouseLoader
+from compore.pipelines.rodent import RodentPreprocessing
 
 def main():
     parser = argparse.ArgumentParser(description="Showcase FRDR Mouse Pipeline")

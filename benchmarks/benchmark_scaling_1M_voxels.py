@@ -6,10 +6,10 @@ import equinox as eqx
 from dmipy.data import saved_acquisition_schemes
 from dmipy.signal_models import cylinder_models, gaussian_models
 from dmipy.core.modeling_framework import MultiCompartmentModel
-import dmipy_jax.signal_models.gaussian_models as jax_gaussian
-from dmipy_jax.signal_models.stick import Stick
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.acquisition import JaxAcquisition
+import compore.signal_models.gaussian_models as jax_gaussian
+from compore.signal_models.stick import Stick
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.acquisition import JaxAcquisition
 
 def benchmark_scaling():
     print("Setting up 1M voxel benchmark...")

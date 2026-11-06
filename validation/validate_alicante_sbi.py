@@ -22,13 +22,13 @@ import jax.numpy as jnp
 import numpy as np
 import time
 
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.config import SBIPipelineConfig
-from dmipy_jax.pipeline.simulator import ModelSimulator
-from dmipy_jax.pipeline.train import train_sbi
-from dmipy_jax.library.derived_metrics import tensor_to_fa_md
-from dmipy_jax.design.oed import d_optimality_loss, optimize_protocol
-from dmipy_jax.inference.mdn import MixtureDensityNetwork
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.config import SBIPipelineConfig
+from compore.pipeline.simulator import ModelSimulator
+from compore.pipeline.train import train_sbi
+from compore.library.derived_metrics import tensor_to_fa_md
+from compore.design.oed import d_optimality_loss, optimize_protocol
+from compore.inference.mdn import MixtureDensityNetwork
 import equinox as eqx
 
 

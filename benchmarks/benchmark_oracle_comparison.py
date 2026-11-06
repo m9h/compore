@@ -2,12 +2,12 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import time
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.core.acquisition import acquisition_scheme_from_bvalues
-from dmipy_jax.signal_models.gaussian_models import Ball
-from dmipy_jax.signal_models.cylinder_models import C1Stick
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.core.acquisition import acquisition_scheme_from_bvalues
+from compore.signal_models.gaussian_models import Ball
+from compore.signal_models.cylinder_models import C1Stick
 
-def benchmark_dmipy_jax():
+def benchmark_compore():
     print("Starting Dmipy-Jax Benchmark (1M samples)...")
     
     # Enable JIT and Float32 (default)
@@ -127,7 +127,7 @@ def benchmark_dmipy_jax():
     # ==========================================
     # 5. Save
     # ==========================================
-    out_file = "data/dmipy_jax_1M.npz"
+    out_file = "data/compore_1M.npz"
     print(f"Saving to {out_file}...")
     np.savez(out_file, 
              signals=np.array(signals_noisy),
@@ -137,4 +137,4 @@ def benchmark_dmipy_jax():
     print("Done!")
 
 if __name__ == "__main__":
-    benchmark_dmipy_jax()
+    benchmark_compore()

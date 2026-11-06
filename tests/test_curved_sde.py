@@ -4,7 +4,7 @@ import jax.numpy as jnp
 import numpy as np
 import diffrax
 import pytest
-from dmipy_jax.simulation.sde_models import CurvedTractSDE, solve_restricted_sde_batch
+from compore.simulation.sde_models import CurvedTractSDE, solve_restricted_sde_batch
 
 def create_torus_phantom(shape=(30, 30, 10), radius=10.0, center=(15, 15)):
     """

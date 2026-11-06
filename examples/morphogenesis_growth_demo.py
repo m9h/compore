@@ -6,8 +6,8 @@ Uses HyperelasticGrowthSolver to simulate a growing bilayer.
 import jax
 import jax.numpy as jnp
 import jax.random as jr
-from dmipy_jax.morphogenesis.cann import MorphoCANN
-from dmipy_jax.morphogenesis.growth_solver import HyperelasticGrowthSolver
+from compore.morphogenesis.cann import MorphoCANN
+from compore.morphogenesis.growth_solver import HyperelasticGrowthSolver
 
 def run_growth_demo():
     # 1. Setup Grid (Small 16x16x16 for speed)

@@ -3,10 +3,10 @@ import pytest
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.simulation.scanner import bloch, objects
-from dmipy_jax.simulation.scanner.sequences import GeneralSequence
-from dmipy_jax.external import pulseq
-from dmipy_jax.external import jemris
+from compore.simulation.scanner import bloch, objects
+from compore.simulation.scanner.sequences import GeneralSequence
+from compore.external import pulseq
+from compore.external import jemris
 
 # Soft dependency check
 try:
@@ -44,7 +44,7 @@ class TestJemrisComparison:
     @pytest.mark.xfail(reason="known failure, pre-existing, see docs/decisions/010 §7.3: Bloch simulate_acquisition raises inside JIT", strict=False)
     def test_fid_signal_match(self, simple_fid_sequence):
         """
-        Validates that dmipy-jax produces purely transverse magnetization 
+        Validates that compore produces purely transverse magnetization 
         after a 90 pulse, matching theoretical JEMRIS expectation.
         
         (Actual JEMRIS comparison requires running JEMRIS externally)

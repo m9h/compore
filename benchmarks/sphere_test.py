@@ -1,5 +1,5 @@
 import jax.numpy as jnp
-from dmipy_jax.signal_models import g3_sphere
+from compore.signal_models import g3_sphere
 
 # Standard HCP Protocol
 big_delta = 0.0431  # 43.1 ms

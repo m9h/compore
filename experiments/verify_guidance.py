@@ -1,12 +1,12 @@
 
 import jax
 import jax.numpy as jnp
-# Add project root to path to ensure we can import dmipy_jax
+# Add project root to path to ensure we can import compore
 import sys
 import os
 sys.path.append(os.getcwd())
 
-from dmipy_jax.diffusion.guidance import microstructure_guided_sampling
+from compore.diffusion.guidance import microstructure_guided_sampling
 
 def dummy_model(x, t):
     # Simple dummy model: epsilon = x * scale + t * scale

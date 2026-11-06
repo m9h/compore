@@ -4,7 +4,7 @@ import jax.numpy as jnp
 import time
 import sys
 import os
-from dmipy_jax.inverse.amico import AMICOSolver
+from compore.inverse.amico import AMICOSolver
 
 # Dummy model for dictionary generation
 def dummy_stick(params, acquisition):

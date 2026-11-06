@@ -6,17 +6,17 @@ import jax.numpy as jnp
 import numpy as np
 
 # Mock dependencies to test logic without downloading 10GB
-from dmipy_jax.io.datasets import load_bigmac_mri
+from compore.io.datasets import load_bigmac_mri
 
 def test_load_bigmac_logic_mocks():
     """
     Verifies that load_bigmac_mri correctly orchestrates fetching and loading
     using mocked file system and openneuro calls.
     """
-    with patch("dmipy_jax.io.datasets.fetch_bigmac") as mock_fetch, \
-         patch("dmipy_jax.io.datasets.get_bigmac_dwi_path") as mock_get_path, \
-         patch("dmipy_jax.io.datasets.load_nifti") as mock_load_nifti, \
-         patch("dmipy_jax.io.datasets.read_bvals_bvecs") as mock_read_bv, \
+    with patch("compore.io.datasets.fetch_bigmac") as mock_fetch, \
+         patch("compore.io.datasets.get_bigmac_dwi_path") as mock_get_path, \
+         patch("compore.io.datasets.load_nifti") as mock_load_nifti, \
+         patch("compore.io.datasets.read_bvals_bvecs") as mock_read_bv, \
          patch("pathlib.Path.exists") as mock_exists, \
          patch("pathlib.Path.rglob") as mock_rglob:
          

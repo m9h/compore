@@ -10,10 +10,10 @@ Benchmarks:
 import numpy as np
 import matplotlib.pyplot as plt
 import jax.numpy as jnp
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.signal_models import cylinder_models, gaussian_models, zeppelin, stick
-from dmipy_jax.fitting.optimization import OptimistixFitter
-from dmipy_jax.acquisition import JaxAcquisition
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.signal_models import cylinder_models, gaussian_models, zeppelin, stick
+from compore.fitting.optimization import OptimistixFitter
+from compore.acquisition import JaxAcquisition
 from pathlib import Path
 
 def main():

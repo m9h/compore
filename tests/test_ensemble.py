@@ -11,14 +11,14 @@ import jax.numpy as jnp
 import numpy as np
 import pytest
 
-from dmipy_jax.pipeline.config import SBIPipelineConfig
-from dmipy_jax.pipeline.train import _NormalisedMDN
-from dmipy_jax.pipeline.ensemble import (
+from compore.pipeline.config import SBIPipelineConfig
+from compore.pipeline.train import _NormalisedMDN
+from compore.pipeline.ensemble import (
     EnsemblePredictor,
     save_ensemble,
     load_ensemble,
 )
-from dmipy_jax.inference.mdn import MixtureDensityNetwork
+from compore.inference.mdn import MixtureDensityNetwork
 
 
 # --------------------------------------------------------------------------- #

@@ -4,7 +4,7 @@ import os
 import sys
 
 # -- Project information -----------------------------------------------------
-project = 'SBI4DWI'
+project = 'compore'
 copyright = '2026, Rutger Fick, Demian Wassermann, and Contributors'
 author = 'Morgan Hough; dmipy lineage: Rutger Fick, Demian Wassermann'
 release = '0.1.0'
@@ -24,8 +24,10 @@ extensions = [
 ]
 
 apidoc_modules = [
+    # lafix (packages/lafix) is small and stable: docs/lafix_api.rst is
+    # committed (sphinx-apidoc output); the apidoc run for compore regenerates reference/ wholesale.
     {
-        'path': '../dmipy_jax',
+        'path': '../compore',
         'destination': 'reference',
         'exclude_patterns': ['**/tests/**', '**/examples/**', '**/benchmarks/**', '**/experiments/**'],
         'separate_modules': False,
@@ -136,7 +138,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store',
 # -- Options for HTML output -------------------------------------------------
 html_theme = 'furo'
 html_static_path = ['_static']
-html_title = "SBI4DWI Documentation"
+html_title = "compore + lafix documentation"
 
 # -- Path setup --------------------------------------------------------------
 # If extensions (or modules to document with autodoc) are in another directory,

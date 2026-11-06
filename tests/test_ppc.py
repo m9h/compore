@@ -5,7 +5,7 @@ Tests for Posterior Predictive Checks (PPC) diagnostics.
 import numpy as np
 import pytest
 
-from dmipy_jax.pipeline.ppc import PPCResult
+from compore.pipeline.ppc import PPCResult
 
 
 class TestPPCResultProperties:

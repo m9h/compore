@@ -1,5 +1,5 @@
 import jax.numpy as jnp
-from dmipy_jax.signal_models import g2_tensor
+from compore.signal_models import g2_tensor
 
 # Test Setups
 bvals = jnp.array([1000.0, 3000.0])

@@ -8,11 +8,11 @@ import jax.numpy as jnp
 import equinox as eqx
 import optax
 import time
-from dmipy_jax.fitting.optimization import VoxelFitter
-from dmipy_jax.core.acquisition import SimpleAcquisitionScheme
-from dmipy_jax.signal_models.ivim import IVIM
-from dmipy_jax.algebra.initializers import segmented_ivim_init
-from dmipy_jax.fitting.optimization import VoxelFitter
+from compore.fitting.optimization import VoxelFitter
+from compore.core.acquisition import SimpleAcquisitionScheme
+from compore.signal_models.ivim import IVIM
+from compore.algebra.initializers import segmented_ivim_init
+from compore.fitting.optimization import VoxelFitter
 import optimistix as optx
 
 # Helper: Load DICOM series

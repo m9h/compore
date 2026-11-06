@@ -1,7 +1,7 @@
 import jax
 import jax.numpy as jnp
 import time
-from dmipy_jax.tractography.hough_global import global_hough_tracking
+from compore.tractography.hough_global import global_hough_tracking
 
 def run_check():
     print("--- Verifying Hough Global Module ---")

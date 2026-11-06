@@ -16,7 +16,7 @@ try:
 except ImportError:
     FLOWJAX_AVAILABLE = False
 
-from dmipy_jax.morphogenesis.inference import MorphoSimulator, generate_training_data
+from compore.morphogenesis.inference import MorphoSimulator, generate_training_data
 
 def run_sbi_demo():
     if not FLOWJAX_AVAILABLE:

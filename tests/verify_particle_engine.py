@@ -9,7 +9,7 @@ import sys
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from dmipy_jax.core import particle_engine
+from compore.core import particle_engine
 
 def verify_particle_engine():
     print("--- Verifying Particle Engine ---")

@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 from typing import Dict, Tuple, List
 import argparse
 
-from dmipy_jax.biophysics.network.connectome_mapper import ConnectomeMapper
-from dmipy_jax.io.tms_loader import TMSLoader
+from compore.biophysics.network.connectome_mapper import ConnectomeMapper
+from compore.io.tms_loader import TMSLoader
 
 def generate_synthetic_data():
     """

@@ -12,7 +12,7 @@ import argparse, time
 from dataclasses import replace
 import numpy as np, jax
 from validation.lib import substrate_benchmark as sb
-from dmipy_jax.prism import prism_jax as pj
+from lafix import prism_jax as pj
 from validation.lib.prism_synthetic import prism_scheme
 
 
@@ -83,7 +83,7 @@ def main():
                     fr = v / np.maximum(v.sum(1, keepdims=True), 1e-12); fi = np.full(N, np.nan)
                 elif meth == "select":
                     # per-voxel Laplace-evidence selection between plus-x and plus-x-disp
-                    from dmipy_jax.prism import prism_uncertainty as pu
+                    from lafix import prism_uncertainty as pu
                     cfgx = replace(pj.PrismConfig(n_fibres=2, n_iter=args.n_iter, loss="nll"),
                                    learn_diffusivities=True, tortuosity=True, use_restricted=False,
                                    separate_extra_dpar=True, lam_diffusivity_prior=1.0,

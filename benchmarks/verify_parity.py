@@ -6,11 +6,11 @@ import jax.numpy as jnp
 from dmipy.signal_models import cylinder_models, gaussian_models
 from dmipy.core.modeling_framework import MultiCompartmentModel
 from dmipy.data import saved_acquisition_schemes
-from dmipy_jax.signal_models import gaussian_models as jax_gaussian
-from dmipy_jax.signal_models import stick as jax_stick
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.fitting.optimization import CustomLMFitter
+from compore.signal_models import gaussian_models as jax_gaussian
+from compore.signal_models import stick as jax_stick
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.acquisition import JaxAcquisition
+from compore.fitting.optimization import CustomLMFitter
 # from sklearn.metrics import r2_score, mean_squared_error
 
 def mean_squared_error(y_true, y_pred):
@@ -22,7 +22,7 @@ def r2_score(y_true, y_pred):
     return 1 - (ss_res / ss_tot)
 
 def benchmark_parity():
-    print("One-to-One Parity Benchmark: dmipy (CPU) vs dmipy-jax (GPU)")
+    print("One-to-One Parity Benchmark: dmipy (CPU) vs compore (GPU)")
     
     # 1. Setup Models
     # Standard dmipy
@@ -93,7 +93,7 @@ def benchmark_parity():
     fitted_diff_cpu = fit_results_cpu.fitted_parameters['G1Ball_1_lambda_iso']
     
     # 4. Fit GPU
-    print("\n--- Running GPU Fit (dmipy-jax) ---")
+    print("\n--- Running GPU Fit (compore) ---")
     data_jax = jnp.array(data_noisy)
     
     # Init
@@ -129,7 +129,7 @@ def benchmark_parity():
     t0 = time.time()
     # We need init params. 
     
-    from dmipy_jax.fitting.initialization import GlobalBruteInitializer
+    from compore.fitting.initialization import GlobalBruteInitializer
     initializer = GlobalBruteInitializer(jax_mcm)
     key = jax.random.PRNGKey(42)
     candidates = initializer.generate_random_grid(2000, key)

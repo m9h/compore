@@ -7,9 +7,9 @@ import pypulseq as pp
 # Add src to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
 
-from dmipy_jax.simulation.scanner.phantoms import SyntheticBigMacPhantom
-from dmipy_jax.external.pulseq import pulseq_to_general
-from dmipy_jax.simulation.scanner.bloch import simulate_acquisition
+from compore.simulation.scanner.phantoms import SyntheticBigMacPhantom
+from compore.external.pulseq import pulseq_to_general
+from compore.simulation.scanner.bloch import simulate_acquisition
 
 def main():
     print("=== JAX-POSSUM Demo: PyPulseSeq + BigMac ===")

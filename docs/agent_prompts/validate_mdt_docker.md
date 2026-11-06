@@ -1,6 +1,6 @@
 # Prompt: Develop MDT Docker Container & Adapter Layer
 
-**Objective**: Create a functioning Docker container for the [Microstructure Diffusion Toolbox (MDT)](https://github.com/Robbert-Harms/MDT) and implement a Python "Adapter Layer" to use it as a test oracle for `dmipy-jax`.
+**Objective**: Create a functioning Docker container for the [Microstructure Diffusion Toolbox (MDT)](https://github.com/Robbert-Harms/MDT) and implement a Python "Adapter Layer" to use it as a test oracle for `compore`.
 
 **Context**:
 MDT is a reference implementation for microstructure modeling. It requires OpenCL and has a complex model instantiation API. We need a containerized environment to run it reliably and a simplified Python interface to generate ground truth signals.

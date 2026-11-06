@@ -61,7 +61,7 @@ into an accurate approximation of the posterior.
 The expressiveness of a normalizing flow depends on the choice of bijection.
 SBI4DWI uses the **Rational Quadratic Spline** (RQS) transform from
 Durkan et al. (2019), implemented in
-{class}`~dmipy_jax.inference.flows.RationalQuadraticSpline`.
+{class}`~compore.inference.flows.RationalQuadraticSpline`.
 
 ### 2.1 How RQS Works
 
@@ -87,13 +87,13 @@ density evaluation efficient.
 
 ### 2.2 Verifying Invertibility
 
-The following test (adapted from `dmipy_jax/tests/test_flows.py`) confirms
+The following test (adapted from `compore/tests/test_flows.py`) confirms
 that the forward and inverse transforms are consistent:
 
 ```python
 import jax
 import jax.numpy as jnp
-from dmipy_jax.inference.flows import RationalQuadraticSpline
+from compore.inference.flows import RationalQuadraticSpline
 
 key = jax.random.PRNGKey(42)
 K = 4   # number of bins
@@ -134,8 +134,8 @@ c_d = params[..., 2*K:]        # derivatives -> softplus -> positive
 
 ## 3. Building a FlowNetwork with Conditional Context
 
-The {class}`~dmipy_jax.inference.flows.FlowNetwork` stacks multiple
-{class}`~dmipy_jax.inference.flows.CouplingLayer` modules, each containing:
+The {class}`~compore.inference.flows.FlowNetwork` stacks multiple
+{class}`~compore.inference.flows.CouplingLayer` modules, each containing:
 
 1. A **conditioner MLP** that takes the unchanged dimensions plus the
    conditioning context (signal vector) and predicts RQS parameters for the
@@ -146,7 +146,7 @@ Between layers, the dimension ordering is reversed so that every dimension
 gets transformed by at least one layer.
 
 ```python
-from dmipy_jax.inference.flows import FlowNetwork
+from compore.inference.flows import FlowNetwork
 
 key = jax.random.PRNGKey(0)
 
@@ -283,7 +283,7 @@ import jax
 import jax.numpy as jnp
 import optax
 import equinox as eqx
-from dmipy_jax.inference.flows import FlowNetwork
+from compore.inference.flows import FlowNetwork
 
 key = jax.random.PRNGKey(101)
 
@@ -383,7 +383,7 @@ the posterior and the computational budget.
 | Sampling | Trivial (mixture sampling) | Fast (inverse pass) |
 | Density evaluation | Closed-form | Closed-form (change of variables) |
 | Multimodality | Explicit ($K$ modes) | Implicit (learned) |
-| Implementation | `dmipy_jax.inference.mdn` | `dmipy_jax.inference.flows` |
+| Implementation | `compore.inference.mdn` | `compore.inference.flows` |
 
 ---
 
@@ -395,8 +395,8 @@ In the full SBI4DWI pipeline the flow backend is instead built on
 [FlowJAX](https://github.com/danielward27/flowjax) (masked autoregressive
 flows with affine or rational-quadratic-spline transformers) and is selected
 at training time through the configuration: set
-`inference_mode="flow"` in {class}`~dmipy_jax.pipeline.config.SBIPipelineConfig`
-and call {func}`~dmipy_jax.pipeline.train.train_sbi`.
+`inference_mode="flow"` in {class}`~compore.pipeline.config.SBIPipelineConfig`
+and call {func}`~compore.pipeline.train.train_sbi`.
 
 The example below trains a deliberately tiny flow on a mono-exponential
 (ADC) forward model so that it runs in a few seconds on CPU; `depth` is the
@@ -404,10 +404,10 @@ number of flow layers and `knots` the number of spline knots.
 
 ```python
 import jax.numpy as jnp
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.pipeline.simulator import ModelSimulator
-from dmipy_jax.pipeline.config import SBIPipelineConfig
-from dmipy_jax.pipeline.train import train_sbi
+from compore.acquisition import JaxAcquisition
+from compore.pipeline.simulator import ModelSimulator
+from compore.pipeline.config import SBIPipelineConfig
+from compore.pipeline.train import train_sbi
 
 def forward_fn(params, acq):
     # params = [D] in um^2/ms; b-values are SI (s/m^2), hence the 1e-9
@@ -459,8 +459,8 @@ config together:
 
 ```python
 import os, tempfile
-from dmipy_jax.pipeline.checkpoint import save_checkpoint, load_checkpoint
-from dmipy_jax.pipeline.deploy import SBIPredictor
+from compore.pipeline.checkpoint import save_checkpoint, load_checkpoint
+from compore.pipeline.deploy import SBIPredictor
 
 ckpt = os.path.join(tempfile.mkdtemp(), "adc_flow")
 save_checkpoint(trained_model, config, ckpt)

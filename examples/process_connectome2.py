@@ -1,7 +1,7 @@
 
 """
 Advanced Processing Pipeline for Connectome 2.0 (ds006181).
-Leverages 'dmipy-jax' high-performance tools:
+Leverages 'compore' high-performance tools:
 - RestrictedCylinder model (Soderman/Callaghan) for High-G sensitivity.
 - OptimistixFitter for robust non-linear optimization.
 """
@@ -9,10 +9,10 @@ Leverages 'dmipy-jax' high-performance tools:
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
-from dmipy_jax.io.connectome2 import load_connectome2_mri
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.signal_models import cylinder_models, gaussian_models, zeppelin
-from dmipy_jax.fitting.optimization import OptimistixFitter
+from compore.io.connectome2 import load_connectome2_mri
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.signal_models import cylinder_models, gaussian_models, zeppelin
+from compore.fitting.optimization import OptimistixFitter
 
 def main():
     print("--- Connectome 2.0 Advanced Processing ---")

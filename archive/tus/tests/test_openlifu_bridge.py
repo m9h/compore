@@ -15,7 +15,7 @@ import pytest
 
 xarray = pytest.importorskip("xarray")
 
-from dmipy_jax.biophysics.openlifu_bridge import (
+from compore.biophysics.openlifu_bridge import (
     SolutionData,
     extract_chain_inputs,
     load_solution_from_files,

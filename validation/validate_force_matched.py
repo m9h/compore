@@ -40,11 +40,11 @@ from dipy.reconst.force import (
     save_force_simulations,
 )
 
-from dmipy_jax.library.generator import LibraryGenerator
-from dmipy_jax.library.matcher import DictionaryMatcher
-from dmipy_jax.library.storage import SimulationLibrary
-from dmipy_jax.pipeline.simulator import ModelSimulator
-from dmipy_jax.signal_models.bingham import BinghamNODDI
+from compore.library.generator import LibraryGenerator
+from compore.library.matcher import DictionaryMatcher
+from compore.library.storage import SimulationLibrary
+from compore.pipeline.simulator import ModelSimulator
+from compore.signal_models.bingham import BinghamNODDI
 from validation.lib.force_baselines import (
     csd_peaks_from_signal,
     dipy_force_peaks_from_signal,

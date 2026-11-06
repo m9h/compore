@@ -17,7 +17,7 @@ def run(name, net_cls, hidden_dim, n_steps, seed=0):
         make_hcp_like_acquisition, build_ball_2stick_simulator,
         angular_error_deg_cartesian,
     )
-    from dmipy_jax.inference.score_posterior import (
+    from compore.inference.score_posterior import (
         VPSchedule, train_score_posterior, sample_posterior,
     )
 
@@ -51,12 +51,12 @@ def run(name, net_cls, hidden_dim, n_steps, seed=0):
         return (sim.prior_sampler(k, n) - lows) / spans
 
     if net_cls == "equivariant":
-        from dmipy_jax.inference.score_posterior import MLPScoreNetEquivariant
+        from compore.inference.score_posterior import MLPScoreNetEquivariant
         net = MLPScoreNetEquivariant(k_net, n_scalars=4, n_vectors=2,
                                       signal_dim=sim.signal_dim,
                                       hidden_dim=hidden_dim, depth=6)
     else:
-        from dmipy_jax.inference.score_posterior import MLPScoreNet
+        from compore.inference.score_posterior import MLPScoreNet
         net = MLPScoreNet(k_net, param_dim=10, signal_dim=sim.signal_dim,
                           hidden_dim=hidden_dim, depth=6)
 

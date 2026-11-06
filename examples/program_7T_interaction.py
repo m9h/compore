@@ -1,7 +1,7 @@
 
 """
 Program: 7T Voxel-wise Interaction Demo
-Objective: Demonstrate that dmipy-jax fits physically consistent models across spatially coupled voxels, exploiting the 800µm resolution.
+Objective: Demonstrate that compore fits physically consistent models across spatially coupled voxels, exploiting the 800µm resolution.
 
 This script:
 1. Generates synthetic 7T data (0.8mm isotropic) with a sharp boundary feature (White Matter / Gray Matter interface).
@@ -24,10 +24,10 @@ import os
 # Ensure project modules are importable
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from dmipy_jax.signal_models import cylinder_models
-from dmipy_jax.signal_models import gaussian_models
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.inverse.global_amico import GlobalAMICOSolver
+from compore.signal_models import cylinder_models
+from compore.signal_models import gaussian_models
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.inverse.global_amico import GlobalAMICOSolver
 
 # --- 1. Define Models ---
 

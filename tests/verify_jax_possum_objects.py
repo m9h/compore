@@ -5,10 +5,10 @@ import jax.numpy as jnp
 import equinox as eqx
 import numpy as np
 
-# Add src to path to import dmipy_jax
+# Add src to path to import compore
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
 
-from dmipy_jax.simulation.scanner.objects import IsochromatPhantom, TrapezoidalGradient
+from compore.simulation.scanner.objects import IsochromatPhantom, TrapezoidalGradient
 
 def verify_phantom():
     print("Verifying IsochromatPhantom...")

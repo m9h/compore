@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 import os
 import pandas as pd
 
-from dmipy_jax.inference.mcmc import MCMCInference
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.core.modeling_framework import JaxMultiCompartmentModel
-from dmipy_jax.distributions.distribute_models import DistributedModel
-from dmipy_jax.distributions.sphere_distributions import SD1Watson
-from dmipy_jax.gaussian import G2Zeppelin, G1Ball
-from dmipy_jax.cylinder import C1Stick
+from compore.inference.mcmc import MCMCInference
+from compore.acquisition import JaxAcquisition
+from compore.core.modeling_framework import JaxMultiCompartmentModel
+from compore.distributions.distribute_models import DistributedModel
+from compore.distributions.sphere_distributions import SD1Watson
+from compore.gaussian import G2Zeppelin, G1Ball
+from compore.cylinder import C1Stick
 
 # Enable x64 for precision if needed, but float32 usually fine for MCMC
 # jax.config.update("jax_enable_x64", True)
@@ -74,7 +74,7 @@ def build_noddi_model():
 def reproduction_workflow():
     print("----------------------------------------------------------------")
     print("   Reproduction of Uncertainty Paper (MCMC Validation)          ")
-    print("   Using dmipy-jax                                              ")
+    print("   Using compore                                              ")
     print("----------------------------------------------------------------")
     
     # 1. Load Protocol

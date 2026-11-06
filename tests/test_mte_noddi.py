@@ -2,8 +2,8 @@
 import jax
 import jax.numpy as jnp
 import numpy as np
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.signal_models.mte_noddi import MTE_NODDI
+from compore.acquisition import JaxAcquisition
+from compore.signal_models.mte_noddi import MTE_NODDI
 
 
 def test_mte_noddi_run():

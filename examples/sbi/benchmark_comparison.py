@@ -8,7 +8,7 @@ import argparse
 import time
 import pickle
 import numpy as np
-from dmipy_jax.inference.mdn import MixtureDensityNetwork, sample_posterior
+from compore.inference.mdn import MixtureDensityNetwork, sample_posterior
 
 def load_test_data(h5_file):
     with h5py.File(h5_file, 'r') as f:

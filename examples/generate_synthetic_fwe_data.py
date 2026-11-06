@@ -3,9 +3,9 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import argparse
-from dmipy_jax.acquisition import JaxAcquisition
-from dmipy_jax.cylinder import C1Stick
-from dmipy_jax.gaussian import G1Ball
+from compore.acquisition import JaxAcquisition
+from compore.cylinder import C1Stick
+from compore.gaussian import G1Ball
 
 import os
 
@@ -81,7 +81,7 @@ def simulate_voxel_batch(key, n_samples, acquisition):
     ball = G1Ball()
     
     # We need to vmap the models or pass batched inputs if supported.
-    # Most dmipy-jax models support batched inputs if written purely in jax.numpy.
+    # Most compore models support batched inputs if written purely in jax.numpy.
     
     # Helper to run simulation
     def sim_one(f_t, f_i, ang, d_t):
