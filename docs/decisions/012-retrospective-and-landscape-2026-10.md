@@ -336,6 +336,68 @@ WAND loader to read `t_bdel` and a multi-TE forward model with the ring
 kernel. If the flow loses there too, the SBI tooling becomes a validation
 utility and the name goes.
 
+#### 7.4.1 Groundwork (2026-11-05)
+
+**Data.** ds008771 (CC0) is on disk at `/data/raw/openneuro/ds008771`:
+the preprocessed derivatives of all 15 sessions (8 subjects, 7 with scan–
+rescan; 17 GB) synced from the OpenNeuro S3 export, the small annexed
+sidecars fetched from the OpenNeuro API (snapshot 1.0.5) because they are
+absent from the S3 export. Gaps in the public export, verified by direct
+object requests (AccessDenied): the preprocessed `.bvec` for sub-01 and
+sub-02 (both sessions), the dwi-space DKT parcellation for sub-01 (both) and
+sub-02 ses-01, and the transforms for those sessions. Powder-averaged models
+do not need directions, so sub-01/02 remain usable for NEXI; the cortical
+mask is missing for three sessions. Loader: `compore/io/nexi_c2.py`
+(`load_scheme`, `load_dwi`, `load_dseg`, `cortex_mask`, `REDUCED_FEATURES`,
+`fetch_small_files`, `available`).
+
+**Scheme** (from the `.bval`/`.delta` files, δ = 5 ms per the paper, TE 66 ms,
+TR 3.3 s, 2 mm): 513 volumes, 13 b0, 15 (b, Δ) features; the 8 XAI-selected
+features plus b0 are 263 volumes. Counts × (b s/mm², Δ ms):
+3×(0,12) 20×(1000,12) 30×(2500,12) | 2×(0,15) 32×(5000,15) | 2×(0,20)
+34×(7350,20) | 3×(0,27) 20×(1000,27) 30×(2500,27) 32×(5000,27) 34×(7500,27)
+44×(10000,27) | 3×(0,45) 20×(1000,45) 30×(2500,45) 32×(5000,45) 34×(7500,45)
+44×(10000,45) 64×(12500,45).
+
+**Forward models** (`compore/signal_models/gm_powder.py`): powder-averaged
+NEXI (Kärger stick ⇄ ball, closed-form 2×2 exponential per orientation,
+64-node Gauss–Legendre over cos θ), SANDI (stick + GPD sphere + ball) and
+NEXI + impermeable soma, plus a Rician-mean helper and the prior boxes of
+Uhl 2026. Tests (7): stick powder vs quadrature 1e-8; NEXI slow-exchange
+limit = stick + ball (1e-4, quadrature), fast-exchange limit = single
+Gaussian (1e-4); per-orientation agreement with the WM Kärger kernel
+(`validation/lib/prism_exchange.karger_pgse`, 1e-6); **agreement with the
+authors' reference integrand** (graymatter_swissknife `M`, Apache-2.0,
+re-expressed in SI with `scipy.integrate.quad_vec`) to rtol 2e-5; SANDI and
+NEXI+soma reductions; gradients finite under jit. Installing the reference
+package itself was not permitted in this session; its formula was read from
+the public source.
+
+**WAND**: the sidecars carry Δ only as the rounded string `t_bdel` and no δ;
+`compore/io/wand.wand_timings` now parses the exact Δ from
+`SeriesDescription` (17.3 / 30 / 42 / 55 ms) and leaves δ as a constant to be
+set from the WAND documentation (`WAND_AXCALIBER_SMALL_DELTA_S`, None → NaN).
+
+**Experiment design.** Three candidate GM models M ∈ {NEXI, SANDI,
+NEXI+soma} with the prior boxes above. Per cortical voxel, powder averages
+over the 15 (b, Δ) shells (`validation/nexi_c2_powder.py` →
+`/data/datasets/compore/ds008771/powder/<sub>_<ses>.npz`, with the b0 noise
+sd per voxel). Three estimators of the model posterior and parameters:
+
+1. NLLS per model + Laplace evidence (the lafix machinery on powder data);
+2. amortised joint posterior p(M, θ | S) from one flow trained on simulations
+   of all three models (the Gloeckler 2026 stance, our implementation);
+3. the authors' point estimate (NEXI NLLS) as the reference parameter map.
+
+Scored on: (a) scan–rescan reproducibility of p(M | S) and of θ under M
+(Bland–Altman as in the paper, plus ICC across the 7 rescanned subjects),
+(b) posterior predictive checks on held-out shells (fit the 8 reduced
+features, predict the 7 others), (c) simulation-based calibration of both
+posteriors, (d) agreement of estimator 2 with estimator 1 where the evidence
+is decisive. Amortisation "wins" if (b) and (c) hold where the Laplace
+evidence was indecisive on the realism ladder (doc 008 §6.19), and the model
+probabilities are at least as reproducible as the parameters.
+
 ### 7.5 Step 5: close the January debts
 
 Remove `scico` (done as an extra; the modules remain), decide ADR 002c

@@ -32,6 +32,30 @@ from compore.data.openneuro import fetch_datalad, DEFAULT_DATA_DIR
 # WAND GIN Repository
 WAND_GIN_URL = "https://gin.g-node.org/CUBRIC/WAND"
 
+# Gradient duration of the WAND AxCaliber/CHARMED scans is not in the sidecars
+# (no `t_sdel`); set it from the acquisition documentation before fitting
+# anything that depends on δ. None → loaders return NaN for small_delta.
+WAND_AXCALIBER_SMALL_DELTA_S = None
+
+
+def wand_timings(meta: dict):
+    """(Delta_s, delta_s) from a WAND dwi sidecar. Δ from SeriesDescription
+    'AX_delta17p3_...' (17.3 ms), else from `t_bdel` (ms, string); δ from
+    `t_sdel` if present, else WAND_AXCALIBER_SMALL_DELTA_S (None → NaN)."""
+    import re, math
+    Delta = None
+    m = re.search(r"delta(\d+)(?:p(\d+))?", str(meta.get("SeriesDescription", "")))
+    if m:
+        Delta = float(f"{m.group(1)}.{m.group(2) or 0}") * 1e-3
+    elif "t_bdel" in meta:
+        Delta = float(meta["t_bdel"]); Delta = Delta * 1e-3 if Delta > 1.0 else Delta
+    if "t_sdel" in meta:
+        delta = float(meta["t_sdel"]); delta = delta * 1e-3 if delta > 1.0 else delta
+    else:
+        delta = WAND_AXCALIBER_SMALL_DELTA_S if WAND_AXCALIBER_SMALL_DELTA_S is not None else math.nan
+    return (Delta if Delta is not None else math.nan), delta
+
+
 class WANDLoader:
     def __init__(self, base_path=None, subject="sub-01"):
         if base_path is None:
@@ -122,34 +146,10 @@ class WANDLoader:
                 with open(json_path, 'r') as jf:
                     meta = json.load(jf)
                     
-                # Parse WAND specific keys
-                # "t_bdel": Big Delta (ms?)
-                # "t_sdel": Small Delta (ms?)
-                # Or standard BIDS fields?
-                
-                # Check standard fields first
-                # Usually in BIDS these might not be standard. WAND uses custom keys?
-                # Based on description: t_bdel
-                
-                # Let's look for keys
-                if 't_bdel' in meta:
-                    Delta = float(meta['t_bdel']) # Assuming seconds or need conversion?
-                    # Usually datasets store SI or ms. Let's assume ms if > 1?
-                    # WAND 300mT/m scanner often reports in s?
-                    # Let's check magnitude. If > 1, likely ms.
-                    if Delta > 1.0: Delta *= 1e-3
-                elif 'DiffusionGradientPulseDuration' in meta:
-                     # Standard BIDS?
-                     pass
-                else:
-                    Delta = 0.03 # Default guess 30ms
-
-                if 't_sdel' in meta:
-                    delta = float(meta['t_sdel'])
-                    if delta > 1.0: delta *= 1e-3
-                else:
-                    delta = 0.01 # Default guess 10ms
-            
+                # WAND stores the big Δ as the aDWI-BIDS key `t_bdel` (string, ms,
+                # rounded: AxCaliber1 says '18' for the 17.3 ms scan). The exact value
+                # is in SeriesDescription "AX_delta17p3_30xb2200_30xb4400".
+                Delta, delta = wand_timings(meta)
             n_vol = len(bvals)
             all_data.append(data)
             all_bvals.append(bvals)
