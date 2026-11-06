@@ -39,7 +39,7 @@ def main():
             if not ok["dseg"]:
                 summary[tag] = "no dwi-space dseg (public export)"; print(tag, summary[tag], flush=True); continue
             t0 = time.time()
-            data, affine, sc = n.load_dwi(s, ses, mmap=True)
+            data, affine, sc = n.load_dwi(s, ses, mmap=False)   # gz proxies cannot fancy-index; ~1.4 GB per session
             dseg, _ = n.load_dseg(s, ses, space="dwi")
             if dseg.shape != data.shape[:3]:
                 summary[tag] = f"dseg shape {dseg.shape} != dwi {data.shape[:3]}"; print(tag, summary[tag], flush=True); continue

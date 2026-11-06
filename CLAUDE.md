@@ -110,6 +110,9 @@ compore/                     # the platform distribution `compore`
 │   │                        #   library generation), emulator.py (LibraryEmulator → ModelSimulator)
 │   └── substrates/          #   spheres.py (Substrate, SDFs, PGSE walker; was validation/lib/
 │                            #   substrate_benchmark.py), caterpillar.py (CATERPillar generators)
+├── signal_models/gm_powder.py  # powder-averaged NEXI / SANDI / NEXI+soma on multi-(b,Δ) schemes
+├── inference/model_selection.py  # joint p(M, θ | S): Laplace evidence vs amortised classifier + flows
+├── io/nexi_c2.py            # ds008771 (reduced NEXI, Connectome 2.0) preproc loader; io/wand.py t_bdel parsing
 ├── pipeline/                # ModelSimulator → train_sbi → checkpoint → deploy; UQ (sbc, ppc,
 │                            #   conformal, ood, ensemble), comparison runner, metrics
 ├── library/                 # SimulationLibrary (HDF5), generator, matcher
