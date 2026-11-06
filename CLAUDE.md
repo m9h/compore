@@ -129,7 +129,7 @@ validation/                  # paper scripts (validate_*.py, hcp_*.py, design_*.
 tests/                       # top-level tests, incl. tests/validation for lafix + validation/lib
 archive/                     # transcranial ultrasound / EIT / pulseq code, kept but not imported
 docs/decisions/              # ADRs and result logs (008 = PRISM/HCP results, 009 = orbit design,
-                             #   012 = retrospective + landscape by group, 013 = progress report + roadmap,
+                             #   012 = retrospective + landscape by group, 013 = progress report + roadmap, 014 = DIPY workshop 2027 landscape,
                              #   010 = package review + clean-up plan and its execution log)
 docs/artifacts.md            # where the untracked checkpoints/binaries live
 ```
