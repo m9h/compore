@@ -71,7 +71,7 @@ and is all that compartment models, fitting and `dipy_refine_peaks` need
 (whole-brain refine + posterior in about two minutes on 20 cores).
 
 ```bash
-git clone https://github.com/m9h/compore.git && cd sbi4dwi
+git clone https://github.com/m9h/compore.git && cd compore
 uv sync                       # core: jax, equinox, optimistix, optax, dipy, nibabel
 uv sync --extra cuda          # + CUDA-13 JAX wheels
 uv sync --extra sbi           # + flowjax, blackjax, numpyro, h5py (SBI pipeline, UQ)
