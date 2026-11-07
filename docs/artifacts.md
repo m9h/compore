@@ -65,6 +65,7 @@ Files moved out of the index (restore with `cp -r /data/datasets/sbi4dwi-artifac
 - `validation/mcmr/mcds/parity_noimages.log`
 - `validation/mcmr/perm_sweep.log`
 - `validation/prism_posterior_disco_slurm1742.log`
+- `validation/cuslines_posterior_disco_snr50.npz` (doc 014 §4.1: DiSCo posterior direction samples + CPU connectomes, 18 MB; regenerate with `validation/cuslines_posterior_disco.py`)
 - `validation/prism_substrate_b3_icvf07_slurm1788.log`
 - `validation/prism_substrate_b3_slurm1786.log`
 - `validation/prism_substrate_cli_slurm1785.log`

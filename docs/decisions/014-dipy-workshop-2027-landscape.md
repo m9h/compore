@@ -78,3 +78,70 @@ acceleration** (Rokem).
 - Deka K et al. GPU-accelerated diffusion MRI tractography in DIPY. ISMRM 2025 #4785; `dipy/GPUStreamlines` (cuslines).
 - Chandio BQ et al. BundleWarp. bioRxiv 2023; Bundle analytics. Sci Rep 2020.
 - DIPY PRs #4258 (SyN SDC), #4267 (SPECTRA statistics), #4291/#4294 (Skyline), #3707 (Cholesky DTI/DKI, Henriques group).
+
+## 4. Execution log
+
+### 4.1 cuslines (GLIDE) for posterior-sampled tractography, 2026-11-07
+
+Scripts: `validation/cuslines_posterior_disco.py` (stage A, main env:
+PRISM-plus fit on DiSCo 1 SNR 50, Laplace fixel posterior, 20 direction
+samples + MAP, CPU EuDX protocol of `lafix.tracking.track_connectivity`) and
+`validation/cuslines_posterior_disco_gpu.py` (stage B, scratch venv with
+`cuslines[cu13]` 2026-06 from PyPI, CUDA backend on the GB10). Numbers from
+`validation/cuslines_posterior_disco.json` and the stage A log.
+
+| | CPU EuDX (dipy 1.12.1, one core) | cuslines prob getter on GB10 |
+|---|---|---|
+| per connectome, 35 376 seeds, 40³ volume | 0.84 s median | 1.56 s median (1.41 s first, incl. JIT) |
+| 21 connectomes | 17.7 s | 32.5 s |
+| streamlines, MAP sample | 79 825 | 55 008 (63 390 median over samples) |
+| r vs DiSCo ground truth, MAP / posterior mean | 0.851 / 0.859 | 0.547 / 0.545 |
+| r range over the 20 samples | 0.842–0.867 | 0.534–0.551 |
+| r GPU connectome vs CPU connectome, same sample | — | 0.46–0.51 |
+
+Facts that decide the question:
+
+- **cuslines has no peaks (EuDX) direction getter**, only bootstrap (CSA/OPDT
+  on raw data), PMF-probabilistic and PTT. A fixel set can only be tracked by
+  turning it into a PMF on the 362-vertex sphere (Watson kernel
+  `exp(κ((v·d)²−1))`, κ = 40). Sweeping κ ∈ {40, 200, 1000} and the
+  relative peak threshold ∈ {0.25, 0.5} on the MAP sample moves r only within
+  0.55–0.57, so the 0.30 gap to EuDX is tracker semantics (probabilistic
+  propagation, cuslines' seeding/merging and stopping rules), not PMF
+  sharpness. The GPU connectome is therefore **not a drop-in replacement**
+  for the §17.5 protocol; every number in docs 007/008 stays CPU EuDX.
+- **At DiSCo size the GPU is slower.** 15 267 voxels and 35 k seeds are
+  under the launch/compile overhead; 0.84 s per connectome on one core means
+  the 21-connectome posterior sweep is 18 s, which was never the bottleneck
+  (the fit is 8 s, the Laplace step 11 s). cuslines pays off at HCP scale
+  (741 k voxels, millions of seeds), where doc 008 §9 tracked once per
+  subject; a 100-sample posterior connectome per HCP subject is the use case
+  to revisit, with a peaks getter.
+- **Two API details** recorded for a later attempt: `GPUTracker.__init__`
+  creates a CUDA context that `__exit__` does not destroy (stage B pops and
+  destroys it after each sample, otherwise the second tracker fails with
+  `CUDA_ERROR_OUT_OF_MEMORY`), and streamlines may overshoot the volume by
+  half a voxel, which `connectivity_matrix` rejects (stage B clips).
+- A peaks/EuDX direction getter in cuslines is the natural upstream
+  contribution if the HCP posterior sweep is ever wanted on the GPU; it is a
+  CUDA kernel, not a DIPY PR, and is not scheduled.
+
+Artefact: `validation/cuslines_posterior_disco_snr50.npz` (18 MB, direction
+samples + CPU connectomes; untracked, listed in docs/artifacts.md).
+
+### 4.2 Skyline example, 2026-11-07
+
+`packages/lafix/examples/viz_skyline_sigma.py` loads the `dipy_refine_peaks`
+outputs (`*_peaks.pam5`, `*_sigmatheta_calibrated.nii.gz`, `*_fwm`,
+`*_fintra`) and calls `dipy.viz.skyline.app.skyline` with the σ map as the
+background image, the refined peaks as a peaks layer, and optionally N
+posterior cone samples of the main fixel on the middle slice as short
+streamlines (`--samples N`); `--stealth out.png` renders offscreen.
+**Untested**: Skyline is only in dipy master (1.13.0.dev0, no wheel on PyPI;
+`uv pip install --pre dipy>=1.13.0.dev0` finds nothing) and the source build
+from GitHub was not run in this session. It is written against the
+`Skyline.__init__` docstring of master on 2026-11-06 (tuple forms
+`(data, affine, label)`, `(peak_dirs, affine, label, peak_values)`,
+`(sft, label)`; `visualizer_type="stealth"`, `out_stealth_png`). To test:
+build dipy master into a venv with `fury>=2.1` and `imgui_bundle`, run the
+CLI on Stanford HARDI, then the example with `--stealth`.
