@@ -1,0 +1,52 @@
+{
+ "npz": "validation/cuslines_posterior_disco_snr50.npz",
+ "kappa": 40.0,
+ "pmf_threshold": 0.1,
+ "n_seeds": 35376,
+ "r_gt_map_cpu_pmf": 0.8774169456187505,
+ "r_gt_mean_cpu_pmf": 0.8745121806331071,
+ "r_gt_map_eudx": 0.851240460775222,
+ "t_cpu_pmf_median_s": 1.085737943649292,
+ "rows": [
+  {
+   "sample": 0,
+   "n_streamlines": 34124,
+   "t_cpu_pmf_s": 1.0783112049102783,
+   "r_gt_cpu_pmf": 0.8774169456187505,
+   "r_gt_eudx": 0.851240460775222,
+   "r_gt_gpu": 0.5473059321992619,
+   "r_cpu_pmf_vs_gpu": null,
+   "r_cpu_pmf_vs_eudx": 0.7985402529217652
+  },
+  {
+   "sample": 1,
+   "n_streamlines": 34221,
+   "t_cpu_pmf_s": 1.0285601615905762,
+   "r_gt_cpu_pmf": 0.8680652761215548,
+   "r_gt_eudx": 0.8529908559377379,
+   "r_gt_gpu": 0.5340257542610156,
+   "r_cpu_pmf_vs_gpu": null,
+   "r_cpu_pmf_vs_eudx": 0.7918645333927273
+  },
+  {
+   "sample": 2,
+   "n_streamlines": 34118,
+   "t_cpu_pmf_s": 1.0931646823883057,
+   "r_gt_cpu_pmf": 0.870695905680488,
+   "r_gt_eudx": 0.8459214840854419,
+   "r_gt_gpu": 0.5511445671240409,
+   "r_cpu_pmf_vs_gpu": null,
+   "r_cpu_pmf_vs_eudx": 0.7984736749273088
+  },
+  {
+   "sample": 3,
+   "n_streamlines": 34240,
+   "t_cpu_pmf_s": 1.0997681617736816,
+   "r_gt_cpu_pmf": 0.8810191889654546,
+   "r_gt_eudx": 0.8415371426065927,
+   "r_gt_gpu": 0.544518317912001,
+   "r_cpu_pmf_vs_gpu": null,
+   "r_cpu_pmf_vs_eudx": 0.7800528162791134
+  }
+ ]
+}

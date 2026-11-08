@@ -69,6 +69,34 @@ def _cone_samples(pam, sigma_deg, affine, z: int, n: int, seed: int = 0):
     return StatefulTractogram(lines, ref, Space.VOX)
 
 
+def build_skyline_kwargs(prefix, samples: int = 0, stealth: str | None = None) -> dict:
+    """Keyword arguments for ``dipy.viz.skyline.app.skyline`` from the
+    ``dipy_refine_peaks`` products at ``<prefix>_*``. Pure data assembly, so
+    it is testable without FURY; ``main`` only adds the ``skyline`` call."""
+    prefix = Path(prefix)
+    pam, sigma, fwm, fintra, affine = _load(prefix)
+    sigma_masked = np.where(fwm > 0, sigma, 0.0).astype(np.float32)
+
+    tractograms = []
+    if samples > 0:
+        z = sigma.shape[2] // 2
+        tractograms.append((_cone_samples(pam, sigma, affine, z, samples), f"posterior cones (slice {z})"))
+
+    kw = dict(
+        images=[
+            (sigma_masked, affine, "sigma_theta_calibrated [deg]"),
+            (fwm.astype(np.float32), affine, "f_wm"),
+            (fintra.astype(np.float32), affine, "f_intra"),
+        ],
+        peaks=[(pam.peak_dirs, affine, "refined peaks", pam.peak_values)],
+        tractograms=tractograms,
+        tract_colors=(1.0, 0.85, 0.2),
+    )
+    if stealth:
+        kw.update(visualizer_type="stealth", out_stealth_png=stealth)
+    return kw
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("prefix", help="<out_dir>/<prefix>_desc-refined")
@@ -81,29 +109,7 @@ def main(argv=None):
     except ImportError:
         sys.exit("Skyline needs dipy >= 1.13 and FURY >= 2.1 (`uv pip install 'dipy>=1.13' 'fury>=2.1'`).")
 
-    prefix = Path(args.prefix)
-    pam, sigma, fwm, fintra, affine = _load(prefix)
-    sigma_masked = np.where(fwm > 0, sigma, 0.0).astype(np.float32)
-
-    tractograms = []
-    if args.samples > 0:
-        z = sigma.shape[2] // 2
-        tractograms.append((_cone_samples(pam, sigma, affine, z, args.samples), f"posterior cones (slice {z})"))
-
-    kw = {}
-    if args.stealth:
-        kw = {"visualizer_type": "stealth", "out_stealth_png": args.stealth}
-    skyline(
-        images=[
-            (sigma_masked, affine, "sigma_theta_calibrated [deg]"),
-            (fwm.astype(np.float32), affine, "f_wm"),
-            (fintra.astype(np.float32), affine, "f_intra"),
-        ],
-        peaks=[(pam.peak_dirs, affine, "refined peaks", pam.peak_values)],
-        tractograms=tractograms,
-        tract_colors=(1.0, 0.85, 0.2),
-        **kw,
-    )
+    skyline(**build_skyline_kwargs(args.prefix, args.samples, args.stealth))
 
 
 if __name__ == "__main__":

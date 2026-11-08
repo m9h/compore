@@ -145,3 +145,70 @@ from GitHub was not run in this session. It is written against the
 `(sft, label)`; `visualizer_type="stealth"`, `out_stealth_png`). To test:
 build dipy master into a venv with `fury>=2.1` and `imgui_bundle`, run the
 CLI on Stanford HARDI, then the example with `--stealth`.
+
+### 4.3 Validation of §4.1 by red–green tests: the r 0.55 was a cuslines bug, 2026-11-07
+
+Asked to test and validate the two tools of §4 test-first,
+`tests/validation/test_doc014_tools.py` was written before any code change
+(11 tests on the dev venv, 6 GPU/Skyline-gated; `uv run pytest
+tests/validation/test_doc014_tools.py`, and in the cuslines venv with
+`-k "cuslines or chunked or pmf_from or pearson or clip or half_voxel"`).
+Three red tests changed the conclusions of §4.1:
+
+1. **CPU reference for the PMF emulation** (`validation/cuslines_posterior_disco_cpu_pmf.py`,
+   DIPY 1.12.1 `probabilistic_tracking` on the *same* κ = 40 PMF, same seeds,
+   stopping and ROIs): r = 0.877 (MAP) / 0.875 (posterior mean), range
+   0.868–0.881 over 3 samples, 34 124 streamlines, 1.09 s per connectome on
+   one core. That is **above** EuDX (0.851 / 0.859), so "the 0.30 gap is
+   tracker semantics" in §4.1 was wrong: the PMF emulation of a fixel set is
+   fine and the gap was in stage B / cuslines.
+2. **`generate_sft` chunking is broken in cuslines 2.2.3** (master b1a7812 too).
+   It stores lazy generators over the propagator's buffers and re-propagates
+   the next chunk before consuming them, so every chunk yields the *last*
+   chunk's streamlines. Stage B used `chunk_size=25000` for 35 376 seeds:
+   55 008 streamlines = 2 × 27 504 (the last 10 376 seeds alone), the first
+   25 000 seeds lost; with 4 chunks 54 536 = 4 × 13 634. This is why κ and the
+   peak threshold did not move r in §4.1. `test_cuslines_generate_sft_is_chunk_invariant_upstream`
+   is a strict xfail that flips when upstream fixes it; stage B now calls
+   `generate_sft` once per chunk itself (`generate_sft_chunked`).
+3. **The stopping map is sampled half a voxel off** (`check_point_d` reads a
+   linear-filtered CUDA texture without the +0.5 texel-centre offset, while
+   the PMF interpolation and seed lookup use DIPY's centre convention): on a
+   phantom with stop voxels z = 3..7 the streamline spans z = 3.02–7.97
+   instead of [2.5, 7.5). Real, but not the cause of §4.1: labelling endpoints
+   at x − 0.5 lowers r (table), so the default keeps raw coordinates.
+
+Numbers from `validation/cuslines_posterior_disco_chunked.json` (default),
+`..._chunked_shifted.json` (`--endpoint-shift`), `..._cpu_pmf.json`, and the
+§4.1 file `cuslines_posterior_disco.json` (chunk bug, kept):
+
+| per sample, 35 376 seeds, κ = 40 | §4.1 (cuslines chunking) | cuslines, chunk-safe | cuslines, chunk-safe, endpoints −0.5 | DIPY CPU prob. on same PMF | DIPY CPU EuDX (§17.5) |
+|---|---|---|---|---|---|
+| r vs GT, MAP / posterior mean | 0.547 / 0.545 | **0.864 / 0.860** | 0.848 / 0.846 | 0.877 / 0.875 | 0.851 / 0.859 |
+| r range over samples | 0.534–0.551 | 0.854–0.864 | 0.839–0.850 | 0.868–0.881 (3) | 0.842–0.867 |
+| r vs CPU EuDX, same sample | 0.46–0.51 | 0.75–0.78 | 0.73–0.77 | 0.78–0.80 | — |
+| streamlines, MAP | 55 008 | 91 729 | 91 729 | 34 124 | 79 825 |
+| s per connectome, median (first) | 1.56 (1.41) | 1.45 (1.61) | 1.48 (1.69) | 1.09 | 0.84 |
+| 21 connectomes, s | 32.5 | 61.8 | 59.4 | — | 17.7 |
+
+What stands and what changes in §4.1:
+
+- **Stands:** no peaks/EuDX getter in cuslines; the GPU is slower than one
+  CPU core at DiSCo size (and the chunk-safe run is slower still, 1.45 s,
+  because each chunk pays its own launch); the CUDA-context leak; docs 007/008
+  stay CPU EuDX. **Changes:** the PMF route is a valid way to track a fixel
+  set (r 0.86–0.88 ≥ EuDX), so at HCP scale cuslines *can* be used for the
+  posterior connectome sweep without a new kernel, once the chunk bug is
+  fixed upstream or worked around as here. cuslines emits ~2.6 streamlines
+  per seed (one per initial peak); the CPU tracker one.
+- Two upstream issues drafted for the user in
+  `docs/outreach/cuslines-issues.md` (chunking = data-corrupting, default
+  `chunk_size` 100 000 so every whole-brain run with more seeds is affected
+  silently; texture offset = half-voxel bias). No existing issue mentions
+  either.
+- Skyline example: `build_skyline_kwargs` factored out of `main` so the data
+  assembly is tested against synthetic `dipy_refine_peaks` products (labels,
+  σ masked by f_wm, affines, peak tuple shapes, cone-sample geometry and
+  angular spread, the `--stealth` kwargs, the wiring through a stand-in
+  `skyline`, the ImportError message). `test_skyline_stealth_renders_png`
+  skips until dipy ≥ 1.13 is installed; that remains the only untested path.

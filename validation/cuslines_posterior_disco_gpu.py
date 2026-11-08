@@ -12,7 +12,9 @@ that matters.
 
 Run with the scratch venv that has cuslines, dipy and nibabel only:
     <venv>/bin/python validation/cuslines_posterior_disco_gpu.py --npz validation/cuslines_posterior_disco_snr50.npz
-Writes validation/cuslines_posterior_disco.json.
+Writes validation/cuslines_posterior_disco_chunked.json (doc 014 §4.3; the
+§4.1 file cuslines_posterior_disco.json is the run with cuslines' broken
+chunking, kept for the record).
 """
 import argparse, json, time
 from math import radians
@@ -30,6 +32,51 @@ def pearson_ut(a, b):
     return float(np.corrcoef(av, bv)[0, 1])
 
 
+CUSLINES_HALF_VOXEL = 0.5
+"""cuslines samples the stopping map through a CUDA texture (linear filter,
+unnormalised coordinates, no +0.5 texel-centre offset: `check_point_d` in
+tracking_helpers.cu, `create_texture` in cutils.py), so the stop boundary of
+mask voxels i..j lies at [i, j+1) instead of DIPY's [i-0.5, j+0.5); the PMF
+trilinear interpolation and the seed voxel lookup use DIPY's centre
+convention. Verified on a stop-mask phantom
+(tests/validation/test_doc014_tools.py::test_cuslines_output_is_corner_convention).
+Consequence: streamlines leave the stopping region half a voxel late on the
++faces and early on the -faces. Labelling endpoints at x - 0.5 (floor(x),
+the texture's convention; ``--endpoint-shift``) was tried and LOWERS the
+DiSCo connectome r (0.864 → 0.848, doc 014 §4.3), so the default keeps the
+raw coordinates; the collapse to r 0.55 in §4.1 was the chunking bug, not
+this offset. Seeds and PMF are never shifted (a +0.5 seed shift crashes the
+kernel at the volume edge: seed voxel 40 of 40)."""
+
+
+def generate_sft_chunked(tracker, seeds, ref_img, chunk):
+    """Streamlines for ``seeds`` from a cuslines tracker, one ``generate_sft``
+    call per ``chunk`` seeds, concatenated. cuslines 2.2.3's own chunking in
+    ``generate_sft`` is broken: it keeps lazy generators over the propagator's
+    buffers and overwrites them with the next chunk before reading, so every
+    chunk returns the LAST chunk's streamlines (two chunks of DiSCo seeds →
+    55 008 = 2 × 27 504 streamlines, the first 25 000 seeds lost; this was the
+    r 0.55 of doc 014 §4.1). The tracker's own ``chunk_size`` must be ≥ chunk."""
+    out = []
+    seeds = np.asarray(seeds)
+    for i in range(0, len(seeds), chunk):
+        out.extend(np.asarray(x) for x in tracker.generate_sft(seeds[i:i + chunk], ref_img).streamlines)
+    return out
+
+
+def clip_to_volume(streamlines, shape):
+    """Clip points to [0, shape-1] so ``connectivity_matrix`` never sees a
+    negative voxel index."""
+    hi = np.asarray(shape, float) - 1.0
+    return [np.clip(np.asarray(x, float), 0.0, hi) for x in streamlines]
+
+
+def to_dipy_vox(streamlines, shape):
+    """cuslines output → coordinates whose nearest voxel is the texture's
+    floor(x) voxel (undo the stop-map half-voxel offset), clipped."""
+    return clip_to_volume([np.asarray(x, float) - CUSLINES_HALF_VOXEL for x in streamlines], shape)
+
+
 def pmf_from_fixels(dirs_s, fracs, idx, shape, verts, kappa, frac_min):
     """(N,K,3) sampled directions + (N,K) fractions → (X,Y,Z,V) PMF."""
     dots2 = np.einsum("nkc,vc->nkv", dirs_s, verts) ** 2                      # (N,K,V)
@@ -43,7 +90,8 @@ def pmf_from_fixels(dirs_s, fracs, idx, shape, verts, kappa, frac_min):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--npz", default="validation/cuslines_posterior_disco_snr50.npz")
-    ap.add_argument("--out", default="validation/cuslines_posterior_disco.json")
+    ap.add_argument("--out", default="validation/cuslines_posterior_disco_chunked.json")
+    ap.add_argument("--endpoint-shift", action="store_true", help="label endpoints at x-0.5 (stop-map texture convention); lowers r, see doc 014 §4.3")
     ap.add_argument("--kappa", type=float, default=40.0)
     ap.add_argument("--min-sep-deg", type=float, default=20.0)
     ap.add_argument("--chunk-size", type=int, default=25000)
@@ -76,7 +124,7 @@ def main():
 
     sc_mask = ((rois > 0) | mask).astype(np.float32)
     seed_mask = (rois > 0) & mask
-    seeds = seeds_from_mask(seed_mask, np.eye(4), density=2).astype(np.float32)   # voxel space
+    seeds = seeds_from_mask(seed_mask, np.eye(4), density=2).astype(np.float32)   # DIPY voxel space, unshifted
     ref_img = nib.Nifti1Image(mask.astype(np.uint8), affine)
     print(f"backend {cuslines.BACKEND}; {dirs.shape[0]} samples, {len(seeds)} seeds", flush=True)
 
@@ -91,12 +139,10 @@ def main():
                         max_angle=radians(max_angle), step_size=0.5, min_pts=8, max_pts=600,
                         relative_peak_thresh=args.rel_peak, min_separation_angle=radians(args.min_sep_deg),
                         ngpus=1, rng_seed=s, chunk_size=args.chunk_size) as tracker:
-            sft = tracker.generate_sft(seeds, ref_img)
+            streamlines = generate_sft_chunked(tracker, seeds, ref_img, args.chunk_size)
         _drop_context()
-        # keep voxel space (DiSCo affine is a pure translation here) and clip the
-        # half-voxel overshoot at the box edge that cuslines allows
-        hi = np.asarray(mask.shape, float) - 1.0
-        sl = [np.clip(np.asarray(x, float), 0.0, hi) for x in sft.streamlines]
+        # voxel space throughout (identity affine for connectivity_matrix)
+        sl = to_dipy_vox(streamlines, mask.shape) if args.endpoint_shift else clip_to_volume(streamlines, mask.shape)
         conn_affine = np.eye(4)
         t_track = time.time() - t0
         if t_first is None:
@@ -122,7 +168,7 @@ def main():
     C = np.asarray(cmats_gpu)
     summary = {
         "npz": args.npz, "backend": cuslines.BACKEND, "kappa": args.kappa, "min_sep_deg": args.min_sep_deg, "rel_peak": args.rel_peak,
-        "n_samples": int(dirs.shape[0] - 1), "n_seeds": int(len(seeds)),
+        "half_voxel_shift": bool(args.endpoint_shift), "chunk_size": args.chunk_size, "chunked_by_stage_b": True, "n_samples": int(dirs.shape[0] - 1), "n_seeds": int(len(seeds)),
         "r_gt_map_gpu": pearson_ut(C[0], gt), "r_gt_mean_gpu": pearson_ut(C[1:].mean(0), gt) if len(C) > 1 else None,
         "r_gt_map_cpu": pearson_ut(cmats_cpu[0], gt) if len(cmats_cpu) else None,
         "r_gt_mean_cpu": pearson_ut(cmats_cpu[1:].mean(0), gt) if len(cmats_cpu) else None,
