@@ -2,7 +2,7 @@
 Shared DiSCo tractography + connectivity helper.
 
 Factored out of ``validation/validate_dmipy_disco_connectivity*.py`` so
-that every method under comparison (dmipy-JAX dictionary, PRISM-JAX,
+that every method under comparison (dmipy-JAX dictionary, lafix,
 MSMT-CSD, FORCE) is pushed through the *identical* eudx_tracking →
 connectivity_matrix pipeline of doc 004 §17.5 / §21.2. Only the
 ``PeaksAndMetrics`` differs between methods.

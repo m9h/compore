@@ -1,6 +1,6 @@
 # DIPY issue draft: calibrated per-fixel uncertainty for refined peaks (lafix)
 
-**Status:** drafted 2026-11-06 for Morgan to post at https://github.com/dipy/dipy/issues. Not sent. Follow-up PR: `lafix.dipy_refine.refine_peaks` as a `dipy.reconst` or `dipy.workflows` contribution; code at https://github.com/m9h/compore/tree/master/packages/lafix (BSD). Numbers: doc 008 §6.4, §10.6, doc 012 §7.6.
+**Status:** drafted 2026-11-06 for Morgan to post at https://github.com/dipy/dipy/issues. Not sent. Follow-up PR: `lafix.dipy_refine.refine_peaks` as a `dipy.reconst` or `dipy.workflows` contribution; code at https://github.com/m9h/compore/tree/master/packages/lafix (MIT). Numbers: doc 008 §6.4, §10.6, doc 012 §7.6.
 
 ---
 
@@ -20,12 +20,14 @@ I have a small, DIPY-only-dependency package (`lafix`, "Laplace fixel") that tak
 ### What exists
 
 ```python
-from lafix.dipy_refine import refine_peaks, default_config
-pam_refined, post = refine_peaks(data, gtab, pam, mask=mask, config=default_config(gtab), laplace=True)
-post.sigma_deg_calibrated          # per fixel, (X, Y, Z, K)
-post.sample_dirs(key, n, calibrated=True)   # posterior direction samples for probabilistic connectomes
+from lafix.dipy_refine import refine_peaks
+pam_refined, post, fit = refine_peaks(data, gtab, mask, pam, n_fibres=3, affine=affine, sigma_inflation=1.81)
+post.sigma_deg                     # raw Laplace σ_θ per fixel, (N_mask, K)
+post.sigma_deg_calibrated          # × 1.81 (HCP-YA constant; default 1.0 = raw)
+post.sample_dirs(key, n)           # posterior direction samples for probabilistic connectomes
 ```
-A CLI (`dipy_refine_peaks`, a `dipy.workflows.workflow.Workflow`) writes refined peaks, `*_sigmatheta_calibrated.nii.gz`, and an MRtrix fixel directory. The dependency chain is dipy + optax + a JAX library of ours (compore) for the differentiable forward model; I can reduce it to dipy + jax if that is preferred for a contribution.
+`pip install lafix` (0.1.0, MIT; depends on dipy, jax, optax only).
+A CLI (`dipy_refine_peaks`, a `dipy.workflows.workflow.Workflow`) writes refined peaks, `*_sigmatheta_calibrated.nii.gz`, and an MRtrix fixel directory. The dependency chain is dipy + jax + optax (the forward model is self-contained; our larger `compore` platform is not needed).
 
 ### Known limits (so nobody is surprised)
 

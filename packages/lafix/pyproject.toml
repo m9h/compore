@@ -5,27 +5,49 @@ build-backend = "hatchling.build"
 [project]
 name = "lafix"
 version = "0.1.0"
-description = "Laplace fixel posteriors: refine any DIPY peaks with a differentiable multi-fixel fit and a calibrated per-fixel uncertainty"
+description = "Laplace fixel posteriors: refine any DIPY peaks with a differentiable multi-fixel fit and get a per-fixel orientation uncertainty"
 readme = "README.md"
-license = { text = "MIT" }
-requires-python = ">=3.12"
-authors = [{ name = "Morgan Hough" }]
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+authors = [{ name = "Morgan Hough", email = "morgan.hough@gmail.com" }]
+keywords = ["diffusion MRI", "tractography", "fixel", "uncertainty", "Laplace", "DIPY", "JAX"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
 dependencies = [
-  "compore",
-  "jax",
+  "jax>=0.4.30",
   "numpy",
   "scipy",
   "optax>=0.2.6",
   "dipy>=1.12.1",
   "nibabel",
+  "h5py",
 ]
+
+[project.optional-dependencies]
+cuda = ["jax[cuda13]"]
+viz = ["fury>=2.1.0"]
+test = ["pytest"]
+
+[project.urls]
+Homepage = "https://github.com/m9h/compore/tree/master/packages/lafix"
+Repository = "https://github.com/m9h/compore"
+Issues = "https://github.com/m9h/compore/issues"
+Changelog = "https://github.com/m9h/compore/blob/master/packages/lafix/CHANGELOG.md"
 
 [project.scripts]
 dipy_refine_peaks = "lafix.workflow:main"
 lafix = "lafix.workflow:main"
 
-[tool.uv.sources]
-compore = { workspace = true }
-
 [tool.hatch.build.targets.wheel]
 packages = ["lafix"]
+
+[tool.hatch.build.targets.sdist]
+include = ["lafix", "README.md", "CHANGELOG.md", "LICENSE", "pyproject.toml"]

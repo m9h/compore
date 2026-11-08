@@ -1,7 +1,7 @@
 """
 DIPY-facing refinement stage (doc 008 §8 item 6 / §9 item 3): take any
 DIPY ``PeaksAndMetrics`` (CSD, MSMT-CSD, FORCE, …) as the initialisation,
-run the differentiable, spatially regularised PRISM-JAX fit from it, and
+run the differentiable, spatially regularised lafix fit from it, and
 return (a) a refined ``PeaksAndMetrics`` that drops straight into DIPY's
 trackers and (b) the Laplace fixel posterior (tangent-plane covariance
 per fixel) for uncertainty-aware tractography (CV pruning, doc 007 §8.3).
@@ -14,16 +14,16 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import Optional, Tuple
 import numpy as np
-from lafix import prism_jax as pj, prism_uncertainty as pu
-def default_config(n_fibres: int, n_iter: int = 300, d_par_init: float = 1.7e-9, wm_only: bool = False, lam_iso: float = 0.0) -> pj.PrismConfig:
+from lafix import model as pj, uncertainty as pu
+def default_config(n_fibres: int, n_iter: int = 300, d_par_init: float = 1.7e-9, wm_only: bool = False, lam_iso: float = 0.0) -> pj.FixelConfig:
     """The plus-x model: learned diffusivities, decoupled extra-cellular D∥,
     tortuosity, no restricted pool; isotropic compartments off for WM-only tissue.
     ``lam_iso`` > 0 adds the one-sided f_iso prior (doc 008 §13.4); see fi_config()."""
-    return replace(pj.PrismConfig(n_fibres=n_fibres, n_iter=n_iter, loss="nll"), learn_diffusivities=True, d_par=d_par_init,
+    return replace(pj.FixelConfig(n_fibres=n_fibres, n_iter=n_iter, loss="nll"), learn_diffusivities=True, d_par=d_par_init,
                    tortuosity=True, use_restricted=False, separate_extra_dpar=True, use_isotropic=not wm_only, lam_iso=lam_iso)
 
 
-def fi_config(n_fibres: int = 3, **kw) -> pj.PrismConfig:
+def fi_config(n_fibres: int = 3, **kw) -> pj.FixelConfig:
     """Recommended configuration for intra-neurite fraction maps: default_config with the
     f_iso prior λ=1e3 / target 0.1. On 42 HCP retest subjects (doc 008 §13.4) it matches the
     WM-only model's f_i reproducibility with the CSF/GM balls kept and is on par with NODDI;
@@ -47,21 +47,22 @@ def init_from_pam(pam, mask: np.ndarray, n_fibres: int, frac_min: float = 0.05) 
     return dirs, fr
 
 
-def refine_peaks(data: np.ndarray, gtab, mask: np.ndarray, pam, n_fibres: int = 3, cfg: Optional[pj.PrismConfig] = None,
+def refine_peaks(data: np.ndarray, gtab, mask: np.ndarray, pam, n_fibres: int = 3, cfg: Optional[pj.FixelConfig] = None,
                  sphere=None, peak_frac_min: float = 0.10, affine=None, laplace: bool = True,
-                 sigma_inflation: float = pu.SIGMA_INFLATION_HCP_YA):
-    """Refine DIPY peaks with the PRISM-JAX MAP; return (PeaksAndMetrics, FixelPosterior | None, PrismFit).
+                 sigma_inflation: float = 1.0):
+    """Refine DIPY peaks with the lafix MAP; return (PeaksAndMetrics, FixelPosterior | None, FixelFit).
 
     ``sigma_inflation`` is stored on the posterior and applied by
-    ``FixelPosterior.sigma_deg_calibrated``; the default is the HCP-YA
-    scan–rescan constant (doc 008 §10.6). Pass 1.0 for the raw Laplace σ."""
+    ``FixelPosterior.sigma_deg_calibrated``; the default 1.0 keeps the raw
+    Laplace σ. ``pu.SIGMA_INFLATION_HCP_YA`` (1.81) is the HCP-YA scan–rescan
+    constant (doc 008 §10.6) for comparable protocols."""
     from dipy.data import default_sphere
     sphere = sphere or default_sphere
     bvals_si = np.asarray(gtab.bvals, float) * 1e6; bvecs = np.asarray(gtab.bvecs, float)
     cfg = cfg or default_config(n_fibres)
     init_dirs, init_fracs = init_from_pam(pam, mask, n_fibres)
-    fit = pj.fit_prism(data, mask, bvals_si, bvecs, cfg, init_dirs, init_fracs)
-    pam_ref = pj.prism_fit_to_pam(fit, sphere, peak_frac_min=peak_frac_min, affine=affine if affine is not None else getattr(pam, "affine", np.eye(4)))
+    fit = pj.fit_fixels(data, mask, bvals_si, bvecs, cfg, init_dirs, init_fracs)
+    pam_ref = pj.fit_to_pam(fit, sphere, peak_frac_min=peak_frac_min, affine=affine if affine is not None else getattr(pam, "affine", np.eye(4)))
     post = pu.laplace_fixel_posterior(fit, data, bvals_si, bvecs, sigma_inflation=sigma_inflation) if laplace else None
     return pam_ref, post, fit
 

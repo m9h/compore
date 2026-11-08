@@ -20,7 +20,7 @@ gpu = pytest.importorskip("validation.cuslines_posterior_disco_gpu")
 
 
 def _load_example():
-    p = ROOT / "packages/lafix/examples/viz_skyline_sigma.py"
+    p = ROOT / "packages/lafix/lafix/examples/viz_skyline_sigma.py"
     spec = importlib.util.spec_from_file_location("viz_skyline_sigma", p)
     mod = importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
     return mod

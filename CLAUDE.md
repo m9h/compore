@@ -90,9 +90,11 @@ These **must match** or the network sees different distributions at train vs dep
 
 ```
 packages/lafix/lafix/        # the product distribution `lafix` (depends on compore)
-├── prism_jax.py             # the differentiable K-fixel model, Rician NLL, priors, fit_prism
-├── prism_uncertainty.py     # Laplace fixel posterior, SIGMA_INFLATION_HCP_YA, cone coverage,
-│                            #   posterior-sampled connectomes, Laplace evidence
+├── model.py                 # the differentiable K-fixel model, Rician NLL, priors, fit_fixels
+│                            #   (was prism_jax.py until the 0.1.0 release; shim kept, doc 015)
+├── uncertainty.py           # Laplace fixel posterior, SIGMA_INFLATION_HCP_YA, cone coverage,
+│                            #   posterior-sampled connectomes, Laplace evidence (was prism_uncertainty.py)
+├── kernels.py               # vendored GPD sphere kernel so lafix does not depend on compore
 ├── dipy_refine.py           # DIPY plug-in: refine_peaks, default_config, fi_config
 ├── tracking.py fixel.py     # peaks → PAM / EuDX helpers; MRtrix fixel-directory writer
 └── workflow.py              # `dipy_refine_peaks` / `lafix` CLI (DIPY Workflow)
@@ -136,7 +138,7 @@ docs/artifacts.md            # where the untracked checkpoints/binaries live
 
 Dependencies (doc 012 §7, 2026-11-04): compore's core list is only what
 `compore.signal_models` / `fitting` and lafix need on CPU; lafix depends on
-compore, dipy, optax. Extras: `cuda` (jax[cuda13]), `sbi` (flowjax, blackjax, numpyro, h5py),
+dipy, jax, optax only (no compore since the 0.1.0 release, doc 015). Extras: `cuda` (jax[cuda13]), `sbi` (flowjax, blackjax, numpyro, h5py),
 `sim` (diffrax, jax-md, pandas), `algebra` (sympy), `inverse` (scico, cvxpy),
 `nn` (e3nn, healpy, ttax), `viz` (matplotlib, tqdm), `data`, `baselines`,
 `test`, `doc`, `all`. The dev environment is `uv sync --all-extras`. Keep the

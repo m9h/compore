@@ -67,7 +67,7 @@ def write_fixel_directory(out_dir, mask: np.ndarray, dirs: np.ndarray, values: d
 
 
 def fixels_from_posterior(post, fit):
-    """Convenience: (dirs, values) for write_fixel_directory from a FixelPosterior + PrismFit."""
+    """Convenience: (dirs, values) for write_fixel_directory from a FixelPosterior + FixelFit."""
     K = post.dirs.shape[1]
     vals = {"fraction": post.wm_fracs, "sigma_theta_deg": post.sigma_deg,
             "f_intra": np.repeat(fit.fintra[:, None], K, axis=1)}

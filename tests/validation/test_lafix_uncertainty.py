@@ -5,8 +5,8 @@ import pytest
 jax = pytest.importorskip("jax")
 import jax.numpy as jnp  # noqa: E402
 
-from lafix import prism_jax as pj  # noqa: E402
-from lafix import prism_uncertainty as pu  # noqa: E402
+from lafix import model as pj  # noqa: E402
+from lafix import uncertainty as pu  # noqa: E402
 from validation.lib import prism_synthetic as ps  # noqa: E402
 
 
@@ -15,11 +15,11 @@ def fitted():
     b = ps.make_benchmark(snr=30)
     # subset: 60° and 90° slices + singles, to keep the test fast
     sel = np.zeros(b["mask"].shape, bool); sel[[9, 15, 16]] = True
-    cfg = pj.PrismConfig(n_fibres=2, n_iter=300, loss="nll")
+    cfg = pj.FixelConfig(n_fibres=2, n_iter=300, loss="nll")
     m = b["mask"] & sel
     gt = b["gt_dirs"][sel[b["mask"]]]
     ang = b["angle"][sel[b["mask"]]]
-    fit = pj.fit_prism(b["data"], m, b["bvals"], b["bvecs"], cfg)
+    fit = pj.fit_fixels(b["data"], m, b["bvals"], b["bvecs"], cfg)
     post = pu.laplace_fixel_posterior(fit, b["data"], b["bvals"], b["bvecs"])
     return b, m, gt, ang, fit, post
 
@@ -86,13 +86,13 @@ def test_evidence_prefers_true_model_class():
     """Undispersed GT → the undispersed model should win most voxels;
     dispersed GT (ODI 0.25) → the dispersed model should win most."""
     from dataclasses import replace
-    base = pj.PrismConfig(n_fibres=2, n_iter=300, loss="nll", learn_diffusivities=False)
+    base = pj.FixelConfig(n_fibres=2, n_iter=300, loss="nll", learn_diffusivities=False)
     for gt_odi, expect_disp in ((None, False), (0.25, True)):
         b = ps.make_benchmark(snr=30, gt_odi=gt_odi)
         sel = np.zeros(b["mask"].shape, bool); sel[[9, 15]] = True      # 60° and 90° slices
         m = b["mask"] & sel
-        f_plain = pj.fit_prism(b["data"], m, b["bvals"], b["bvecs"], base)
-        f_disp = pj.fit_prism(b["data"], m, b["bvals"], b["bvecs"], replace(base, disperse=True))
+        f_plain = pj.fit_fixels(b["data"], m, b["bvals"], b["bvecs"], base)
+        f_disp = pj.fit_fixels(b["data"], m, b["bvals"], b["bvecs"], replace(base, disperse=True))
         out = pu.select_per_voxel([f_plain, f_disp], b["data"], b["bvals"], b["bvecs"])
         frac_disp = float(np.mean(out["choice"] == 1))
         assert np.isfinite(out["evidence"]).all()

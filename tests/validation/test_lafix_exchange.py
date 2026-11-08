@@ -66,9 +66,9 @@ def test_batched_kernel_shape():
 
 
 def test_watson_karger_matches_prism_dispersed_mixture_without_exchange():
-    """τ_ex → ∞: the dispersed Kärger kernel must equal PRISM-JAX's own Watson-
+    """τ_ex → ∞: the dispersed Kärger kernel must equal lafix's own Watson-
     convolved f·stick + (1−f)·zeppelin (same Legendre machinery)."""
-    from lafix import prism_jax as pj
+    from lafix import model as pj
     b, g = _scheme(); odi = 0.15
     s_k = px.karger_watson_pgse(b, g, tau_ex=1e6, delta=10e-3, Delta=30e-3, odi=odi, **ARGS)
     kappa = 1.0 / jnp.tan(jnp.pi * odi / 2.0)

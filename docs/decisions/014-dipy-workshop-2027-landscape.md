@@ -131,7 +131,7 @@ samples + CPU connectomes; untracked, listed in docs/artifacts.md).
 
 ### 4.2 Skyline example, 2026-11-07
 
-`packages/lafix/examples/viz_skyline_sigma.py` loads the `dipy_refine_peaks`
+`packages/lafix/lafix/examples/viz_skyline_sigma.py` loads the `dipy_refine_peaks`
 outputs (`*_peaks.pam5`, `*_sigmatheta_calibrated.nii.gz`, `*_fwm`,
 `*_fintra`) and calls `dipy.viz.skyline.app.skyline` with the σ map as the
 background image, the refined peaks as a peaks layer, and optionally N

@@ -23,6 +23,7 @@ memory of previous sessions cite them as "doc 008 §13".
 | [012](012-retrospective-and-landscape-2026-10.md) | review + survey | live | origins as a dmipy fork, Kidger-stack audit, the tour of techniques, and the October 2026 landscape by group; supersedes doc 004 as the landscape entry point |
 | [013](013-progress-report-and-roadmap-2026-11-06.md) | report | live | program scorecard two days into doc 012 §7, step-4 interim numbers (phase A, first two phase B sessions), ordered roadmap |
 | [014](014-dipy-workshop-2027-landscape.md) | landscape | live | DIPY Workshop 2026/2027 programme decoded (SuCor, Skyline/Auto, GLIDE=cuslines, BUAN3/SPECTRA, THETAN, PRISM status) and what it means for the DIPY issue and the lafix paper |
+| [015](015-lafix-0.1.0-release.md) | release | executed | lafix 0.1.0 as a standalone tool: `lafix.model`/`lafix.uncertainty` (PRISM-named shims kept), no compore dependency, σ calibration opt-in, README/CHANGELOG/LICENSE, wheel verified in a clean venv on Stanford HARDI |
 
 Conventions: one file per topic; append dated sections rather than rewriting
 history; numbers in the tables are copied from the JSON the scripts in
