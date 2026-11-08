@@ -10,9 +10,9 @@ tractography pipeline can propagate orientation uncertainty into
 probabilistic connectomes instead of tracking a single point estimate.
 
 Whole brain on a CPU takes a few minutes: Stanford HARDI (150 directions)
-refines in 88 s + 31 s Laplace on a 154 625-voxel white-matter mask, and in
-291 s on the 185 968-voxel brain mask the quick start below uses. A GPU is
-optional.
+refines + Laplace in 128 s on the 77 664-voxel FA > 0.2 mask the quick start
+below uses (8 threads), 119 s on a 154 625-voxel white-matter mask, 291 s on
+the 185 968-voxel brain mask. A GPU is optional.
 
 ```bash
 pip install lafix            # or: uv add lafix
@@ -71,7 +71,10 @@ Two shipped configurations:
 python -m lafix.examples.stanford_hardi_quickstart out/    # downloads Stanford HARDI, CSD peaks, refine, Laplace
 ```
 
-It writes the files above plus `out/quickstart.json` with timings.
+It masks white matter as brain ∧ DTI FA > 0.2 (`--fa-thr 0` for the whole
+brain; outside white matter σ_θ sits on its 57° prior bound) and writes the
+files above plus `out/quickstart.json` with timings and summary numbers
+(σ_θ median 3.7°, p90 7.9°, f_i median 0.47 on this data).
 `python -m lafix.examples.viz_skyline_sigma out/stanford_hardi_desc-refined`
 shows the result in DIPY's Skyline viewer (dipy ≥ 1.13, FURY ≥ 2.1).
 

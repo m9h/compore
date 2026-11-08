@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""End-to-end lafix quick start on DIPY's Stanford HARDI dataset (CPU, ~3 min).
+"""End-to-end lafix quick start on DIPY's Stanford HARDI dataset (CPU, a few minutes).
 
-    python stanford_hardi_quickstart.py out/ [--n-fibres 3] [--n-iter 300] [--sigma-inflation 1.0]
+    python stanford_hardi_quickstart.py out/ [--n-fibres 3] [--n-iter 300] [--sigma-inflation 1.0] [--fa-thr 0.2]
 
-1. fetch Stanford HARDI (dipy.data), median-Otsu brain mask
+1. fetch Stanford HARDI (dipy.data), median-Otsu brain mask, DTI FA inside it;
+   the working mask is FA > --fa-thr (white matter; 0 keeps the whole brain mask)
 2. CSD (sh_order 8) peaks, 5 per voxel, via dipy.direction.peaks_from_model
 3. `dipy_refine_peaks` on those peaks (the same Workflow the CLI runs)
 4. report timings and a few summary numbers in out/quickstart.json
@@ -17,6 +18,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("out_dir"); ap.add_argument("--n-fibres", type=int, default=3); ap.add_argument("--n-iter", type=int, default=300)
     ap.add_argument("--sigma-inflation", type=float, default=1.0); ap.add_argument("--num-cpus", type=int, default=0)
+    ap.add_argument("--fa-thr", type=float, default=0.2, help="white-matter mask = brain mask & DTI FA > this; 0 = brain mask")
     a = ap.parse_args(argv)
     out = Path(a.out_dir); out.mkdir(parents=True, exist_ok=True)
 
@@ -27,13 +29,22 @@ def main(argv=None):
     from dipy.io.image import load_nifti, save_nifti
     from dipy.io.peaks import save_pam
     from dipy.reconst.csdeconv import ConstrainedSphericalDeconvModel, auto_response_ssst
+    from dipy.reconst.dti import TensorModel
     from dipy.segment.mask import median_otsu
     from lafix.workflow import RefinePeaksFlow
 
     t = {}
     f_dwi, f_bval, f_bvec = get_fnames(name="stanford_hardi")
     data, affine = load_nifti(f_dwi); bvals, bvecs = read_bvals_bvecs(f_bval, f_bvec); gtab = gradient_table(bvals, bvecs=bvecs)
-    t0 = time.time(); _, mask = median_otsu(data, vol_idx=range(10, 50), median_radius=3, numpass=1, dilate=2); t["mask_s"] = time.time() - t0
+    t0 = time.time(); _, brain = median_otsu(data, vol_idx=range(10, 50), median_radius=3, numpass=1, dilate=2)
+    save_nifti(str(out / "brain_mask.nii.gz"), brain.astype(np.uint8), affine)
+    if a.fa_thr > 0:
+        fa = TensorModel(gtab).fit(data, mask=brain).fa
+        fa = np.nan_to_num(fa); save_nifti(str(out / "fa.nii.gz"), fa.astype(np.float32), affine)
+        mask = brain & (fa > a.fa_thr)
+    else:
+        mask = brain
+    t["mask_s"] = time.time() - t0
     save_nifti(str(out / "mask.nii.gz"), mask.astype(np.uint8), affine)
 
     t0 = time.time()
@@ -52,7 +63,8 @@ def main(argv=None):
 
     sig, _ = load_nifti(str(out / "stanford_hardi_desc-refined_sigmatheta.nii.gz")); fi, _ = load_nifti(str(out / "stanford_hardi_desc-refined_fintra.nii.gz"))
     m = mask & (sig > 0)
-    summary = {"n_mask_voxels": int(mask.sum()), "n_fitted_voxels": int(m.sum()), "sigma_theta_deg_median": float(np.median(sig[m])),
+    summary = {"mask": "brain & FA > %g" % a.fa_thr if a.fa_thr > 0 else "brain (median-Otsu)",
+               "n_brain_voxels": int(brain.sum()), "n_mask_voxels": int(mask.sum()), "n_fitted_voxels": int(m.sum()), "sigma_theta_deg_median": float(np.median(sig[m])),
                "sigma_theta_deg_p90": float(np.percentile(sig[m], 90)), "f_intra_median": float(np.median(fi[m])), **t,
                "model": json.loads((out / "stanford_hardi_desc-refined_model.json").read_text())}
     (out / "quickstart.json").write_text(json.dumps(summary, indent=1)); print(json.dumps(summary, indent=1))

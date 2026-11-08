@@ -56,6 +56,30 @@ stays the platform; nothing in it is released.
   masks the whole brain, not white matter (185 968 vs 154 625 voxels, and
   the non-WM voxels converge slowly); the README now quotes both.
 
+## 6. Quick start on a white-matter mask (2026-11-07, after the release commit)
+
+The user chose option 4 of §5. `stanford_hardi_quickstart` now computes a
+DTI FA map inside the median-Otsu brain mask and fits brain ∧ FA > 0.2
+(`--fa-thr`, 0 restores the brain mask); `brain_mask.nii.gz` and `fa.nii.gz`
+are written next to `mask.nii.gz`. Dev venv, `JAX_PLATFORMS=cpu`, 8 threads,
+numbers from `quickstart.json`:
+
+| step | brain mask (§3) | FA > 0.2 mask |
+|---|---|---|
+| mask voxels | 185 968 | 77 664 (brain 185 968) |
+| mask step | 48 s | 133 s (median-Otsu + whole-brain DTI) |
+| CSD peaks | 208 s | 17 s (data already cached; §3 included the download / first-run cost) |
+| refine + Laplace (n_fibres 3, 300 it.) | 291 s | 128 s |
+| learned D∥ / extra D∥ | 1.32 / 1.11 µm²/ms | 1.46 / 0.99 µm²/ms |
+| σ_θ main fixel median / p90 | 5.8° / 57.3° | 3.7° / 7.9° |
+| f_i median | 0.44 | 0.47 |
+
+The 57° tail was the non-WM voxels, as §3 guessed. The refine time did not
+halve with the voxel count (128 vs 291 s for 0.42× the voxels) because the
+fixed costs (JIT compile, Laplace Hessians per fixel) stay; it is still the
+runtime the README quotes for the default example. The DTI fit is the new
+dominant cost of the example; it is plain DIPY and not lafix's.
+
 ## 4. Not done in this release
 
 - Skyline example untested (dipy 1.13 not installable from PyPI; source
@@ -72,12 +96,11 @@ stays the platform; nothing in it is released.
 ## 5. Left to the user
 
 1. **Tag and publish**: `git tag lafix-v0.1.0`, `uv publish dist/*` (PyPI
-   credentials needed; the package name `lafix` was not checked for
-   availability on PyPI from this session). The sdist and wheel in `dist/`
-   are the verified artefacts.
-2. Push the commits (47b9351 … this one) when ready.
+   credentials needed). The name `lafix` was free on PyPI on 2026-11-07
+   (`https://pypi.org/pypi/lafix/json` → 404). Rebuild the wheel first if
+   §6 is to be included (it only changes the example). The sdist and wheel
+   in `dist/` are the verified artefacts.
+2. ~~Push the commits~~ — pushed 2026-11-07 (a12add0..370bd11).
 3. Send `docs/outreach/dipy-lafix-issue.md` (updated to the 0.1.0 API and
    `pip install lafix`) and `docs/outreach/cuslines-issues.md`.
-4. Decide whether the quick start should mask white matter (FA > 0.2 from
-   DTI) instead of the brain; it would halve the runtime and remove the
-   57° tail, at the cost of a DTI fit in the example.
+4. ~~Decide whether the quick start should mask white matter~~ — done, §6.

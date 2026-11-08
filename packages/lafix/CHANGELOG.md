@@ -18,5 +18,6 @@ First release.
   `lafix.kernels`.
 - The σ calibration factor is opt-in (`--sigma_inflation`, default 1.0 = raw
   Laplace σ); 1.81 is the HCP-YA scan–rescan constant.
-- Examples (`python -m lafix.examples.<name>`): `stanford_hardi_quickstart`,
+- Examples (`python -m lafix.examples.<name>`): `stanford_hardi_quickstart`
+  (brain mask ∧ DTI FA > 0.2 by default, `--fa-thr 0` for the whole brain),
   `viz_skyline_sigma` (Skyline, dipy ≥ 1.13).
